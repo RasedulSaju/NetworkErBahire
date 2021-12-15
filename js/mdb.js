@@ -1,6 +1,6 @@
-/* !
+/*!
  * Material Design for Bootstrap 4
- * Version: MDB Pro 4.11.0
+ * Version: MDB Admin Dashboard 4.8.11
  *
  *
  * Copyright: Material Design for Bootstrap
@@ -21,45 +21,42 @@
  *
  * Contact: office@mdbootstrap.com
  *
- * Attribution: Animate CSS, Twitter Bootstrap, Materialize CSS, Normalize CSS, Waves JS, WOW JS, Toastr, Chart.js ,
+ * Attribution: Animate CSS, Twitter Bootstrap, Materialize CSS, Normalize CSS, Waves JS, WOW JS, Toastr, Chart.js
  *
  */
 
 
 /*
 
-  jquery.easing.js
-  velocity.js
-  chart.js
-  wow.js
-  scrolling-navbar.js
-  waves.js
-  forms-free.js
-  preloading.js
-  cards.js
-  character-counter.js
-  toastr.js
-  smooth-scroll.js
-  dropdown.js
-  buttons.js
-  sidenav.js
-  collapsible.js
-  range-input.js
-  file-input.js
-  material-select.js
-  picker.js
-  picker-date.js
-  picker-time.js
-  lightbox.js
-  jquery.sticky.js
-  scrollbar.js
-  chips.js
-  ofi.js
-  jarallax.js
-  jarallax-video.js
-  mdb-autocomplete.js
-  enhanced-modals.js
-  treeview.js
+jquery.easing.js
+velocity.min.js
+chart.js
+wow.js
+scrolling-navbar.js
+waves.js
+forms-free.js
+cards.js
+smooth-scroll.js
+toastr.js
+dropdown.js
+buttons.js
+sidenav.js
+collapsible.js
+jquery.easypiechart.js
+file-input.js
+material-select.js
+picker.js
+picker-date.js
+picker-time.js
+lightbox.js
+jquery.sticky.js
+scrollbar.js
+chips.js
+jarallax.js
+jarallax-video.js
+mdb-autocomplete.js
+treeview.js
+
 
 */
 
@@ -14731,1418 +14728,48 @@ module.exports = function() {
 },{"1":1,"26":26,"33":33,"34":34,"46":46}]},{},[7])(7)
 });
 
-/*!
- * chartjs-plugin-datalabels v0.7.0
- * https://chartjs-plugin-datalabels.netlify.com
- * (c) 2019 Chart.js Contributors
- * Released under the MIT license
- */
-(function (global, factory) {
-typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('chart.js')) :
-typeof define === 'function' && define.amd ? define(['chart.js'], factory) :
-(global = global || self, global.ChartDataLabels = factory(global.Chart));
-}(this, function (Chart) { 'use strict';
-
-Chart = Chart && Chart.hasOwnProperty('default') ? Chart['default'] : Chart;
-
-var helpers = Chart.helpers;
-
-var devicePixelRatio = (function() {
-	if (typeof window !== 'undefined') {
-		if (window.devicePixelRatio) {
-			return window.devicePixelRatio;
-		}
-
-		// devicePixelRatio is undefined on IE10
-		// https://stackoverflow.com/a/20204180/8837887
-		// https://github.com/chartjs/chartjs-plugin-datalabels/issues/85
-		var screen = window.screen;
-		if (screen) {
-			return (screen.deviceXDPI || 1) / (screen.logicalXDPI || 1);
-		}
-	}
-
-	return 1;
-}());
-
-var utils = {
-	// @todo move this in Chart.helpers.toTextLines
-	toTextLines: function(inputs) {
-		var lines = [];
-		var input;
-
-		inputs = [].concat(inputs);
-		while (inputs.length) {
-			input = inputs.pop();
-			if (typeof input === 'string') {
-				lines.unshift.apply(lines, input.split('\n'));
-			} else if (Array.isArray(input)) {
-				inputs.push.apply(inputs, input);
-			} else if (!helpers.isNullOrUndef(inputs)) {
-				lines.unshift('' + input);
-			}
-		}
-
-		return lines;
-	},
-
-	// @todo move this method in Chart.helpers.canvas.toFont (deprecates helpers.fontString)
-	// @see https://developer.mozilla.org/en-US/docs/Web/CSS/font
-	toFontString: function(font) {
-		if (!font || helpers.isNullOrUndef(font.size) || helpers.isNullOrUndef(font.family)) {
-			return null;
-		}
-
-		return (font.style ? font.style + ' ' : '')
-			+ (font.weight ? font.weight + ' ' : '')
-			+ font.size + 'px '
-			+ font.family;
-	},
-
-	// @todo move this in Chart.helpers.canvas.textSize
-	// @todo cache calls of measureText if font doesn't change?!
-	textSize: function(ctx, lines, font) {
-		var items = [].concat(lines);
-		var ilen = items.length;
-		var prev = ctx.font;
-		var width = 0;
-		var i;
-
-		ctx.font = font.string;
-
-		for (i = 0; i < ilen; ++i) {
-			width = Math.max(ctx.measureText(items[i]).width, width);
-		}
-
-		ctx.font = prev;
-
-		return {
-			height: ilen * font.lineHeight,
-			width: width
-		};
-	},
-
-	// @todo move this method in Chart.helpers.options.toFont
-	parseFont: function(value) {
-		var global = Chart.defaults.global;
-		var size = helpers.valueOrDefault(value.size, global.defaultFontSize);
-		var font = {
-			family: helpers.valueOrDefault(value.family, global.defaultFontFamily),
-			lineHeight: helpers.options.toLineHeight(value.lineHeight, size),
-			size: size,
-			style: helpers.valueOrDefault(value.style, global.defaultFontStyle),
-			weight: helpers.valueOrDefault(value.weight, null),
-			string: ''
-		};
-
-		font.string = utils.toFontString(font);
-		return font;
-	},
-
-	/**
-	 * Returns value bounded by min and max. This is equivalent to max(min, min(value, max)).
-	 * @todo move this method in Chart.helpers.bound
-	 * https://doc.qt.io/qt-5/qtglobal.html#qBound
-	 */
-	bound: function(min, value, max) {
-		return Math.max(min, Math.min(value, max));
-	},
-
-	/**
-	 * Returns an array of pair [value, state] where state is:
-	 * * -1: value is only in a0 (removed)
-	 * *  1: value is only in a1 (added)
-	 */
-	arrayDiff: function(a0, a1) {
-		var prev = a0.slice();
-		var updates = [];
-		var i, j, ilen, v;
-
-		for (i = 0, ilen = a1.length; i < ilen; ++i) {
-			v = a1[i];
-			j = prev.indexOf(v);
-
-			if (j === -1) {
-				updates.push([v, 1]);
-			} else {
-				prev.splice(j, 1);
-			}
-		}
-
-		for (i = 0, ilen = prev.length; i < ilen; ++i) {
-			updates.push([prev[i], -1]);
-		}
-
-		return updates;
-	},
-
-	/**
-	 * https://github.com/chartjs/chartjs-plugin-datalabels/issues/70
-	 */
-	rasterize: function(v) {
-		return Math.round(v * devicePixelRatio) / devicePixelRatio;
-	}
-};
-
-function orient(point, origin) {
-	var x0 = origin.x;
-	var y0 = origin.y;
-
-	if (x0 === null) {
-		return {x: 0, y: -1};
-	}
-	if (y0 === null) {
-		return {x: 1, y: 0};
-	}
-
-	var dx = point.x - x0;
-	var dy = point.y - y0;
-	var ln = Math.sqrt(dx * dx + dy * dy);
-
-	return {
-		x: ln ? dx / ln : 0,
-		y: ln ? dy / ln : -1
-	};
-}
-
-function aligned(x, y, vx, vy, align) {
-	switch (align) {
-	case 'center':
-		vx = vy = 0;
-		break;
-	case 'bottom':
-		vx = 0;
-		vy = 1;
-		break;
-	case 'right':
-		vx = 1;
-		vy = 0;
-		break;
-	case 'left':
-		vx = -1;
-		vy = 0;
-		break;
-	case 'top':
-		vx = 0;
-		vy = -1;
-		break;
-	case 'start':
-		vx = -vx;
-		vy = -vy;
-		break;
-	case 'end':
-		// keep natural orientation
-		break;
-	default:
-		// clockwise rotation (in degree)
-		align *= (Math.PI / 180);
-		vx = Math.cos(align);
-		vy = Math.sin(align);
-		break;
-	}
-
-	return {
-		x: x,
-		y: y,
-		vx: vx,
-		vy: vy
-	};
-}
-
-// Line clipping (Cohen–Sutherland algorithm)
-// https://en.wikipedia.org/wiki/Cohen–Sutherland_algorithm
-
-var R_INSIDE = 0;
-var R_LEFT = 1;
-var R_RIGHT = 2;
-var R_BOTTOM = 4;
-var R_TOP = 8;
-
-function region(x, y, rect) {
-	var res = R_INSIDE;
-
-	if (x < rect.left) {
-		res |= R_LEFT;
-	} else if (x > rect.right) {
-		res |= R_RIGHT;
-	}
-	if (y < rect.top) {
-		res |= R_TOP;
-	} else if (y > rect.bottom) {
-		res |= R_BOTTOM;
-	}
-
-	return res;
-}
-
-function clipped(segment, area) {
-	var x0 = segment.x0;
-	var y0 = segment.y0;
-	var x1 = segment.x1;
-	var y1 = segment.y1;
-	var r0 = region(x0, y0, area);
-	var r1 = region(x1, y1, area);
-	var r, x, y;
-
-	// eslint-disable-next-line no-constant-condition
-	while (true) {
-		if (!(r0 | r1) || (r0 & r1)) {
-			// both points inside or on the same side: no clipping
-			break;
-		}
-
-		// at least one point is outside
-		r = r0 || r1;
-
-		if (r & R_TOP) {
-			x = x0 + (x1 - x0) * (area.top - y0) / (y1 - y0);
-			y = area.top;
-		} else if (r & R_BOTTOM) {
-			x = x0 + (x1 - x0) * (area.bottom - y0) / (y1 - y0);
-			y = area.bottom;
-		} else if (r & R_RIGHT) {
-			y = y0 + (y1 - y0) * (area.right - x0) / (x1 - x0);
-			x = area.right;
-		} else if (r & R_LEFT) {
-			y = y0 + (y1 - y0) * (area.left - x0) / (x1 - x0);
-			x = area.left;
-		}
-
-		if (r === r0) {
-			x0 = x;
-			y0 = y;
-			r0 = region(x0, y0, area);
-		} else {
-			x1 = x;
-			y1 = y;
-			r1 = region(x1, y1, area);
-		}
-	}
-
-	return {
-		x0: x0,
-		x1: x1,
-		y0: y0,
-		y1: y1
-	};
-}
-
-function compute(range, config) {
-	var anchor = config.anchor;
-	var segment = range;
-	var x, y;
-
-	if (config.clamp) {
-		segment = clipped(segment, config.area);
-	}
-
-	if (anchor === 'start') {
-		x = segment.x0;
-		y = segment.y0;
-	} else if (anchor === 'end') {
-		x = segment.x1;
-		y = segment.y1;
-	} else {
-		x = (segment.x0 + segment.x1) / 2;
-		y = (segment.y0 + segment.y1) / 2;
-	}
-
-	return aligned(x, y, range.vx, range.vy, config.align);
-}
-
-var positioners = {
-	arc: function(vm, config) {
-		var angle = (vm.startAngle + vm.endAngle) / 2;
-		var vx = Math.cos(angle);
-		var vy = Math.sin(angle);
-		var r0 = vm.innerRadius;
-		var r1 = vm.outerRadius;
-
-		return compute({
-			x0: vm.x + vx * r0,
-			y0: vm.y + vy * r0,
-			x1: vm.x + vx * r1,
-			y1: vm.y + vy * r1,
-			vx: vx,
-			vy: vy
-		}, config);
-	},
-
-	point: function(vm, config) {
-		var v = orient(vm, config.origin);
-		var rx = v.x * vm.radius;
-		var ry = v.y * vm.radius;
-
-		return compute({
-			x0: vm.x - rx,
-			y0: vm.y - ry,
-			x1: vm.x + rx,
-			y1: vm.y + ry,
-			vx: v.x,
-			vy: v.y
-		}, config);
-	},
-
-	rect: function(vm, config) {
-		var v = orient(vm, config.origin);
-		var x = vm.x;
-		var y = vm.y;
-		var sx = 0;
-		var sy = 0;
-
-		if (vm.horizontal) {
-			x = Math.min(vm.x, vm.base);
-			sx = Math.abs(vm.base - vm.x);
-		} else {
-			y = Math.min(vm.y, vm.base);
-			sy = Math.abs(vm.base - vm.y);
-		}
-
-		return compute({
-			x0: x,
-			y0: y + sy,
-			x1: x + sx,
-			y1: y,
-			vx: v.x,
-			vy: v.y
-		}, config);
-	},
-
-	fallback: function(vm, config) {
-		var v = orient(vm, config.origin);
-
-		return compute({
-			x0: vm.x,
-			y0: vm.y,
-			x1: vm.x,
-			y1: vm.y,
-			vx: v.x,
-			vy: v.y
-		}, config);
-	}
-};
-
-var helpers$1 = Chart.helpers;
-var rasterize = utils.rasterize;
-
-function boundingRects(model) {
-	var borderWidth = model.borderWidth || 0;
-	var padding = model.padding;
-	var th = model.size.height;
-	var tw = model.size.width;
-	var tx = -tw / 2;
-	var ty = -th / 2;
-
-	return {
-		frame: {
-			x: tx - padding.left - borderWidth,
-			y: ty - padding.top - borderWidth,
-			w: tw + padding.width + borderWidth * 2,
-			h: th + padding.height + borderWidth * 2
-		},
-		text: {
-			x: tx,
-			y: ty,
-			w: tw,
-			h: th
-		}
-	};
-}
-
-function getScaleOrigin(el) {
-	var horizontal = el._model.horizontal;
-	var scale = el._scale || (horizontal && el._xScale) || el._yScale;
-
-	if (!scale) {
-		return null;
-	}
-
-	if (scale.xCenter !== undefined && scale.yCenter !== undefined) {
-		return {x: scale.xCenter, y: scale.yCenter};
-	}
-
-	var pixel = scale.getBasePixel();
-	return horizontal ?
-		{x: pixel, y: null} :
-		{x: null, y: pixel};
-}
-
-function getPositioner(el) {
-	if (el instanceof Chart.elements.Arc) {
-		return positioners.arc;
-	}
-	if (el instanceof Chart.elements.Point) {
-		return positioners.point;
-	}
-	if (el instanceof Chart.elements.Rectangle) {
-		return positioners.rect;
-	}
-	return positioners.fallback;
-}
-
-function drawFrame(ctx, rect, model) {
-	var bgColor = model.backgroundColor;
-	var borderColor = model.borderColor;
-	var borderWidth = model.borderWidth;
-
-	if (!bgColor && (!borderColor || !borderWidth)) {
-		return;
-	}
-
-	ctx.beginPath();
-
-	helpers$1.canvas.roundedRect(
-		ctx,
-		rasterize(rect.x) + borderWidth / 2,
-		rasterize(rect.y) + borderWidth / 2,
-		rasterize(rect.w) - borderWidth,
-		rasterize(rect.h) - borderWidth,
-		model.borderRadius);
-
-	ctx.closePath();
-
-	if (bgColor) {
-		ctx.fillStyle = bgColor;
-		ctx.fill();
-	}
-
-	if (borderColor && borderWidth) {
-		ctx.strokeStyle = borderColor;
-		ctx.lineWidth = borderWidth;
-		ctx.lineJoin = 'miter';
-		ctx.stroke();
-	}
-}
-
-function textGeometry(rect, align, font) {
-	var h = font.lineHeight;
-	var w = rect.w;
-	var x = rect.x;
-	var y = rect.y + h / 2;
-
-	if (align === 'center') {
-		x += w / 2;
-	} else if (align === 'end' || align === 'right') {
-		x += w;
-	}
-
-	return {
-		h: h,
-		w: w,
-		x: x,
-		y: y
-	};
-}
-
-function drawTextLine(ctx, text, cfg) {
-	var shadow = ctx.shadowBlur;
-	var stroked = cfg.stroked;
-	var x = rasterize(cfg.x);
-	var y = rasterize(cfg.y);
-	var w = rasterize(cfg.w);
-
-	if (stroked) {
-		ctx.strokeText(text, x, y, w);
-	}
-
-	if (cfg.filled) {
-		if (shadow && stroked) {
-			// Prevent drawing shadow on both the text stroke and fill, so
-			// if the text is stroked, remove the shadow for the text fill.
-			ctx.shadowBlur = 0;
-		}
-
-		ctx.fillText(text, x, y, w);
-
-		if (shadow && stroked) {
-			ctx.shadowBlur = shadow;
-		}
-	}
-}
-
-function drawText(ctx, lines, rect, model) {
-	var align = model.textAlign;
-	var color = model.color;
-	var filled = !!color;
-	var font = model.font;
-	var ilen = lines.length;
-	var strokeColor = model.textStrokeColor;
-	var strokeWidth = model.textStrokeWidth;
-	var stroked = strokeColor && strokeWidth;
-	var i;
-
-	if (!ilen || (!filled && !stroked)) {
-		return;
-	}
-
-	// Adjust coordinates based on text alignment and line height
-	rect = textGeometry(rect, align, font);
-
-	ctx.font = font.string;
-	ctx.textAlign = align;
-	ctx.textBaseline = 'middle';
-	ctx.shadowBlur = model.textShadowBlur;
-	ctx.shadowColor = model.textShadowColor;
-
-	if (filled) {
-		ctx.fillStyle = color;
-	}
-	if (stroked) {
-		ctx.lineJoin = 'round';
-		ctx.lineWidth = strokeWidth;
-		ctx.strokeStyle = strokeColor;
-	}
-
-	for (i = 0, ilen = lines.length; i < ilen; ++i) {
-		drawTextLine(ctx, lines[i], {
-			stroked: stroked,
-			filled: filled,
-			w: rect.w,
-			x: rect.x,
-			y: rect.y + rect.h * i
-		});
-	}
-}
-
-var Label = function(config, ctx, el, index) {
-	var me = this;
-
-	me._config = config;
-	me._index = index;
-	me._model = null;
-	me._rects = null;
-	me._ctx = ctx;
-	me._el = el;
-};
-
-helpers$1.extend(Label.prototype, {
-	/**
-	 * @private
-	 */
-	_modelize: function(display, lines, config, context) {
-		var me = this;
-		var index = me._index;
-		var resolve = helpers$1.options.resolve;
-		var font = utils.parseFont(resolve([config.font, {}], context, index));
-		var color = resolve([config.color, Chart.defaults.global.defaultFontColor], context, index);
-
-		return {
-			align: resolve([config.align, 'center'], context, index),
-			anchor: resolve([config.anchor, 'center'], context, index),
-			area: context.chart.chartArea,
-			backgroundColor: resolve([config.backgroundColor, null], context, index),
-			borderColor: resolve([config.borderColor, null], context, index),
-			borderRadius: resolve([config.borderRadius, 0], context, index),
-			borderWidth: resolve([config.borderWidth, 0], context, index),
-			clamp: resolve([config.clamp, false], context, index),
-			clip: resolve([config.clip, false], context, index),
-			color: color,
-			display: display,
-			font: font,
-			lines: lines,
-			offset: resolve([config.offset, 0], context, index),
-			opacity: resolve([config.opacity, 1], context, index),
-			origin: getScaleOrigin(me._el),
-			padding: helpers$1.options.toPadding(resolve([config.padding, 0], context, index)),
-			positioner: getPositioner(me._el),
-			rotation: resolve([config.rotation, 0], context, index) * (Math.PI / 180),
-			size: utils.textSize(me._ctx, lines, font),
-			textAlign: resolve([config.textAlign, 'start'], context, index),
-			textShadowBlur: resolve([config.textShadowBlur, 0], context, index),
-			textShadowColor: resolve([config.textShadowColor, color], context, index),
-			textStrokeColor: resolve([config.textStrokeColor, color], context, index),
-			textStrokeWidth: resolve([config.textStrokeWidth, 0], context, index)
-		};
-	},
-
-	update: function(context) {
-		var me = this;
-		var model = null;
-		var rects = null;
-		var index = me._index;
-		var config = me._config;
-		var value, label, lines;
-
-		// We first resolve the display option (separately) to avoid computing
-		// other options in case the label is hidden (i.e. display: false).
-		var display = helpers$1.options.resolve([config.display, true], context, index);
-
-		if (display) {
-			value = context.dataset.data[index];
-			label = helpers$1.valueOrDefault(helpers$1.callback(config.formatter, [value, context]), value);
-			lines = helpers$1.isNullOrUndef(label) ? [] : utils.toTextLines(label);
-
-			if (lines.length) {
-				model = me._modelize(display, lines, config, context);
-				rects = boundingRects(model);
-			}
-		}
-
-		me._model = model;
-		me._rects = rects;
-	},
-
-	geometry: function() {
-		return this._rects ? this._rects.frame : {};
-	},
-
-	rotation: function() {
-		return this._model ? this._model.rotation : 0;
-	},
-
-	visible: function() {
-		return this._model && this._model.opacity;
-	},
-
-	model: function() {
-		return this._model;
-	},
-
-	draw: function(chart, center) {
-		var me = this;
-		var ctx = chart.ctx;
-		var model = me._model;
-		var rects = me._rects;
-		var area;
-
-		if (!this.visible()) {
-			return;
-		}
-
-		ctx.save();
-
-		if (model.clip) {
-			area = model.area;
-			ctx.beginPath();
-			ctx.rect(
-				area.left,
-				area.top,
-				area.right - area.left,
-				area.bottom - area.top);
-			ctx.clip();
-		}
-
-		ctx.globalAlpha = utils.bound(0, model.opacity, 1);
-		ctx.translate(rasterize(center.x), rasterize(center.y));
-		ctx.rotate(model.rotation);
-
-		drawFrame(ctx, rects.frame, model);
-		drawText(ctx, model.lines, rects.text, model);
-
-		ctx.restore();
-	}
-});
-
-var helpers$2 = Chart.helpers;
-
-var MIN_INTEGER = Number.MIN_SAFE_INTEGER || -9007199254740991; // eslint-disable-line es/no-number-minsafeinteger
-var MAX_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;  // eslint-disable-line es/no-number-maxsafeinteger
-
-function rotated(point, center, angle) {
-	var cos = Math.cos(angle);
-	var sin = Math.sin(angle);
-	var cx = center.x;
-	var cy = center.y;
-
-	return {
-		x: cx + cos * (point.x - cx) - sin * (point.y - cy),
-		y: cy + sin * (point.x - cx) + cos * (point.y - cy)
-	};
-}
-
-function projected(points, axis) {
-	var min = MAX_INTEGER;
-	var max = MIN_INTEGER;
-	var origin = axis.origin;
-	var i, pt, vx, vy, dp;
-
-	for (i = 0; i < points.length; ++i) {
-		pt = points[i];
-		vx = pt.x - origin.x;
-		vy = pt.y - origin.y;
-		dp = axis.vx * vx + axis.vy * vy;
-		min = Math.min(min, dp);
-		max = Math.max(max, dp);
-	}
-
-	return {
-		min: min,
-		max: max
-	};
-}
-
-function toAxis(p0, p1) {
-	var vx = p1.x - p0.x;
-	var vy = p1.y - p0.y;
-	var ln = Math.sqrt(vx * vx + vy * vy);
-
-	return {
-		vx: (p1.x - p0.x) / ln,
-		vy: (p1.y - p0.y) / ln,
-		origin: p0,
-		ln: ln
-	};
-}
-
-var HitBox = function() {
-	this._rotation = 0;
-	this._rect = {
-		x: 0,
-		y: 0,
-		w: 0,
-		h: 0
-	};
-};
-
-helpers$2.extend(HitBox.prototype, {
-	center: function() {
-		var r = this._rect;
-		return {
-			x: r.x + r.w / 2,
-			y: r.y + r.h / 2
-		};
-	},
-
-	update: function(center, rect, rotation) {
-		this._rotation = rotation;
-		this._rect = {
-			x: rect.x + center.x,
-			y: rect.y + center.y,
-			w: rect.w,
-			h: rect.h
-		};
-	},
-
-	contains: function(point) {
-		var me = this;
-		var margin = 1;
-		var rect = me._rect;
-
-		point = rotated(point, me.center(), -me._rotation);
-
-		return !(point.x < rect.x - margin
-			|| point.y < rect.y - margin
-			|| point.x > rect.x + rect.w + margin * 2
-			|| point.y > rect.y + rect.h + margin * 2);
-	},
-
-	// Separating Axis Theorem
-	// https://gamedevelopment.tutsplus.com/tutorials/collision-detection-using-the-separating-axis-theorem--gamedev-169
-	intersects: function(other) {
-		var r0 = this._points();
-		var r1 = other._points();
-		var axes = [
-			toAxis(r0[0], r0[1]),
-			toAxis(r0[0], r0[3])
-		];
-		var i, pr0, pr1;
-
-		if (this._rotation !== other._rotation) {
-			// Only separate with r1 axis if the rotation is different,
-			// else it's enough to separate r0 and r1 with r0 axis only!
-			axes.push(
-				toAxis(r1[0], r1[1]),
-				toAxis(r1[0], r1[3])
-			);
-		}
-
-		for (i = 0; i < axes.length; ++i) {
-			pr0 = projected(r0, axes[i]);
-			pr1 = projected(r1, axes[i]);
-
-			if (pr0.max < pr1.min || pr1.max < pr0.min) {
-				return false;
-			}
-		}
-
-		return true;
-	},
-
-	/**
-	 * @private
-	 */
-	_points: function() {
-		var me = this;
-		var rect = me._rect;
-		var angle = me._rotation;
-		var center = me.center();
-
-		return [
-			rotated({x: rect.x, y: rect.y}, center, angle),
-			rotated({x: rect.x + rect.w, y: rect.y}, center, angle),
-			rotated({x: rect.x + rect.w, y: rect.y + rect.h}, center, angle),
-			rotated({x: rect.x, y: rect.y + rect.h}, center, angle)
-		];
-	}
-});
-
-function coordinates(view, model, geometry) {
-	var point = model.positioner(view, model);
-	var vx = point.vx;
-	var vy = point.vy;
-
-	if (!vx && !vy) {
-		// if aligned center, we don't want to offset the center point
-		return {x: point.x, y: point.y};
-	}
-
-	var w = geometry.w;
-	var h = geometry.h;
-
-	// take in account the label rotation
-	var rotation = model.rotation;
-	var dx = Math.abs(w / 2 * Math.cos(rotation)) + Math.abs(h / 2 * Math.sin(rotation));
-	var dy = Math.abs(w / 2 * Math.sin(rotation)) + Math.abs(h / 2 * Math.cos(rotation));
-
-	// scale the unit vector (vx, vy) to get at least dx or dy equal to
-	// w or h respectively (else we would calculate the distance to the
-	// ellipse inscribed in the bounding rect)
-	var vs = 1 / Math.max(Math.abs(vx), Math.abs(vy));
-	dx *= vx * vs;
-	dy *= vy * vs;
-
-	// finally, include the explicit offset
-	dx += model.offset * vx;
-	dy += model.offset * vy;
-
-	return {
-		x: point.x + dx,
-		y: point.y + dy
-	};
-}
-
-function collide(labels, collider) {
-	var i, j, s0, s1;
-
-	// IMPORTANT Iterate in the reverse order since items at the end of the
-	// list have an higher weight/priority and thus should be less impacted
-	// by the overlapping strategy.
-
-	for (i = labels.length - 1; i >= 0; --i) {
-		s0 = labels[i].$layout;
-
-		for (j = i - 1; j >= 0 && s0._visible; --j) {
-			s1 = labels[j].$layout;
-
-			if (s1._visible && s0._box.intersects(s1._box)) {
-				collider(s0, s1);
-			}
-		}
-	}
-
-	return labels;
-}
-
-function compute$1(labels) {
-	var i, ilen, label, state, geometry, center;
-
-	// Initialize labels for overlap detection
-	for (i = 0, ilen = labels.length; i < ilen; ++i) {
-		label = labels[i];
-		state = label.$layout;
-
-		if (state._visible) {
-			geometry = label.geometry();
-			center = coordinates(label._el._model, label.model(), geometry);
-			state._box.update(center, geometry, label.rotation());
-		}
-	}
-
-	// Auto hide overlapping labels
-	return collide(labels, function(s0, s1) {
-		var h0 = s0._hidable;
-		var h1 = s1._hidable;
-
-		if ((h0 && h1) || h1) {
-			s1._visible = false;
-		} else if (h0) {
-			s0._visible = false;
-		}
-	});
-}
-
-var layout = {
-	prepare: function(datasets) {
-		var labels = [];
-		var i, j, ilen, jlen, label;
-
-		for (i = 0, ilen = datasets.length; i < ilen; ++i) {
-			for (j = 0, jlen = datasets[i].length; j < jlen; ++j) {
-				label = datasets[i][j];
-				labels.push(label);
-				label.$layout = {
-					_box: new HitBox(),
-					_hidable: false,
-					_visible: true,
-					_set: i,
-					_idx: j
-				};
-			}
-		}
-
-		// TODO New `z` option: labels with a higher z-index are drawn
-		// of top of the ones with a lower index. Lowest z-index labels
-		// are also discarded first when hiding overlapping labels.
-		labels.sort(function(a, b) {
-			var sa = a.$layout;
-			var sb = b.$layout;
-
-			return sa._idx === sb._idx
-				? sb._set - sa._set
-				: sb._idx - sa._idx;
-		});
-
-		this.update(labels);
-
-		return labels;
-	},
-
-	update: function(labels) {
-		var dirty = false;
-		var i, ilen, label, model, state;
-
-		for (i = 0, ilen = labels.length; i < ilen; ++i) {
-			label = labels[i];
-			model = label.model();
-			state = label.$layout;
-			state._hidable = model && model.display === 'auto';
-			state._visible = label.visible();
-			dirty |= state._hidable;
-		}
-
-		if (dirty) {
-			compute$1(labels);
-		}
-	},
-
-	lookup: function(labels, point) {
-		var i, state;
-
-		// IMPORTANT Iterate in the reverse order since items at the end of
-		// the list have an higher z-index, thus should be picked first.
-
-		for (i = labels.length - 1; i >= 0; --i) {
-			state = labels[i].$layout;
-
-			if (state && state._visible && state._box.contains(point)) {
-				return labels[i];
-			}
-		}
-
-		return null;
-	},
-
-	draw: function(chart, labels) {
-		var i, ilen, label, state, geometry, center;
-
-		for (i = 0, ilen = labels.length; i < ilen; ++i) {
-			label = labels[i];
-			state = label.$layout;
-
-			if (state._visible) {
-				geometry = label.geometry();
-				center = coordinates(label._el._view, label.model(), geometry);
-				state._box.update(center, geometry, label.rotation());
-				label.draw(chart, center);
-			}
-		}
-	}
-};
-
-var helpers$3 = Chart.helpers;
-
-var formatter = function(value) {
-	if (helpers$3.isNullOrUndef(value)) {
-		return null;
-	}
-
-	var label = value;
-	var keys, klen, k;
-	if (helpers$3.isObject(value)) {
-		if (!helpers$3.isNullOrUndef(value.label)) {
-			label = value.label;
-		} else if (!helpers$3.isNullOrUndef(value.r)) {
-			label = value.r;
-		} else {
-			label = '';
-			keys = Object.keys(value);
-			for (k = 0, klen = keys.length; k < klen; ++k) {
-				label += (k !== 0 ? ', ' : '') + keys[k] + ': ' + value[keys[k]];
-			}
-		}
-	}
-
-	return '' + label;
-};
-
-/**
- * IMPORTANT: make sure to also update tests and TypeScript definition
- * files (`/test/specs/defaults.spec.js` and `/types/options.d.ts`)
- */
-
-var defaults = {
-	align: 'center',
-	anchor: 'center',
-	backgroundColor: null,
-	borderColor: null,
-	borderRadius: 0,
-	borderWidth: 0,
-	clamp: false,
-	clip: false,
-	color: undefined,
-	display: true,
-	font: {
-		family: undefined,
-		lineHeight: 1.2,
-		size: undefined,
-		style: undefined,
-		weight: null
-	},
-	formatter: formatter,
-	labels: undefined,
-	listeners: {},
-	offset: 4,
-	opacity: 1,
-	padding: {
-		top: 4,
-		right: 4,
-		bottom: 4,
-		left: 4
-	},
-	rotation: 0,
-	textAlign: 'start',
-	textStrokeColor: undefined,
-	textStrokeWidth: 0,
-	textShadowBlur: 0,
-	textShadowColor: undefined
-};
-
-/**
- * @see https://github.com/chartjs/Chart.js/issues/4176
- */
-
-var helpers$4 = Chart.helpers;
-var EXPANDO_KEY = '$datalabels';
-var DEFAULT_KEY = '$default';
-
-function configure(dataset, options) {
-	var override = dataset.datalabels;
-	var listeners = {};
-	var configs = [];
-	var labels, keys;
-
-	if (override === false) {
-		return null;
-	}
-	if (override === true) {
-		override = {};
-	}
-
-	options = helpers$4.merge({}, [options, override]);
-	labels = options.labels || {};
-	keys = Object.keys(labels);
-	delete options.labels;
-
-	if (keys.length) {
-		keys.forEach(function(key) {
-			if (labels[key]) {
-				configs.push(helpers$4.merge({}, [
-					options,
-					labels[key],
-					{_key: key}
-				]));
-			}
-		});
-	} else {
-		// Default label if no "named" label defined.
-		configs.push(options);
-	}
-
-	// listeners: {<event-type>: {<label-key>: <fn>}}
-	listeners = configs.reduce(function(target, config) {
-		helpers$4.each(config.listeners || {}, function(fn, event) {
-			target[event] = target[event] || {};
-			target[event][config._key || DEFAULT_KEY] = fn;
-		});
-
-		delete config.listeners;
-		return target;
-	}, {});
-
-	return {
-		labels: configs,
-		listeners: listeners
-	};
-}
-
-function dispatchEvent(chart, listeners, label) {
-	if (!listeners) {
-		return;
-	}
-
-	var context = label.$context;
-	var groups = label.$groups;
-	var callback;
-
-	if (!listeners[groups._set]) {
-		return;
-	}
-
-	callback = listeners[groups._set][groups._key];
-	if (!callback) {
-		return;
-	}
-
-	if (helpers$4.callback(callback, [context]) === true) {
-		// Users are allowed to tweak the given context by injecting values that can be
-		// used in scriptable options to display labels differently based on the current
-		// event (e.g. highlight an hovered label). That's why we update the label with
-		// the output context and schedule a new chart render by setting it dirty.
-		chart[EXPANDO_KEY]._dirty = true;
-		label.update(context);
-	}
-}
-
-function dispatchMoveEvents(chart, listeners, previous, label) {
-	var enter, leave;
-
-	if (!previous && !label) {
-		return;
-	}
-
-	if (!previous) {
-		enter = true;
-	} else if (!label) {
-		leave = true;
-	} else if (previous !== label) {
-		leave = enter = true;
-	}
-
-	if (leave) {
-		dispatchEvent(chart, listeners.leave, previous);
-	}
-	if (enter) {
-		dispatchEvent(chart, listeners.enter, label);
-	}
-}
-
-function handleMoveEvents(chart, event) {
-	var expando = chart[EXPANDO_KEY];
-	var listeners = expando._listeners;
-	var previous, label;
-
-	if (!listeners.enter && !listeners.leave) {
-		return;
-	}
-
-	if (event.type === 'mousemove') {
-		label = layout.lookup(expando._labels, event);
-	} else if (event.type !== 'mouseout') {
-		return;
-	}
-
-	previous = expando._hovered;
-	expando._hovered = label;
-	dispatchMoveEvents(chart, listeners, previous, label);
-}
-
-function handleClickEvents(chart, event) {
-	var expando = chart[EXPANDO_KEY];
-	var handlers = expando._listeners.click;
-	var label = handlers && layout.lookup(expando._labels, event);
-	if (label) {
-		dispatchEvent(chart, handlers, label);
-	}
-}
-
-// https://github.com/chartjs/chartjs-plugin-datalabels/issues/108
-function invalidate(chart) {
-	if (chart.animating) {
-		return;
-	}
-
-	// `chart.animating` can be `false` even if there is animation in progress,
-	// so let's iterate all animations to find if there is one for the `chart`.
-	var animations = Chart.animationService.animations;
-	for (var i = 0, ilen = animations.length; i < ilen; ++i) {
-		if (animations[i].chart === chart) {
-			return;
-		}
-	}
-
-	// No render scheduled: trigger a "lazy" render that can be canceled in case
-	// of hover interactions. The 1ms duration is a workaround to make sure an
-	// animation is created so the controller can stop it before any transition.
-	chart.render({duration: 1, lazy: true});
-}
-
-Chart.defaults.global.plugins.datalabels = defaults;
-
-var plugin = {
-	id: 'datalabels',
-
-	beforeInit: function(chart) {
-		chart[EXPANDO_KEY] = {
-			_actives: []
-		};
-	},
-
-	beforeUpdate: function(chart) {
-		var expando = chart[EXPANDO_KEY];
-		expando._listened = false;
-		expando._listeners = {};     // {<event-type>: {<dataset-index>: {<label-key>: <fn>}}}
-		expando._datasets = [];      // per dataset labels: [Label[]]
-		expando._labels = [];        // layouted labels: Label[]
-	},
-
-	afterDatasetUpdate: function(chart, args, options) {
-		var datasetIndex = args.index;
-		var expando = chart[EXPANDO_KEY];
-		var labels = expando._datasets[datasetIndex] = [];
-		var visible = chart.isDatasetVisible(datasetIndex);
-		var dataset = chart.data.datasets[datasetIndex];
-		var config = configure(dataset, options);
-		var elements = args.meta.data || [];
-		var ctx = chart.ctx;
-		var i, j, ilen, jlen, cfg, key, el, label;
-
-		ctx.save();
-
-		for (i = 0, ilen = elements.length; i < ilen; ++i) {
-			el = elements[i];
-			el[EXPANDO_KEY] = [];
-
-			if (visible && el && !el.hidden && !el._model.skip) {
-				for (j = 0, jlen = config.labels.length; j < jlen; ++j) {
-					cfg = config.labels[j];
-					key = cfg._key;
-
-					label = new Label(cfg, ctx, el, i);
-					label.$groups = {
-						_set: datasetIndex,
-						_key: key || DEFAULT_KEY
-					};
-					label.$context = {
-						active: false,
-						chart: chart,
-						dataIndex: i,
-						dataset: dataset,
-						datasetIndex: datasetIndex
-					};
-
-					label.update(label.$context);
-					el[EXPANDO_KEY].push(label);
-					labels.push(label);
-				}
-			}
-		}
-
-		ctx.restore();
-
-		// Store listeners at the chart level and per event type to optimize
-		// cases where no listeners are registered for a specific event.
-		helpers$4.merge(expando._listeners, config.listeners, {
-			merger: function(event, target, source) {
-				target[event] = target[event] || {};
-				target[event][args.index] = source[event];
-				expando._listened = true;
-			}
-		});
-	},
-
-	afterUpdate: function(chart, options) {
-		chart[EXPANDO_KEY]._labels = layout.prepare(
-			chart[EXPANDO_KEY]._datasets,
-			options);
-	},
-
-	// Draw labels on top of all dataset elements
-	// https://github.com/chartjs/chartjs-plugin-datalabels/issues/29
-	// https://github.com/chartjs/chartjs-plugin-datalabels/issues/32
-	afterDatasetsDraw: function(chart) {
-		layout.draw(chart, chart[EXPANDO_KEY]._labels);
-	},
-
-	beforeEvent: function(chart, event) {
-		// If there is no listener registered for this chart, `listened` will be false,
-		// meaning we can immediately ignore the incoming event and avoid useless extra
-		// computation for users who don't implement label interactions.
-		if (chart[EXPANDO_KEY]._listened) {
-			switch (event.type) {
-			case 'mousemove':
-			case 'mouseout':
-				handleMoveEvents(chart, event);
-				break;
-			case 'click':
-				handleClickEvents(chart, event);
-				break;
-			default:
-			}
-		}
-	},
-
-	afterEvent: function(chart) {
-		var expando = chart[EXPANDO_KEY];
-		var previous = expando._actives;
-		var actives = expando._actives = chart.lastActive || [];  // public API?!
-		var updates = utils.arrayDiff(previous, actives);
-		var i, ilen, j, jlen, update, label, labels;
-
-		for (i = 0, ilen = updates.length; i < ilen; ++i) {
-			update = updates[i];
-			if (update[1]) {
-				labels = update[0][EXPANDO_KEY] || [];
-				for (j = 0, jlen = labels.length; j < jlen; ++j) {
-					label = labels[j];
-					label.$context.active = (update[1] === 1);
-					label.update(label.$context);
-				}
-			}
-		}
-
-		if (expando._dirty || updates.length) {
-			layout.update(expando._labels);
-			invalidate(chart);
-		}
-
-		delete expando._dirty;
-	}
-};
-
-// TODO Remove at version 1, we shouldn't automatically register plugins.
-// https://github.com/chartjs/chartjs-plugin-datalabels/issues/42
-Chart.plugins.unregister(plugin);
-return plugin;
-
-}));
-
 'use strict';
 
 var WOW;
 
 (function ($) {
+
   WOW = function WOW() {
+
     return {
+
       init: function init() {
+
         var animationName = [];
+
         var once = 1;
 
         function mdbWow() {
+
           var windowHeight = window.innerHeight;
           var scroll = window.scrollY;
+
           $('.wow').each(function () {
+
             if ($(this).css('visibility') == 'visible') {
               return;
             }
 
             if (windowHeight + scroll - 100 > getOffset(this) && scroll < getOffset(this) || windowHeight + scroll - 100 > getOffset(this) + $(this).height() && scroll < getOffset(this) + $(this).height() || windowHeight + scroll == $(document).height() && getOffset(this) + 100 > $(document).height()) {
+
               var index = $(this).index('.wow');
+
               var delay = $(this).attr('data-wow-delay');
 
               if (delay) {
-                delay = $(this).attr('data-wow-delay').slice(0, -1);
+
+                delay = $(this).attr('data-wow-delay').slice(0, -1
+
+                );
                 var self = this;
+
                 var timeout = parseFloat(delay) * 1000;
+
                 $(self).addClass('animated');
                 $(self).css({
                   'visibility': 'visible'
@@ -16153,17 +14780,22 @@ var WOW;
                 $(self).css({
                   'animation-name': animationName[index]
                 });
+
                 var removeTime = $(this).css('animation-duration').slice(0, -1) * 1000;
 
                 if ($(this).attr('data-wow-delay')) {
+
                   removeTime += $(this).attr('data-wow-delay').slice(0, -1) * 1000;
                 }
 
                 var self = this;
+
                 setTimeout(function () {
+
                   $(self).removeClass('animated');
                 }, removeTime);
               } else {
+
                 $(this).addClass('animated');
                 $(this).css({
                   'visibility': 'visible'
@@ -16171,9 +14803,13 @@ var WOW;
                 $(this).css({
                   'animation-name': animationName[index]
                 });
+
                 var removeTime = $(this).css('animation-duration').slice(0, -1) * 1000;
+
                 var self = this;
+
                 setTimeout(function () {
+
                   $(self).removeClass('animated');
                 }, removeTime);
               }
@@ -16182,13 +14818,19 @@ var WOW;
         }
 
         function appear() {
+
           $('.wow').each(function () {
+
             var index = $(this).index('.wow');
+
             var delay = $(this).attr('data-wow-delay');
 
             if (delay) {
+
               delay = $(this).attr('data-wow-delay').slice(0, -1);
+
               var timeout = parseFloat(delay) * 1000;
+
               $(this).addClass('animated');
               $(this).css({
                 'visibility': 'visible'
@@ -16200,6 +14842,7 @@ var WOW;
                 'animation-name': animationName[index]
               });
             } else {
+
               $(this).addClass('animated');
               $(this).css({
                 'visibility': 'visible'
@@ -16212,10 +14855,14 @@ var WOW;
         }
 
         function hide() {
+
           var windowHeight = window.innerHeight;
           var scroll = window.scrollY;
+
           $('.wow.animated').each(function () {
+
             if (windowHeight + scroll - 100 > getOffset(this) && scroll > getOffset(this) + 100 || windowHeight + scroll - 100 < getOffset(this) && scroll < getOffset(this) + 100 || getOffset(this) + $(this).height > $(document).height() - 100) {
+
               $(this).removeClass('animated');
               $(this).css({
                 'animation-name': 'none'
@@ -16224,33 +14871,46 @@ var WOW;
                 'visibility': 'hidden'
               });
             } else {
+
               var removeTime = $(this).css('animation-duration').slice(0, -1) * 1000;
 
               if ($(this).attr('data-wow-delay')) {
+
                 removeTime += $(this).attr('data-wow-delay').slice(0, -1) * 1000;
               }
 
               var self = this;
+
               setTimeout(function () {
+
                 $(self).removeClass('animated');
               }, removeTime);
             }
           });
+
           mdbWow();
+
           once--;
         }
 
         function getOffset(elem) {
+
           var box = elem.getBoundingClientRect();
+
           var body = document.body;
           var docEl = document.documentElement;
+
           var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+
           var clientTop = docEl.clientTop || body.clientTop || 0;
+
           var top = box.top + scrollTop - clientTop;
+
           return Math.round(top);
         }
 
         $('.wow').each(function () {
+
           $(this).css({
             'visibility': 'hidden'
           });
@@ -16259,20 +14919,26 @@ var WOW;
             'animation-name': 'none'
           });
         });
+
         $(window).scroll(function () {
+
           if (once) {
+
             hide();
           } else {
+
             mdbWow();
           }
         });
+
         appear();
       }
     };
   };
 })(jQuery);
 
-window.WOW = WOW;
+"use strict";
+
 (function ($) {
   var SCROLLING_NAVBAR_OFFSET_TOP = 50;
   $(window).on('scroll', function () {
@@ -16287,6 +14953,55 @@ window.WOW = WOW;
     }
   });
 })(jQuery);
+"use strict";
+
+(function ($) {
+  $.fn.characterCounter = function () {
+    return this.each(function () {
+      var itHasLengthAttribute = $(this).attr('length') !== undefined;
+
+      if (itHasLengthAttribute) {
+        $(this).on('input', updateCounter);
+        $(this).on('focus', updateCounter);
+        $(this).on('blur', removeCounterElement);
+        addCounterElement($(this));
+      }
+    });
+  };
+
+  function updateCounter() {
+    var maxLength = Number($(this).attr('length'));
+    var actualLength = Number($(this).val().length);
+    var isValidLength = actualLength <= maxLength;
+    $(this).parent().find('span[class="character-counter"]').html("".concat(actualLength, "/").concat(maxLength));
+    addInputStyle(isValidLength, $(this));
+  }
+
+  function addCounterElement($input) {
+    var $counterElement = $('<span/>').addClass('character-counter').css('float', 'right').css('font-size', '12px').css('height', 1);
+    $input.parent().append($counterElement);
+  }
+
+  function removeCounterElement() {
+    $(this).parent().find('span[class="character-counter"]').html('');
+  }
+
+  function addInputStyle(isValidLength, $input) {
+    var inputHasInvalidClass = $input.hasClass('invalid');
+
+    if (isValidLength && inputHasInvalidClass) {
+      $input.removeClass('invalid');
+    } else if (!isValidLength && !inputHasInvalidClass) {
+      $input.removeClass('valid');
+      $input.addClass('invalid');
+    }
+  }
+
+  $(document).ready(function () {
+    $('input, textarea').characterCounter();
+  });
+})(jQuery);
+
 /*!
  * Waves v0.7.6
  * http://fian.my.id/Waves
@@ -16897,19 +15612,21 @@ $(document).ready(function () {
   Waves.init();
 });
 
-var _this = this;
+"use strict";
+
+var _this = void 0;
 
 (function ($) {
-  var inputSelector = ['text', 'password', 'email', 'url', 'tel', 'number', 'search', 'search-md'].map(function (selector) {
-    return "input[type=" + selector + "]";
-  }).join(', ') + ", textarea";
+  var inputSelector = "".concat(['text', 'password', 'email', 'url', 'tel', 'number', 'search', 'search-md'].map(function (selector) {
+    return "input[type=".concat(selector, "]");
+  }).join(', '), ", textarea");
   var textAreaSelector = '.materialize-textarea';
 
   var updateTextFields = function updateTextFields($input) {
     var $labelAndIcon = $input.siblings('label, i');
     var hasValue = $input.val().length;
     var hasPlaceholder = $input.attr('placeholder');
-    var addOrRemove = (hasValue || hasPlaceholder ? 'add' : 'remove') + "Class";
+    var addOrRemove = "".concat(hasValue || hasPlaceholder ? 'add' : 'remove', "Class");
     $labelAndIcon[addOrRemove]('active');
   };
 
@@ -16954,7 +15671,7 @@ var _this = this;
         $hiddenDiv.css('overflow-wrap', 'normal').css('white-space', 'pre');
       }
 
-      $hiddenDiv.text($textarea.val() + "\n");
+      $hiddenDiv.text("".concat($textarea.val(), "\n"));
       var content = $hiddenDiv.html().replace(/\n/g, '<br>');
       $hiddenDiv.html(content); // When textarea is hidden, width goes crazy.
       // Approximate with half of window size
@@ -17027,7 +15744,7 @@ var _this = this;
 
       if (window.attachEvent) {
         observe = function observe(element, event, handler) {
-          element.attachEvent("on" + event, handler);
+          element.attachEvent("on".concat(event), handler);
         };
       } else {
         observe = function observe(element, event, handler) {
@@ -17040,7 +15757,7 @@ var _this = this;
 
         function resize() {
           self.style.height = 'auto';
-          self.style.height = self.scrollHeight + "px";
+          self.style.height = "".concat(self.scrollHeight, "px");
         }
 
         function delayedResize() {
@@ -17067,154 +15784,72 @@ var _this = this;
 
   $(textAreaSelector).each(textAreaAutoResize);
   $body.on('keyup keydown', textAreaSelector, textAreaAutoResize);
-  var $dateInputs = $('input[type="date"]');
-  $dateInputs.each(function (index, $item) {
-    $item.type = 'text';
-  });
-  $dateInputs.on('focus', function ($item) {
-    $item.target.type = 'date';
-  });
-  $dateInputs.on('blur', function ($item) {
-    $item.target.type = 'text';
-    $("label[for=" + $item.target.id + "]").removeClass('active');
-  });
 })(jQuery);
-// 'use strict';
-var loader_path = '../dev/dist/mdb-addons/preloader.html';
-var windowLoaded = false;
-$(window).on('load', function () {
-  windowLoaded = true;
-});
-$(document).ready(function () {
-  $('body').attr('aria-busy', true);
-  $('#preloader-markup').load(loader_path, function () {
-    if (windowLoaded) {
-      $('#mdb-preloader').fadeOut('slow');
-      $('body').removeAttr('aria-busy');
-    } else {
-      $(window).on('load', function () {
-        $('#mdb-preloader').fadeOut('slow');
-        $('body').removeAttr('aria-busy');
-      });
-    }
-  });
-});
-jQuery(function ($) {
+"use strict";
+
+(function ($) {
   $(document).on('click.card', '.card', function (e) {
-    var $this = $(this);
-    var $reveal = $this.find('.card-reveal');
+    var $reveal = $(this).find('.card-reveal');
 
     if ($reveal.length) {
-      var $clickedElem = $(e.target);
-      var isTitleClicked = $clickedElem.is('.card-reveal .card-title');
-      var isTitleIconClicked = $clickedElem.is('.card-reveal .card-title i');
-      var isActivatorClicked = $clickedElem.is('.card .activator');
-      var isActivatorIconClicked = $clickedElem.is('.card .activator i');
+      var $clicked = $(e.target);
+      var isTitle = $clicked.is('.card-reveal .card-title');
+      var isTitleIcon = $clicked.is('.card-reveal .card-title i');
+      var isActivator = $clicked.is('.card .activator');
+      var isActivatorIcon = $clicked.is('.card .activator i');
 
-      if (isTitleClicked || isTitleIconClicked) {
-        takeRevealDown($reveal);
-      } else if (isActivatorClicked || isActivatorIconClicked) {
-        takeRevealUp($reveal);
+      if (isTitle || isTitleIcon) {
+        // down
+        $(this).find('.card-reveal').velocity({
+          translateY: 0
+        }, {
+          duration: 225,
+          queue: false,
+          easing: 'easeInOutQuad',
+          complete: function complete() {
+            $(this).css({
+              display: 'none'
+            });
+          }
+        });
+      } else if (isActivator || isActivatorIcon) {
+        // up
+        $(this).find('.card-reveal').css({
+          display: 'block'
+        }).velocity('stop', false).velocity({
+          translateY: '-100%'
+        }, {
+          duration: 300,
+          queue: false,
+          easing: 'easeInOutQuad'
+        });
       }
     }
   });
-
-  var takeRevealUp = function takeRevealUp(revealElem) {
-    revealElem.css({
-      display: 'block'
-    }).velocity({
-      translateY: '-100%'
-    }, {
-      duration: 300,
-      queue: false,
-      easing: 'easeInOutQuad'
-    });
-  };
-
-  var takeRevealDown = function takeRevealDown(revealElem) {
-    revealElem.velocity({
-      translateY: 0
-    }, {
-      duration: 225,
-      queue: false,
-      easing: 'easeInOutQuad',
-      complete: function complete() {
-        revealElem.css({
-          display: 'none'
-        });
-      }
-    });
-  };
-
   $('.rotate-btn').on('click', function () {
-    $(this).closest('.card').toggleClass('flipped');
+    var cardId = $(this).attr('data-card');
+    $("#".concat(cardId)).toggleClass('flipped');
   });
   $(window).on('load', function () {
-    var $rotatingCards = $('.card-rotating');
-    $rotatingCards.each(function () {
-      var $this = $(this);
-      var $cardWrapper = $this.parent();
-      var $front = $this.find('.front');
-      var $back = $this.find('.back');
-      var $frontHeight = $this.find('.front').outerHeight();
-      var $backHeight = $this.find('.back').outerHeight();
-      if ($frontHeight > $backHeight) $($cardWrapper, $back).height($frontHeight);else if ($frontHeight < $backHeight) $($cardWrapper, $front).height($backHeight);else $($cardWrapper).height($backHeight);
-    });
+    var frontHeight = $('.front').outerHeight();
+    var backHeight = $('.back').outerHeight();
+
+    if (frontHeight > backHeight) {
+      $('.card-wrapper, .back').height(frontHeight);
+    } else if (frontHeight > backHeight) {
+      $('.card-wrapper, .front').height(backHeight);
+    } else {
+      $('.card-wrapper').height(backHeight);
+    }
   });
   $('.card-share > a').on('click', function (e) {
     e.preventDefault();
     $(this).toggleClass('share-expanded').parent().find('div').toggleClass('social-reveal-active');
   });
-  $('.map-card').on('click', function () {
-    $(this).find('.card-body').toggleClass('closed');
-  });
-});
-jQuery(function ($) {
-  $.fn.characterCounter = function () {
-    return this.each(function () {
-      var $this = $(this);
-      var hasLengthAttribute = $this.attr('length') !== undefined;
+})(jQuery);
 
-      if (hasLengthAttribute) {
-        $this.on('input focus', updateCounter);
-        $this.on('blur', removeCounterElement);
-        addCounterElement($this);
-      }
-    });
-  };
-
-  function updateCounter() {
-    var $this = $(this);
-    var maxLength = Number($this.attr('length'));
-    var actualLength = Number($this.val().length);
-    var isValidLength = actualLength <= maxLength;
-    $this.parent().find('span[class="character-counter"]').html(actualLength + "/" + maxLength);
-    addInputStyle(isValidLength, $this);
-  }
-
-  function addCounterElement($input) {
-    var $counterElement = $('<span/>').addClass('character-counter').css('float', 'right').css('font-size', '12px').css('height', 1);
-    $input.parent().append($counterElement);
-  }
-
-  function removeCounterElement() {
-    $(this).parent().find('span[class="character-counter"]').html('');
-  }
-
-  function addInputStyle(isValidLength, $input) {
-    var inputHasInvalidClass = $input.hasClass('invalid');
-
-    if (isValidLength && inputHasInvalidClass) {
-      $input.removeClass('invalid');
-    } else if (!isValidLength && !inputHasInvalidClass) {
-      $input.removeClass('valid');
-      $input.addClass('invalid');
-    }
-  }
-
-  $(document).ready(function () {
-    $('input, textarea').characterCounter();
-  });
+$('.map-card').click(function () {
+  $('.card-body').toggleClass('closed');
 });
 /*
  * Toastr
@@ -17632,6 +16267,8 @@ jQuery(function ($) {
     }
 }));
 
+"use strict";
+
 var SMOOTH_SCROLL_DURATION = 700;
 $('.smooth-scroll').on('click', 'a', function () {
   var elAttr = $(this).attr('href');
@@ -17650,75 +16287,513 @@ $('.smooth-scroll').on('click', 'a', function () {
     return false;
   }
 });
-jQuery(function ($) {
-  var isTouchDevice = 'ontouchstart' in document.documentElement;
+"use strict";
 
-  var toggleOpen = function toggleOpen(btn, open) {
-    if (open && !btn.hasClass('active') || !open && btn.hasClass('active')) {
-      btn[open ? 'addClass' : 'removeClass']('active');
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+(function ($) {
+  $.fn.scrollTo = function (elem) {
+    $(this).scrollTop($(this).scrollTop() - $(this).offset().top + $(elem).offset().top);
+    return this;
+  };
+
+  $.fn.dropdown = function (option) {
+    var options = $.extend({}, $.fn.dropdown.defaults, option);
+
+    function updatePosition(origin, activates) {
+      // Offscreen detection
+      var windowHeight = window.innerHeight;
+      var originHeight = origin.innerHeight();
+      var offsetLeft = origin.offset().left;
+      var offsetTop = origin.offset().top - $(window).scrollTop();
+      var currAlignment = options.alignment;
+      var gutterSpacing = 0;
+      var leftPosition = 0; // Below Origin
+
+      var verticalOffset = 0;
+
+      if (options.belowOrigin === true) {
+        verticalOffset = originHeight;
+      } // Check for scrolling positioned container.
+
+
+      var scrollOffset = 0;
+      var wrapper = origin.parent();
+
+      if (!wrapper.is('body') && wrapper[0].scrollHeight > wrapper[0].clientHeight) {
+        scrollOffset = wrapper[0].scrollTop;
+      }
+
+      if (offsetLeft + activates.innerWidth() > $(window).width()) {
+        // Dropdown goes past screen on right, force right alignment
+        currAlignment = 'right';
+      } else if (offsetLeft - activates.innerWidth() + origin.innerWidth() < 0) {
+        // Dropdown goes past screen on left, force left alignment
+        currAlignment = 'left';
+      } // Vertical bottom offscreen detection
+
+
+      if (offsetTop + activates.innerHeight() > windowHeight) {
+        // If going upwards still goes offscreen, just crop height of dropdown.
+        if (offsetTop + originHeight - activates.innerHeight() < 0) {
+          var adjustedHeight = windowHeight - offsetTop - verticalOffset;
+          activates.css('max-height', adjustedHeight);
+        } else {
+          // Flow upwards.
+          if (!verticalOffset) {
+            verticalOffset += originHeight;
+          }
+
+          verticalOffset -= activates.innerHeight();
+        }
+      } // Handle edge alignment
+
+
+      if (currAlignment === 'left') {
+        gutterSpacing = options.gutter;
+        leftPosition = origin.position().left + gutterSpacing;
+      } else if (currAlignment === 'right') {
+        var offsetRight = origin.position().left + origin.outerWidth() - activates.outerWidth();
+        gutterSpacing = -options.gutter;
+        leftPosition = offsetRight + gutterSpacing;
+      } // Position dropdown
+
+
+      activates.css({
+        position: 'absolute',
+        top: origin.position().top + verticalOffset + scrollOffset,
+        left: leftPosition
+      });
+    }
+
+    this.each(function () {
+      var origin = $(this);
+      var isFocused = false; // Dropdown menu
+
+      var activates = $("#".concat(origin.attr('data-activates')));
+
+      function updateOptions() {
+        if (origin.data('induration') !== undefined) {
+          options.inDuration = origin.data('inDuration');
+        }
+
+        if (origin.data('outduration') !== undefined) {
+          options.outDuration = origin.data('outDuration');
+        }
+
+        if (origin.data('constrainwidth') !== undefined) {
+          options.constrain_width = origin.data('constrainwidth');
+        }
+
+        if (origin.data('hover') !== undefined) {
+          options.hover = origin.data('hover');
+        }
+
+        if (origin.data('gutter') !== undefined) {
+          options.gutter = origin.data('gutter');
+        }
+
+        if (origin.data('beloworigin') !== undefined) {
+          options.belowOrigin = origin.data('beloworigin');
+        }
+
+        if (origin.data('alignment') !== undefined) {
+          options.alignment = origin.data('alignment');
+        }
+
+        if (origin.data('maxheight') !== undefined) {
+          options.maxHeight = origin.data('maxheight');
+        }
+
+        if (origin.data('resetscroll') !== undefined) {
+          options.resetScroll = origin.data('resetscroll') === 'true';
+        }
+      }
+
+      updateOptions(); // Attach dropdown to its activator
+
+      origin.after(activates);
+      /*
+        Helper function to position and resize dropdown.
+        Used in hover and click handler.
+      */
+
+      function placeDropdown(eventType) {
+        // Check for simultaneous focus and click events.
+        if (eventType === 'focus') {
+          isFocused = true;
+        } // Check html data attributes
+
+
+        updateOptions(); // Set Dropdown state
+
+        activates.addClass('active');
+        origin.addClass('active'); // Constrain width
+
+        if (options.constrain_width === true) {
+          activates.css('width', origin.outerWidth());
+        } else {
+          activates.css('white-space', 'nowrap');
+        }
+
+        updatePosition(origin, activates); // Show dropdown
+
+        activates.stop(true, true).css('opacity', 0).slideDown({
+          queue: false,
+          duration: options.inDuration,
+          easing: 'easeOutCubic',
+          complete: function complete() {
+            $(this).css('height', '');
+          }
+        }).animate(_objectSpread({
+          opacity: 1
+        }, options.resetScroll && {
+          scrollTop: 0
+        }), {
+          queue: false,
+          duration: options.inDuration,
+          easing: 'easeOutSine'
+        });
+      }
+
+      function hideDropdown() {
+        // Check for simultaneous focus and click events.
+        isFocused = false;
+        activates.fadeOut(options.outDuration);
+        activates.removeClass('active');
+        origin.removeClass('active');
+        setTimeout(function () {
+          activates.css('max-height', options.maxHeight);
+        }, options.outDuration);
+      } // Hover
+
+
+      if (options.hover) {
+        var open = false;
+        origin.unbind("click.".concat(origin.attr('id'))); // Hover handler to show dropdown
+
+        origin.on('mouseenter', function () {
+          // Mouse over
+          if (open === false) {
+            placeDropdown();
+            open = true;
+          }
+        });
+        origin.on('mouseleave', function (e) {
+          // If hover on origin then to something other than dropdown content, then close
+          var toEl = e.toElement || e.relatedTarget; // added browser compatibility for target element
+
+          if (!$(toEl).closest('.dropdown-content').is(activates)) {
+            activates.stop(true, true);
+            hideDropdown();
+            open = false;
+          }
+        });
+        activates.on('mouseleave', function (e) {
+          // Mouse out
+          var toEl = e.toElement || e.relatedTarget;
+
+          if (!$(toEl).closest('.dropdown-button').is(origin)) {
+            activates.stop(true, true);
+            hideDropdown();
+            open = false;
+          }
+        }); // Click
+      } else {
+        // Click handler to show dropdown
+        origin.unbind("click.".concat(origin.attr('id')));
+        origin.bind("click.".concat(origin.attr('id')), function (e) {
+          if (!isFocused) {
+            if (origin[0] === e.currentTarget && !origin.hasClass('active') && $(e.target).closest('.dropdown-content').length === 0) {
+              e.preventDefault(); // Prevents button click from moving window
+
+              placeDropdown('click');
+            } else if (origin.hasClass('active')) {
+              // If origin is clicked and menu is open, close menu
+              hideDropdown();
+              $(document).unbind("click.".concat(activates.attr('id'), " touchstart.").concat(activates.attr('id')));
+            } // If menu open, add click close handler to document
+
+
+            if (activates.hasClass('active')) {
+              $(document).bind("click.".concat(activates.attr('id'), " touchstart.").concat(activates.attr('id')), function (e) {
+                if (!activates.is(e.target) && !origin.is(e.target) && !origin.find(e.target).length) {
+                  hideDropdown();
+                  $(document).unbind("click.".concat(activates.attr('id'), " touchstart.").concat(activates.attr('id')));
+                }
+              });
+            }
+          }
+        });
+      }
+
+      origin.on('open', function (e, eventType) {
+        placeDropdown(eventType);
+      });
+      origin.on('close', hideDropdown);
+    });
+    return {
+      updatePosition: updatePosition
+    };
+  };
+
+  $.fn.dropdown.defaults = {
+    inDuration: 300,
+    outDuration: 225,
+    constrain_width: true,
+    hover: false,
+    gutter: 0,
+    belowOrigin: false,
+    alignment: 'left',
+    maxHeight: '',
+    resetScroll: true
+  };
+  $('.dropdown-button').dropdown();
+
+  $.fn.mdbDropSearch = function (options) {
+    var $mdbInput = $(this).find('input');
+    this.filter(function (value, index) {
+      $(index).on('keyup', function () {
+        var $linksInDropMenu = $mdbInput.closest('div[id]').find('a, li');
+
+        for (var i = 0; i < $linksInDropMenu.length; i++) {
+          if ($linksInDropMenu.eq(i).html().toUpperCase().indexOf($mdbInput.val().toUpperCase()) > -1) {
+            $linksInDropMenu.eq(i).css({
+              display: ''
+            });
+          } else {
+            $linksInDropMenu.eq(i).css({
+              display: 'none'
+            });
+          }
+        }
+      });
+    });
+    var settings = $.extend({
+      color: '#000',
+      backgroundColor: '',
+      fontSize: '.9rem',
+      fontWeight: '400',
+      borderRadius: '',
+      borderColor: ''
+    }, options);
+    return this.css({
+      color: settings.color,
+      backgroundColor: settings.backgroundColor,
+      fontSize: settings.fontSize,
+      fontWeight: settings.fontWeight,
+      borderRadius: settings.borderRadius,
+      border: settings.border,
+      margin: settings.margin
+    });
+  };
+})(jQuery);
+
+var dropdownSelectors = $('.dropdown, .dropup'); // Custom function to read dropdown data
+
+function dropdownEffectData(target) {
+  // TODO - page level global?
+  var effectInDefault = 'fadeIn';
+  var effectOutDefault = 'fadeOut';
+  var dropdown = $(target);
+  var dropdownMenu = $('.dropdown-menu', target);
+  var parentUl = dropdown.parents('ul.nav'); // If parent is ul.nav allow global effect settings
+
+  if (parentUl.height > 0) {
+    effectInDefault = parentUl.data('dropdown-in') || null;
+    effectOutDefault = parentUl.data('dropdown-out') || null;
+  }
+
+  return {
+    target: target,
+    dropdown: dropdown,
+    dropdownMenu: dropdownMenu,
+    effectIn: dropdownMenu.data('dropdown-in') || effectInDefault,
+    effectOut: dropdownMenu.data('dropdown-out') || effectOutDefault
+  };
+} // Custom function to start effect (in or out)
+
+
+function dropdownEffectStart(data, effectToStart) {
+  if (effectToStart) {
+    data.dropdown.addClass('dropdown-animating');
+    data.dropdownMenu.addClass(['animated', effectToStart].join(' '));
+  }
+} // Custom function to read when animation is over
+
+
+function dropdownEffectEnd(data, callbackFunc) {
+  var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+  data.dropdown.one(animationEnd, function () {
+    data.dropdown.removeClass('dropdown-animating');
+    data.dropdownMenu.removeClass(['animated', data.effectIn, data.effectOut].join(' ')); // Custom callback option, used to remove open class in out effect
+
+    if (typeof callbackFunc === 'function') {
+      callbackFunc();
+    }
+  });
+} // Bootstrap API hooks
+
+
+dropdownSelectors.on({
+  'show.bs.dropdown': function showBsDropdown() {
+    // On show, start in effect
+    var dropdown = dropdownEffectData(this);
+    dropdownEffectStart(dropdown, dropdown.effectIn);
+  },
+  'shown.bs.dropdown': function shownBsDropdown() {
+    // On shown, remove in effect once complete
+    var dropdown = dropdownEffectData(this);
+
+    if (dropdown.effectIn && dropdown.effectOut) {
+      dropdownEffectEnd(dropdown);
+    }
+  },
+  'hide.bs.dropdown': function hideBsDropdown(e) {
+    // On hide, start out effect
+    var dropdown = dropdownEffectData(this);
+
+    if (dropdown.effectOut) {
+      e.preventDefault();
+      dropdownEffectStart(dropdown, dropdown.effectOut);
+      dropdownEffectEnd(dropdown, function () {
+        dropdown.dropdown.removeClass('show');
+        dropdown.dropdownMenu.removeClass('show');
+      });
+    }
+  }
+});
+$('.multi-level-dropdown .dropdown-submenu > a').on("mouseenter", function (e) {
+  var submenu = $(this);
+  $('.multi-level-dropdown .dropdown-submenu .dropdown-menu').removeClass('show');
+  submenu.next('.dropdown-menu').addClass('show');
+  e.stopPropagation();
+});
+$('.multi-level-dropdown .dropdown').on("hidden.bs.dropdown", function () {
+  // hide any open menus when parent closes
+  $('.multi-level-dropdown .dropdown-menu.show').removeClass('show');
+});
+"use strict";
+
+(function ($) {
+  var _this = this;
+
+  $(document).ready(function () {
+    $(document).on('mouseenter', '.fixed-action-btn', function () {
+      var $this = $(this);
+      openFABMenu($this);
+    });
+    $(document).on('mouseleave', '.fixed-action-btn', function () {
+      var $this = $(this);
+      closeFABMenu($this);
+    });
+    $(document).on('click', '.fixed-action-btn > a', function () {
+      var $this = $(this);
+      var $menu = $this.parent();
+      $menu.hasClass('active') ? openFABMenu($menu) : closeFABMenu($menu);
+
+      if ($menu.hasClass('active')) {
+        closeFABMenu($menu);
+      } else {
+        openFABMenu($menu);
+      }
+    });
+  });
+  $.fn.extend({
+    openFAB: function openFAB() {
+      openFABMenu($(this));
+    },
+    closeFAB: function closeFAB() {
+      closeFABMenu($(this));
+    }
+  });
+
+  var openFABMenu = function openFABMenu(btn) {
+    var fab = btn;
+
+    if (!fab.hasClass('active')) {
+      fab.addClass('active');
       var btnList = document.querySelectorAll('ul .btn-floating');
       btnList.forEach(function (el) {
-        return el.classList[open ? 'add' : 'remove']('shown');
+        el.classList.add('shown');
       });
     }
   };
 
-  var handleClick = function handleClick(btn) {
-    if (btn.hasClass('active')) {
-      toggleOpen(btn, false);
-    } else {
-      toggleOpen(btn, true);
-    }
+  var closeFABMenu = function closeFABMenu(btn) {
+    var fab = btn;
+    fab.removeClass('active');
+    var btnList = document.querySelectorAll('ul .btn-floating');
+    btnList.forEach(function (el) {
+      el.classList.remove('shown');
+    });
   };
 
-  var $btn = $('.fixed-action-btn:not(.smooth-scroll) > .btn-floating');
-  $btn.on('mouseenter', function (e) {
-    if (!isTouchDevice) {
-      toggleOpen($(e.currentTarget).parent(), true);
+  $('.fixed-action-btn:not(.smooth-scroll) > .btn-floating').on('click', function (e) {
+    if (!$(_this).hasClass('smooth-scroll')) {
+      e.preventDefault();
+      toggleFABMenu($('.fixed-action-btn'));
+      return false;
     }
   });
-  $btn.parent().on('mouseleave', function (e) {
-    return toggleOpen($(e.currentTarget), false);
-  });
-  $btn.on('click', function (e) {
-    e.preventDefault();
-    handleClick($(e.currentTarget).parent());
-  });
-  $.fn.extend({
-    openFAB: function openFAB() {
-      toggleOpen($(this), true);
-    },
-    closeFAB: function closeFAB() {
-      toggleOpen($(this), false);
+
+  function toggleFABMenu(btn) {
+    var elem = btn;
+
+    if (elem.hasClass('active')) {
+      closeFABMenu(elem);
+    } else {
+      openFABMenu(elem);
     }
-  });
-});
-jQuery(function ($) {
+  }
+})(jQuery);
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+(function ($) {
+  var MENU_WIDTH = 240;
+  var SN_BREAKPOINT = 1440;
+  var MENU_WIDTH_HALF = 2;
+  var MENU_LEFT_MIN_BORDER = 0.3;
+  var MENU_LEFT_MAX_BORDER = -0.5;
+  var MENU_RIGHT_MIN_BORDER = -0.3;
+  var MENU_RIGHT_MAX_BORDER = 0.5;
+  var MENU_VELOCITY_OFFSET = 10;
+  var MENU_TIME_DURATION_OPEN = 300;
+  var MENU_TIME_DURATION_CLOSE = 200;
+  var MENU_TIME_DURATION_OVERLAY_OPEN = 50;
+  var MENU_TIME_DURATION_OVERLAY_CLOSE = 200;
+  var MENU_EASING_OPEN = 'easeOutQuad';
+  var MENU_EASING_CLOSE = 'easeOutCubic';
+  var SHOW_OVERLAY = true;
+  var SHOW_CLOSE_BUTTON = false;
+
   var SideNav =
   /*#__PURE__*/
   function () {
     function SideNav(element, options) {
-      this.settings = {
-        menuLeftMinBorder: 0.3,
-        menuLeftMaxBorder: -0.5,
-        menuRightMinBorder: -0.3,
-        menuRightMaxBorder: 0.5,
-        menuVelocityOffset: 10
-      };
+      _classCallCheck(this, SideNav);
+
       this.defaults = {
-        menuWidth: 240,
+        MENU_WIDTH: MENU_WIDTH,
         edge: 'left',
         closeOnClick: false,
-        breakpoint: 1440,
-        timeDurationOpen: 300,
-        timeDurationClose: 200,
-        timeDurationOverlayOpen: 50,
-        timeDurationOverlayClose: 200,
-        easingOpen: 'easeOutQuad',
-        easingClose: 'easeOutCubic',
-        showOverlay: true,
-        showCloseButton: false,
-        slim: false
+        breakpoint: SN_BREAKPOINT,
+        timeDurationOpen: MENU_TIME_DURATION_OPEN,
+        timeDurationClose: MENU_TIME_DURATION_CLOSE,
+        timeDurationOverlayOpen: MENU_TIME_DURATION_OVERLAY_OPEN,
+        timeDurationOverlayClose: MENU_TIME_DURATION_OVERLAY_CLOSE,
+        easingOpen: MENU_EASING_OPEN,
+        easingClose: MENU_EASING_CLOSE,
+        showOverlay: SHOW_OVERLAY,
+        showCloseButton: SHOW_CLOSE_BUTTON
       };
       this.$element = element;
       this.$elementCloned = element.clone().css({
@@ -17736,466 +16811,648 @@ jQuery(function ($) {
         }
       };
       this.$body = $('body');
-      this.$menu = $("#" + this.$element.attr('data-activates'));
+      this.$menu = $("#".concat(this.$element.attr('data-activates')));
       this.$sidenavOverlay = $('#sidenav-overlay');
       this.$dragTarget = $('<div class="drag-target"></div>');
       this.$body.append(this.$dragTarget);
+      this.init();
     }
 
-    var _proto = SideNav.prototype;
-
-    _proto.assignOptions = function assignOptions(newOptions) {
-      return $.extend({}, this.defaults, newOptions);
-    };
-
-    _proto.init = function init() {
-      this.setMenuWidth();
-      this.setMenuTranslation();
-      this.closeOnClick();
-      this.openOnClick();
-      this.bindTouchEvents();
-      this.showCloseButton();
-      this.inputOnClick();
-
-      if (this.options.slim === true) {
-        this.handleSlim();
+    _createClass(SideNav, [{
+      key: "init",
+      value: function init() {
+        this.setMenuWidth();
+        this.setMenuTranslation();
+        this.closeOnClick();
+        this.openOnClick();
+        this.bindTouchEvents();
+        this.showCloseButton();
+        this.inputOnClick();
       }
-    };
+    }, {
+      key: "bindTouchEvents",
+      value: function bindTouchEvents() {
+        var _this = this;
 
-    _proto.setMenuWidth = function setMenuWidth() {
-      var $sidenavBg = $("#" + this.$menu.attr('id')).find('> .sidenav-bg');
-      this.$menu.css('width', this.options.menuWidth);
-      $sidenavBg.css('width', this.options.menuWidth);
-    };
-
-    _proto.setMenuTranslation = function setMenuTranslation() {
-      var _this = this;
-
-      if (this.options.edge === 'left') {
-        this.$menu.css('transform', 'translateX(-100%)');
-        this.$dragTarget.css({
-          left: 0
+        this.$dragTarget.on('click', function () {
+          return _this.removeMenu();
         });
-      } else {
-        this.$menu.addClass('right-aligned').css('transform', 'translateX(100%)');
-        this.$dragTarget.css({
-          right: 0
+        this.$elementCloned.on('click', function () {
+          return _this.removeMenu();
         });
+        this.$dragTarget.on('touchstart', function (e) {
+          _this.lastTouchVelocity.x.startPosition = e.touches[0].clientX;
+          _this.lastTouchVelocity.x.startTime = Date.now();
+        });
+        this.$dragTarget.on('touchmove', this.touchmoveEventHandler.bind(this));
+        this.$dragTarget.on('touchend', this.touchendEventHandler.bind(this));
       }
-
-      if (!this.$menu.hasClass('fixed')) {
-        return;
-      }
-
-      if (window.innerWidth > this.options.breakpoint) {
-        this.$menu.css('transform', 'translateX(0)');
-      }
-
-      this.$menu.find('input[type=text]').on('touchstart', function () {
-        _this.$menu.addClass('transform-fix-input');
-      });
-      $(window).on('resize', function () {
-        if (window.innerWidth > _this.options.breakpoint) {
-          if (_this.$sidenavOverlay.length) {
-            _this.removeMenu(true);
-          } else {
-            _this.$menu.css('transform', 'translateX(0%)');
-          }
-        } else if (_this.menuOut === false) {
-          var xValue = _this.options.edge === 'left' ? '-100' : '100';
-
-          _this.$menu.css('transform', "translateX(" + xValue + "%)");
+    }, {
+      key: "touchmoveEventHandler",
+      value: function touchmoveEventHandler(e) {
+        if (e.type !== 'touchmove') {
+          return;
         }
-      });
-    };
 
-    _proto.closeOnClick = function closeOnClick() {
-      var _this2 = this;
+        var touch = e.touches[0];
+        var touchX = touch.clientX; // calculate velocity every 20ms
 
-      if (this.options.closeOnClick === true) {
-        this.$menu.on('click', 'a:not(.collapsible-header)', function () {
-          return _this2.removeMenu();
+        if (Date.now() - this.lastTouchVelocity.x.startTime > 20) {
+          this.lastTouchVelocity.x.startPosition = touch.clientX;
+          this.lastTouchVelocity.x.startTime = Date.now();
+        }
+
+        this.disableScrolling();
+        var overlayExists = this.$sidenavOverlay.length !== 0;
+
+        if (!overlayExists) {
+          this.buildSidenavOverlay();
+        } // Keep within boundaries
+
+
+        if (this.options.edge === 'left') {
+          if (touchX > this.options.MENU_WIDTH) {
+            touchX = this.options.MENU_WIDTH;
+          } else if (touchX < 0) {
+            touchX = 0;
+          }
+        }
+
+        this.translateSidenavX(touchX);
+        this.updateOverlayOpacity(touchX);
+      }
+    }, {
+      key: "panEventHandler",
+      value: function panEventHandler(e) {
+        if (e.gesture.pointerType !== 'touch') {
+          return;
+        }
+
+        var touchX = e.gesture.center.x;
+        this.disableScrolling();
+        var overlayExists = this.$sidenavOverlay.length !== 0;
+
+        if (!overlayExists) {
+          this.buildSidenavOverlay();
+        } // Keep within boundaries
+
+
+        if (this.options.edge === 'left') {
+          if (touchX > this.options.MENU_WIDTH) {
+            touchX = this.options.MENU_WIDTH;
+          } else if (touchX < 0) {
+            touchX = 0;
+          }
+        }
+
+        this.translateSidenavX(touchX);
+        this.updateOverlayOpacity(touchX);
+      }
+    }, {
+      key: "translateSidenavX",
+      value: function translateSidenavX(touchX) {
+        if (this.options.edge === 'left') {
+          var isRightDirection = touchX >= this.options.MENU_WIDTH / MENU_WIDTH_HALF;
+          this.menuOut = isRightDirection;
+          this.$menu.css('transform', "translateX(".concat(touchX - this.options.MENU_WIDTH, "px)"));
+        } else {
+          var isLeftDirection = touchX < window.innerWidth - this.options.MENU_WIDTH / MENU_WIDTH_HALF;
+          this.menuOut = isLeftDirection;
+          var rightPos = touchX - this.options.MENU_WIDTH / MENU_WIDTH_HALF;
+
+          if (rightPos < 0) {
+            rightPos = 0;
+          }
+
+          this.$menu.css('transform', "translateX(".concat(rightPos, "px)"));
+        }
+      }
+    }, {
+      key: "updateOverlayOpacity",
+      value: function updateOverlayOpacity(touchX) {
+        var overlayPercentage;
+
+        if (this.options.edge === 'left') {
+          overlayPercentage = touchX / this.options.MENU_WIDTH;
+        } else {
+          overlayPercentage = Math.abs((touchX - window.innerWidth) / this.options.MENU_WIDTH);
+        }
+
+        this.$sidenavOverlay.velocity({
+          opacity: overlayPercentage
+        }, {
+          duration: 10,
+          queue: false,
+          easing: this.options.easingOpen
         });
+      }
+    }, {
+      key: "buildSidenavOverlay",
+      value: function buildSidenavOverlay() {
+        var _this2 = this;
 
-        if (this.$menu.css('transform') === 'translateX(0)') {
-          this.$menu.on('click', function () {
+        if (this.options.showOverlay === true) {
+          this.$sidenavOverlay = $('<div id="sidenav-overlay"></div>');
+          this.$sidenavOverlay.css('opacity', 0).on('click', function () {
             return _this2.removeMenu();
           });
+          this.$body.append(this.$sidenavOverlay);
         }
       }
-    };
-
-    _proto.openOnClick = function openOnClick() {
-      var _this3 = this;
-
-      // eslint-disable-next-line consistent-return
-      this.$element.on('click', function (e) {
-        e.preventDefault();
-
-        if (_this3.menuOut === true) {
-          return _this3.removeMenu();
+    }, {
+      key: "disableScrolling",
+      value: function disableScrolling() {
+        var oldWidth = this.$body.innerWidth();
+        this.$body.css('overflow', 'hidden');
+        this.$body.width(oldWidth);
+      }
+    }, {
+      key: "touchendEventHandler",
+      value: function touchendEventHandler(e) {
+        if (e.type !== 'touchend') {
+          return;
         }
 
-        if (_this3.options.showOverlay === true) {
-          if (!$('#sidenav-overlay').length) {
-            _this3.$sidenavOverlay = $('<div id="sidenav-overlay"></div>');
+        var touch = e.changedTouches[0];
+        this.lastTouchVelocity.x.endTime = Date.now();
+        this.lastTouchVelocity.x.endPosition = touch.clientX;
+        var velocityX = this.calculateTouchVelocityX();
+        var touchX = touch.clientX;
+        var leftPos = touchX - this.options.MENU_WIDTH;
+        var rightPos = touchX - this.options.MENU_WIDTH / MENU_WIDTH_HALF;
 
-            _this3.$body.append(_this3.$sidenavOverlay);
-          }
-        } else {
-          _this3.showCloseButton();
+        if (leftPos > 0) {
+          leftPos = 0;
         }
-
-        var translateX = [];
-
-        if (_this3.options.edge === 'left') {
-          translateX = [0, -1 * _this3.options.menuWidth];
-        } else {
-          translateX = [0, _this3.options.menuWidth];
-        }
-
-        if (_this3.$menu.css('transform') !== 'matrix(1, 0, 0, 1, 0, 0)') {
-          _this3.$menu.velocity({
-            translateX: translateX
-          }, {
-            duration: _this3.options.timeDurationOpen,
-            queue: false,
-            easing: _this3.options.easingOpen
-          });
-        }
-
-        _this3.$sidenavOverlay.on('click', function () {
-          return _this3.removeMenu();
-        });
-
-        _this3.$sidenavOverlay.on('touchmove', _this3.touchmoveEventHandler.bind(_this3));
-
-        _this3.$menu.on('touchmove', function (e) {
-          e.preventDefault();
-
-          _this3.$menu.find('.custom-scrollbar').css('padding-bottom', '30px');
-        });
-
-        _this3.menuOut = true;
-      });
-    };
-
-    _proto.bindTouchEvents = function bindTouchEvents() {
-      var _this4 = this;
-
-      this.$dragTarget.on('click', function () {
-        return _this4.removeMenu();
-      });
-      this.$dragTarget.on('touchstart', function (e) {
-        _this4.lastTouchVelocity.x.startPosition = e.touches[0].clientX;
-        _this4.lastTouchVelocity.x.startTime = Date.now();
-      });
-      this.$dragTarget.on('touchmove', this.touchmoveEventHandler.bind(this));
-      this.$dragTarget.on('touchend', this.touchendEventHandler.bind(this));
-    };
-
-    _proto.showCloseButton = function showCloseButton() {
-      if (this.options.showCloseButton === true) {
-        this.$menu.prepend(this.$elementCloned);
-        this.$menu.find('.logo-wrapper').css({
-          borderTop: '1px solid rgba(153,153,153,.3)'
-        });
-      }
-    };
-
-    _proto.inputOnClick = function inputOnClick() {
-      var _this5 = this;
-
-      this.$menu.find('input[type=text]').on('touchstart', function () {
-        return _this5.$menu.css('transform', 'translateX(0)');
-      });
-    };
-
-    _proto.removeMenu = function removeMenu(restoreMenu) {
-      var _this6 = this;
-
-      this.$body.css({
-        overflow: '',
-        width: ''
-      });
-      this.$menu.velocity({
-        translateX: this.options.edge === 'left' ? '-100%' : '100%'
-      }, {
-        duration: this.options.timeDurationClose,
-        queue: false,
-        easing: this.options.easingClose,
-        complete: function complete() {
-          if (restoreMenu === true) {
-            _this6.$menu.removeAttr('style');
-
-            _this6.$menu.css('width', _this6.options.menuWidth);
-          }
-        }
-      });
-      this.$menu.removeClass('transform-fix-input');
-      this.hideSidenavOverlay();
-      this.menuOut = false;
-    };
-
-    _proto.handleSlim = function handleSlim() {
-      var _this7 = this;
-
-      var $toggle = $('#toggle');
-      $toggle.on('click', function () {
-        if (_this7.$menu.hasClass('slim')) {
-          _this7.$menu.removeClass('slim');
-
-          $('.sv-slim-icon').removeClass('fa-angle-double-right').addClass('fa-angle-double-left');
-          $('.fixed-sn .double-nav').css({
-            transition: 'all .3s ease-in-out',
-            'padding-left': '15.9rem'
-          });
-          $('.fixed-sn main, .fixed-sn footer').css({
-            transition: 'all .3s ease-in-out',
-            'padding-left': '15rem'
-          });
-        } else {
-          _this7.$menu.addClass('slim');
-
-          $('.sv-slim-icon').removeClass('fa-angle-double-left').addClass('fa-angle-double-right');
-          $('.fixed-sn .double-nav').css('padding-left', '4.6rem');
-          $('.fixed-sn main, .fixed-sn footer').css({
-            'padding-left': '3.7rem'
-          });
-        }
-      });
-    };
-
-    _proto.touchmoveEventHandler = function touchmoveEventHandler(e) {
-      if (e.type !== 'touchmove') {
-        return;
-      }
-
-      var _e$touches = e.touches,
-          touch = _e$touches[0];
-      var touchX = touch.clientX; // calculate velocity every 20ms
-
-      if (Date.now() - this.lastTouchVelocity.x.startTime > 20) {
-        this.lastTouchVelocity.x.startPosition = touch.clientX;
-        this.lastTouchVelocity.x.startTime = Date.now();
-      }
-
-      this.disableScrolling();
-      var overlayExists = this.$sidenavOverlay.length !== 0;
-
-      if (!overlayExists) {
-        this.buildSidenavOverlay();
-      } // Keep within boundaries
-
-
-      if (this.options.edge === 'left') {
-        if (touchX > this.options.menuWidth) {
-          touchX = this.options.menuWidth;
-        } else if (touchX < 0) {
-          touchX = 0;
-        }
-      }
-
-      this.translateSidenavX(touchX);
-      this.updateOverlayOpacity(touchX);
-    };
-
-    _proto.calculateTouchVelocityX = function calculateTouchVelocityX() {
-      var distance = Math.abs(this.lastTouchVelocity.x.endPosition - this.lastTouchVelocity.x.startPosition);
-      var time = Math.abs(this.lastTouchVelocity.x.endTime - this.lastTouchVelocity.x.startTime);
-      return distance / time;
-    };
-
-    _proto.touchendEventHandler = function touchendEventHandler(e) {
-      if (e.type !== 'touchend') {
-        return;
-      }
-
-      var touch = e.changedTouches[0];
-      this.lastTouchVelocity.x.endTime = Date.now();
-      this.lastTouchVelocity.x.endPosition = touch.clientX;
-      var velocityX = this.calculateTouchVelocityX();
-      var touchX = touch.clientX;
-      var leftPos = touchX - this.options.menuWidth;
-      var rightPos = touchX - this.options.menuWidth / 2;
-
-      if (leftPos > 0) {
-        leftPos = 0;
-      }
-
-      if (rightPos < 0) {
-        rightPos = 0;
-      }
-
-      if (this.options.edge === 'left') {
-        // If velocityX <= 0.3 then the user is flinging the menu closed so ignore this.menuOut
-        if (this.menuOut || velocityX <= this.settings.menuLeftMinBorder || velocityX < this.options.menuLeftMaxBorder) {
-          if (leftPos !== 0) {
-            this.translateMenuX([0, leftPos], '300');
-          }
-
-          this.showSidenavOverlay();
-        } else if (!this.menuOut || velocityX > this.settings.menuLeftMinBorder) {
-          this.enableScrolling();
-          this.translateMenuX([-1 * this.options.menuWidth - this.options.menuVelocityOffset, leftPos], '200');
-          this.hideSidenavOverlay();
-        }
-
-        this.$dragTarget.css({
-          width: '10px',
-          right: '',
-          left: 0
-        });
-      } else if (this.menuOut && velocityX >= this.settings.menuRightMinBorder || velocityX > this.settings.menuRightMaxBorder) {
-        this.translateMenuX([0, rightPos], '300');
-        this.showSidenavOverlay();
-        this.$dragTarget.css({
-          width: '50%',
-          right: '',
-          left: 0
-        });
-      } else if (!this.menuOut || velocityX < this.settings.menuRightMinBorder) {
-        this.enableScrolling();
-        this.translateMenuX([this.options.menuWidth + this.options.menuVelocityOffset, rightPos], '200');
-        this.hideSidenavOverlay();
-        this.$dragTarget.css({
-          width: '10px',
-          right: 0,
-          left: ''
-        });
-      }
-    };
-
-    _proto.buildSidenavOverlay = function buildSidenavOverlay() {
-      var _this8 = this;
-
-      if (this.options.showOverlay === true) {
-        this.$sidenavOverlay = $('<div id="sidenav-overlay"></div>');
-        this.$sidenavOverlay.css('opacity', 0).on('click', function () {
-          return _this8.removeMenu();
-        });
-        this.$body.append(this.$sidenavOverlay);
-      }
-    };
-
-    _proto.disableScrolling = function disableScrolling() {
-      var oldWidth = this.$body.innerWidth();
-      this.$body.css('overflow', 'hidden');
-      this.$body.width(oldWidth);
-    };
-
-    _proto.enableScrolling = function enableScrolling() {
-      this.$body.css({
-        overflow: '',
-        width: ''
-      });
-    };
-
-    _proto.translateMenuX = function translateMenuX(fromTo, duration) {
-      this.$menu.velocity({
-        translateX: fromTo
-      }, {
-        duration: typeof duration === 'string' ? Number(duration) : duration,
-        queue: false,
-        easing: this.options.easingOpen
-      });
-    };
-
-    _proto.translateSidenavX = function translateSidenavX(touchX) {
-      if (this.options.edge === 'left') {
-        var isRightDirection = touchX >= this.options.menuWidth / 2;
-        this.menuOut = isRightDirection;
-        this.$menu.css('transform', "translateX(" + (touchX - this.options.menuWidth) + "px)");
-      } else {
-        var isLeftDirection = touchX < window.innerWidth - this.options.menuWidth / 2;
-        this.menuOut = isLeftDirection;
-        var rightPos = touchX - this.options.menuWidth / 2;
 
         if (rightPos < 0) {
           rightPos = 0;
         }
 
-        this.$menu.css('transform', "translateX(" + rightPos + "px)");
-      }
-    };
+        if (this.options.edge === 'left') {
+          // If velocityX <= 0.3 then the user is flinging the menu closed so ignore this.menuOut
+          if (this.menuOut && velocityX <= MENU_LEFT_MIN_BORDER || velocityX < MENU_LEFT_MAX_BORDER) {
+            if (leftPos !== 0) {
+              this.translateMenuX([0, leftPos], '300');
+            }
 
-    _proto.updateOverlayOpacity = function updateOverlayOpacity(touchX) {
-      var overlayPercentage;
+            this.showSidenavOverlay();
+          } else if (!this.menuOut || velocityX > MENU_LEFT_MIN_BORDER) {
+            this.enableScrolling();
+            this.translateMenuX([-1 * this.options.MENU_WIDTH - MENU_VELOCITY_OFFSET, leftPos], '200');
+            this.hideSidenavOverlay();
+          }
 
-      if (this.options.edge === 'left') {
-        overlayPercentage = touchX / this.options.menuWidth;
-      } else {
-        overlayPercentage = Math.abs((touchX - window.innerWidth) / this.options.menuWidth);
-      }
-
-      this.$sidenavOverlay.velocity({
-        opacity: overlayPercentage
-      }, {
-        duration: 10,
-        queue: false,
-        easing: this.options.easingOpen
-      });
-    };
-
-    _proto.showSidenavOverlay = function showSidenavOverlay() {
-      if (this.options.showOverlay === true && !$('#sidenav-overlay').length) {
-        this.buildSidenavOverlay();
-      }
-
-      this.$sidenavOverlay.velocity({
-        opacity: 1
-      }, {
-        duration: this.options.timeDurationOverlayOpen,
-        queue: false,
-        easing: this.options.easingOpen
-      });
-    };
-
-    _proto.hideSidenavOverlay = function hideSidenavOverlay() {
-      this.$sidenavOverlay.velocity({
-        opacity: 0
-      }, {
-        duration: this.options.timeDurationOverlayClose,
-        queue: false,
-        easing: this.options.easingOpen,
-        complete: function complete() {
-          $(this).remove();
+          this.$dragTarget.css({
+            width: '10px',
+            right: '',
+            left: 0
+          });
+        } else if (this.menuOut && velocityX >= MENU_RIGHT_MIN_BORDER || velocityX > MENU_RIGHT_MAX_BORDER) {
+          this.translateMenuX([0, rightPos], '300');
+          this.showSidenavOverlay();
+          this.$dragTarget.css({
+            width: '50%',
+            right: '',
+            left: 0
+          });
+        } else if (!this.menuOut || velocityX < MENU_RIGHT_MIN_BORDER) {
+          this.enableScrolling();
+          this.translateMenuX([this.options.MENU_WIDTH + MENU_VELOCITY_OFFSET, rightPos], '200');
+          this.hideSidenavOverlay();
+          this.$dragTarget.css({
+            width: '10px',
+            right: 0,
+            left: ''
+          });
         }
-      });
-    };
+      }
+    }, {
+      key: "calculateTouchVelocityX",
+      value: function calculateTouchVelocityX() {
+        var distance = Math.abs(this.lastTouchVelocity.x.endPosition - this.lastTouchVelocity.x.startPosition);
+        var time = Math.abs(this.lastTouchVelocity.x.endTime - this.lastTouchVelocity.x.startTime);
+        return distance / time;
+      }
+    }, {
+      key: "panendEventHandler",
+      value: function panendEventHandler(e) {
+        if (e.gesture.pointerType !== 'touch') {
+          return;
+        }
+
+        var velocityX = e.gesture.velocityX;
+        var touchX = e.gesture.center.x;
+        var leftPos = touchX - this.options.MENU_WIDTH;
+        var rightPos = touchX - this.options.MENU_WIDTH / MENU_WIDTH_HALF;
+
+        if (leftPos > 0) {
+          leftPos = 0;
+        }
+
+        if (rightPos < 0) {
+          rightPos = 0;
+        }
+
+        if (this.options.edge === 'left') {
+          // If velocityX <= 0.3 then the user is flinging the menu closed so ignore this.menuOut
+          if (this.menuOut && velocityX <= MENU_LEFT_MIN_BORDER || velocityX < MENU_LEFT_MAX_BORDER) {
+            if (leftPos !== 0) {
+              this.translateMenuX([0, leftPos], '300');
+            }
+
+            this.showSidenavOverlay();
+          } else if (!this.menuOut || velocityX > MENU_LEFT_MIN_BORDER) {
+            this.enableScrolling();
+            this.translateMenuX([-1 * this.options.MENU_WIDTH - MENU_VELOCITY_OFFSET, leftPos], '200');
+            this.hideSidenavOverlay();
+          }
+
+          this.$dragTarget.css({
+            width: '10px',
+            right: '',
+            left: 0
+          });
+        } else if (this.menuOut && velocityX >= MENU_RIGHT_MIN_BORDER || velocityX > MENU_RIGHT_MAX_BORDER) {
+          this.translateMenuX([0, rightPos], '300');
+          this.showSidenavOverlay();
+          this.$dragTarget.css({
+            width: '50%',
+            right: '',
+            left: 0
+          });
+        } else if (!this.menuOut || velocityX < MENU_RIGHT_MIN_BORDER) {
+          this.enableScrolling();
+          this.translateMenuX([this.options.MENU_WIDTH + MENU_VELOCITY_OFFSET, rightPos], '200');
+          this.hideSidenavOverlay();
+          this.$dragTarget.css({
+            width: '10px',
+            right: 0,
+            left: ''
+          });
+        }
+      }
+    }, {
+      key: "translateMenuX",
+      value: function translateMenuX(fromTo, duration) {
+        this.$menu.velocity({
+          translateX: fromTo
+        }, {
+          duration: typeof duration === 'string' ? Number(duration) : duration,
+          queue: false,
+          easing: this.options.easingOpen
+        });
+      }
+    }, {
+      key: "hideSidenavOverlay",
+      value: function hideSidenavOverlay() {
+        this.$sidenavOverlay.velocity({
+          opacity: 0
+        }, {
+          duration: this.options.timeDurationOverlayClose,
+          queue: false,
+          easing: this.options.easingOpen,
+          complete: function complete() {
+            $(this).remove();
+          }
+        });
+      }
+    }, {
+      key: "showSidenavOverlay",
+      value: function showSidenavOverlay() {
+        this.$sidenavOverlay.velocity({
+          opacity: 1
+        }, {
+          duration: this.options.timeDurationOverlayOpen,
+          queue: false,
+          easing: this.options.easingOpen
+        });
+      }
+    }, {
+      key: "enableScrolling",
+      value: function enableScrolling() {
+        this.$body.css({
+          overflow: '',
+          width: ''
+        });
+      }
+    }, {
+      key: "openOnClick",
+      value: function openOnClick() {
+        var _this3 = this;
+
+        this.$element.on('click', function (e) {
+          e.preventDefault();
+
+          if (_this3.menuOut === true) {
+            _this3.removeMenu();
+          } else {
+            _this3.menuOut = true;
+
+            if (_this3.options.showOverlay === true) {
+              if (!$('#sidenav-overlay').length) {
+                _this3.$sidenavOverlay = $('<div id="sidenav-overlay"></div>');
+
+                _this3.$body.append(_this3.$sidenavOverlay);
+              }
+            } else {
+              _this3.showCloseButton();
+            }
+
+            var translateX = [];
+
+            if (_this3.options.edge === 'left') {
+              translateX = [0, -1 * _this3.options.MENU_WIDTH];
+            } else {
+              translateX = [0, _this3.options.MENU_WIDTH];
+            }
+
+            if (_this3.$menu.css('transform') !== 'matrix(1, 0, 0, 1, 0, 0)') {
+              _this3.$menu.velocity({
+                translateX: translateX
+              }, {
+                duration: _this3.options.timeDurationOpen,
+                queue: false,
+                easing: _this3.options.easingOpen
+              });
+            }
+
+            _this3.$sidenavOverlay.on('click', function () {
+              return _this3.removeMenu();
+            });
+
+            _this3.$sidenavOverlay.on('touchmove', _this3.touchmoveEventHandler.bind(_this3));
+
+            _this3.$menu.on('touchmove', function (e) {
+              e.preventDefault();
+
+              _this3.$menu.find('.custom-scrollbar').css('padding-bottom', '30px');
+            });
+
+            _this3.menuOut = true;
+          }
+        });
+      }
+    }, {
+      key: "closeOnClick",
+      value: function closeOnClick() {
+        var _this4 = this;
+
+        if (this.options.closeOnClick === true) {
+          this.$menu.on('click', 'a:not(.collapsible-header)', function () {
+            return _this4.removeMenu();
+          });
+
+          if (this.$menu.css('transform') === 'translateX(0)') {
+            this.click(function () {
+              return _this4.removeMenu();
+            });
+          }
+        }
+      }
+    }, {
+      key: "showCloseButton",
+      value: function showCloseButton() {
+        if (this.options.showCloseButton === true) {
+          this.$menu.prepend(this.$elementCloned);
+          this.$menu.find('.logo-wrapper').css({
+            borderTop: '1px solid rgba(153,153,153,.3)'
+          });
+        }
+      }
+    }, {
+      key: "setMenuTranslation",
+      value: function setMenuTranslation() {
+        var _this5 = this;
+
+        if (this.options.edge === 'left') {
+          this.$menu.css('transform', 'translateX(-100%)');
+          this.$dragTarget.css({
+            left: 0
+          });
+        } else {
+          this.$menu.addClass('right-aligned').css('transform', 'translateX(100%)');
+          this.$dragTarget.css({
+            right: 0
+          });
+        }
+
+        if (this.$menu.hasClass('fixed')) {
+          if (window.innerWidth > this.options.breakpoint) {
+            this.$menu.css('transform', 'translateX(0)');
+          }
+
+          this.$menu.find('input[type=text]').on('touchstart', function () {
+            _this5.$menu.addClass('transform-fix-input');
+          });
+          $(window).resize(function () {
+            if (window.innerWidth > _this5.options.breakpoint) {
+              if (_this5.$sidenavOverlay.length) {
+                _this5.removeMenu(true);
+              } else {
+                _this5.$menu.css('transform', 'translateX(0%)');
+              }
+            } else if (_this5.menuOut === false) {
+              var xValue = _this5.options.edge === 'left' ? '-100' : '100';
+
+              _this5.$menu.css('transform', "translateX(".concat(xValue, "%)"));
+            }
+          });
+        }
+      }
+    }, {
+      key: "setMenuWidth",
+      value: function setMenuWidth() {
+        var $sidenavBg = $("#".concat(this.$menu.attr('id'))).find('> .sidenav-bg');
+
+        if (this.options.MENU_WIDTH !== MENU_WIDTH) {
+          this.$menu.css('width', this.options.MENU_WIDTH);
+          $sidenavBg.css('width', this.options.MENU_WIDTH);
+        }
+      }
+    }, {
+      key: "inputOnClick",
+      value: function inputOnClick() {
+        var _this6 = this;
+
+        this.$menu.find('input[type=text]').on('touchstart', function () {
+          return _this6.$menu.css('transform', 'translateX(0)');
+        });
+      }
+    }, {
+      key: "assignOptions",
+      value: function assignOptions(newOptions) {
+        return $.extend({}, this.defaults, newOptions);
+      }
+    }, {
+      key: "removeMenu",
+      value: function removeMenu(restoreMenu) {
+        var _this7 = this;
+
+        this.$body.css({
+          overflow: '',
+          width: ''
+        });
+        this.$menu.velocity({
+          translateX: this.options.edge === 'left' ? '-100%' : '100%'
+        }, {
+          duration: this.options.timeDurationClose,
+          queue: false,
+          easing: this.options.easingClose,
+          complete: function complete() {
+            if (restoreMenu === true) {
+              _this7.$menu.removeAttr('style');
+
+              _this7.$menu.css('width', _this7.options.MENU_WIDTH);
+            }
+          }
+        });
+
+        if (this.$menu.hasClass('transform-fix-input')) {
+          this.$menu.removeClass('transform-fix-input');
+        }
+
+        this.hideSidenavOverlay();
+        this.menuOut = false;
+      }
+    }]);
 
     return SideNav;
   }();
 
   $.fn.sideNav = function (options) {
-    $(this).each(function () {
-      var sidenav = new SideNav($(this), options);
-      sidenav.init();
+    return this.each(function () {
+      new SideNav($(this), options);
     });
   };
+})(jQuery);
 
-  $('.side-nav').on('touchmove', function (e) {
-    e.stopPropagation();
-  }, false);
+$(function ($) {
+  $('#toggle').click(function () {
+    if ($('#slide-out').hasClass('slim')) {
+      $('#slide-out').removeClass('slim');
+      $('.sv-slim-icon').removeClass('fa-angle-double-right').addClass('fa-angle-double-left');
+      $('.fixed-sn .double-nav').css({
+        'transition': 'all .3s ease-in-out',
+        'padding-left': '15.9rem'
+      });
+      $('.fixed-sn main').css({
+        'transition': 'all .3s ease-in-out',
+        'padding-left': '15rem'
+      });
+      $('.fixed-sn footer').css({
+        'transition': 'all .3s ease-in-out',
+        'padding-left': '15rem'
+      });
+    } else {
+      $('#slide-out').addClass('slim');
+      $('.sv-slim-icon').removeClass('fa-angle-double-left').addClass('fa-angle-double-right');
+      $('.fixed-sn .double-nav').css('padding-left', '4.6rem');
+      $('.fixed-sn main').css('padding-left', '3.7rem');
+      $('.fixed-sn footer').css('padding-left', '3.7rem');
+    }
+  });
 });
-jQuery(function ($) {
+"use strict";
+
+(function ($) {
   $.fn.collapsible = function (options) {
     var defaults = {
       accordion: undefined
     };
     options = $.extend(defaults, options);
+
+    function accordionOpen($collapsible, object) {
+      $panelHeaders = $collapsible.find('> li > .collapsible-header');
+
+      if (object.hasClass('active')) {
+        object.parent().addClass('active');
+      } else {
+        object.parent().removeClass('active');
+      }
+
+      if (object.parent().hasClass('active')) {
+        object.siblings('.collapsible-body').stop(true, false).slideDown({
+          duration: 350,
+          easing: 'easeOutQuart',
+          queue: false,
+          complete: function complete() {
+            $(this).css('height', '');
+          }
+        });
+      } else {
+        object.siblings('.collapsible-body').stop(true, false).slideUp({
+          duration: 350,
+          easing: 'easeOutQuart',
+          queue: false,
+          complete: function complete() {
+            $(this).css('height', '');
+          }
+        });
+      }
+
+      $panelHeaders.not(object).removeClass('active').parent().removeClass('active');
+      $panelHeaders.not(object).parent().children('.collapsible-body').stop(true, false).slideUp({
+        duration: 350,
+        easing: 'easeOutQuart',
+        queue: false,
+        complete: function complete() {
+          $(this).css('height', '');
+        }
+      });
+    }
+
+    function expandableOpen(object) {
+      if (object.hasClass('active')) {
+        object.parent().addClass('active');
+      } else {
+        object.parent().removeClass('active');
+      }
+
+      if (object.parent().hasClass('active')) {
+        object.siblings('.collapsible-body').stop(true, false).slideDown({
+          duration: 350,
+          easing: 'easeOutQuart',
+          queue: false,
+          complete: function complete() {
+            $(this).css('height', '');
+          }
+        });
+      } else {
+        object.siblings('.collapsible-body').stop(true, false).slideUp({
+          duration: 350,
+          easing: 'easeOutQuart',
+          queue: false,
+          complete: function complete() {
+            $(this).css('height', '');
+          }
+        });
+      }
+    }
+
+    function isChildrenOfPanelHeader(object) {
+      var panelHeader = getPanelHeader(object);
+      return panelHeader.length > 0;
+    }
+
+    function getPanelHeader(object) {
+      return object.closest('li > .collapsible-header');
+    }
+
     return this.each(function () {
       var $this = $(this);
-      var $panelHeaders = $this.find('> li > .collapsible-header');
-      var collapsibleType = $this.data('collapsible');
+      var $panelHeaders = $(this).find('> li > .collapsible-header');
+      var collapsibleType = $this.data('collapsible'); // Turn off any existing event handlers
+
       $this.off('click.collapse', '.collapsible-header');
       $panelHeaders.off('click.collapse');
 
       if (options.accordion || collapsibleType === 'accordion' || collapsibleType === undefined) {
+        $panelHeaders = $this.find('> li > .collapsible-header');
         $panelHeaders.on('click.collapse', function (e) {
           var element = $(e.target);
 
-          if (isChildOfPanelHeader(element)) {
+          if (isChildrenOfPanelHeader(element)) {
             element = getPanelHeader(element);
           }
 
@@ -18208,7 +17465,7 @@ jQuery(function ($) {
           $(this).on('click.collapse', function (e) {
             var element = $(e.target);
 
-            if (isChildOfPanelHeader(element)) {
+            if (isChildrenOfPanelHeader(element)) {
               element = getPanelHeader(element);
             }
 
@@ -18224,1002 +17481,726 @@ jQuery(function ($) {
     });
   };
 
-  function accordionOpen($collapsible, object) {
-    var $panelHeaders = $collapsible.find('> li > .collapsible-header');
-    expandableOpen(object);
-    $panelHeaders.not(object).removeClass('active').parent().removeClass('active').children('.collapsible-body').stop(true, false).slideUp({
-      duration: 350,
-      easing: 'easeOutQuart',
-      queue: false,
-      complete: function complete() {
-        $(this).css('height', '');
-      }
-    });
-  }
-
-  function expandableOpen(object) {
-    object.hasClass('active') ? object.parent().addClass('active') : object.parent().removeClass('active');
-    object.parent().hasClass('active') ? object.siblings('.collapsible-body').stop(true, false).slideDown({
-      duration: 350,
-      easing: 'easeOutQuart',
-      queue: false,
-      complete: function complete() {
-        $(this).css('height', '');
-      }
-    }) : object.siblings('.collapsible-body').stop(true, false).slideUp({
-      duration: 350,
-      easing: 'easeOutQuart',
-      queue: false,
-      complete: function complete() {
-        $(this).css('height', '');
-      }
-    });
-  }
-
-  function isChildOfPanelHeader(object) {
-    var $panelHeader = getPanelHeader(object);
-    return $panelHeader.length > 0;
-  }
-
-  function getPanelHeader(object) {
-    return object.closest('li > .collapsible-header');
-  }
-
   $('.collapsible').collapsible();
-});
-(function ($) {
-  var rangeWrapper = '.range-field';
-  var rangeType = 'input[type=range]:not(.custom-range):not(.multi-range)';
-  var thumbHtml = '<span class="thumb"><span class="value"></span></span>';
-  var rangeMousedown = false;
-  var left;
-
-  function addThumb() {
-    var $thumb = $(thumbHtml);
-    $(rangeType).after($thumb);
-  }
-
-  $(document).on('change', rangeType, function () {
-    var $thumb = $(this);
-    var $thumbValue = $thumb.siblings('.thumb').find('.value');
-    $thumbValue.html($thumb.val());
-  });
-  $(document).on('input mousedown touchstart', rangeType, function (e) {
-    var $this = $(this);
-    var $thumb = $this.siblings('.thumb');
-    var width = $this.outerWidth();
-    var noThumb = !$thumb.length;
-
-    if (noThumb) {
-      addThumb();
-    } // Set indicator value
-
-
-    $thumb.find('.value').html($this.val());
-    rangeMousedown = true;
-    $this.addClass('active');
-
-    if (!$thumb.hasClass('active')) {
-      $thumb.velocity({
-        height: '30px',
-        width: '30px',
-        top: '-20px',
-        marginLeft: '-15px'
-      }, {
-        duration: 300,
-        easing: 'easeOutExpo'
-      });
-    }
-
-    if (e.type !== 'input') {
-      var isMobile = e.pageX === undefined || e.pageX === null;
-
-      if (isMobile) {
-        left = e.originalEvent.touches[0].pageX - $(this).offset().left;
-      } else {
-        left = e.pageX - $(this).offset().left;
-      }
-
-      if (left < 0) {
-        left = 0;
-      } else if (left > width) {
-        left = width;
-      }
-
-      $thumb.addClass('active').css('left', left);
-    }
-
-    $thumb.find('.value').html($this.val());
-  });
-  $(document).on('mouseup touchend', rangeWrapper, function () {
-    rangeMousedown = false;
-    $(this).removeClass('active');
-  });
-  $(document).on('mousemove touchmove', rangeWrapper, function (e) {
-    var $thumb = $(this).children('.thumb');
-    var left;
-
-    if (rangeMousedown) {
-      if (!$thumb.hasClass('active')) {
-        $thumb.velocity({
-          height: '30px',
-          width: '30px',
-          top: '-20px',
-          marginLeft: '-15px'
-        }, {
-          duration: 300,
-          easing: 'easeOutExpo'
-        });
-      }
-
-      var isMobile = e.pageX === undefined || e.pageX === null;
-
-      if (isMobile) {
-        left = e.originalEvent.touches[0].pageX - $(this).offset().left;
-      } else {
-        left = e.pageX - $(this).offset().left;
-      }
-
-      var width = $(this).outerWidth();
-
-      if (left < 0) {
-        left = 0;
-      } else if (left > width) {
-        left = width;
-      }
-
-      $thumb.addClass('active').css('left', left);
-      $thumb.find('.value').html($thumb.siblings(rangeType).val());
-    }
-  });
-  $(document).on('mouseout touchleave', rangeWrapper, function () {
-    if (!rangeMousedown) {
-      var $thumb = $(this).children('.thumb');
-
-      if ($thumb.hasClass('active')) {
-        $thumb.velocity({
-          height: '0',
-          width: '0',
-          top: '10px',
-          marginLeft: '-6px'
-        }, {
-          duration: 100
-        });
-      }
-
-      $thumb.removeClass('active');
-    }
-  });
 })(jQuery);
-jQuery(function ($) {
-  $(document).on('change', '.file-field input[type="file"]', function () {
-    var $this = $(this);
+/**!
+ * easy-pie-chart
+ * Lightweight plugin to render simple, animated and retina optimized pie charts
+ *
+ * @license 
+ * @author Robert Fleischmann <rendro87@gmail.com> (http://robert-fleischmann.de)
+ * @version 2.1.7
+ **/
+
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module unless amdModuleId is set
+    define(["jquery"], function (a0) {
+      return (factory(a0));
+    });
+  } else if (typeof exports === 'object') {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory(require("jquery"));
+  } else {
+    factory(jQuery);
+  }
+}(this, function ($) {
+
+/**
+ * Renderer to render the chart on a canvas object
+ * @param {DOMElement} el      DOM element to host the canvas (root of the plugin)
+ * @param {object}     options options object of the plugin
+ */
+var CanvasRenderer = function(el, options) {
+	var cachedBackground;
+	var canvas = document.createElement('canvas');
+
+	el.appendChild(canvas);
+
+	if (typeof(G_vmlCanvasManager) === 'object') {
+		G_vmlCanvasManager.initElement(canvas);
+	}
+
+	var ctx = canvas.getContext('2d');
+
+	canvas.width = canvas.height = options.size;
+
+	// canvas on retina devices
+	var scaleBy = 1;
+	if (window.devicePixelRatio > 1) {
+		scaleBy = window.devicePixelRatio;
+		canvas.style.width = canvas.style.height = [options.size, 'px'].join('');
+		canvas.width = canvas.height = options.size * scaleBy;
+		ctx.scale(scaleBy, scaleBy);
+	}
+
+	// move 0,0 coordinates to the center
+	ctx.translate(options.size / 2, options.size / 2);
+
+	// rotate canvas -90deg
+	ctx.rotate((-1 / 2 + options.rotate / 180) * Math.PI);
+
+	var radius = (options.size - options.lineWidth) / 2;
+	if (options.scaleColor && options.scaleLength) {
+		radius -= options.scaleLength + 2; // 2 is the distance between scale and bar
+	}
+
+	// IE polyfill for Date
+	Date.now = Date.now || function() {
+		return +(new Date());
+	};
+
+	/**
+	 * Draw a circle around the center of the canvas
+	 * @param {strong} color     Valid CSS color string
+	 * @param {number} lineWidth Width of the line in px
+	 * @param {number} percent   Percentage to draw (float between -1 and 1)
+	 */
+	var drawCircle = function(color, lineWidth, percent) {
+		percent = Math.min(Math.max(-1, percent || 0), 1);
+		var isNegative = percent <= 0 ? true : false;
+
+		ctx.beginPath();
+		ctx.arc(0, 0, radius, 0, Math.PI * 2 * percent, isNegative);
+
+		ctx.strokeStyle = color;
+		ctx.lineWidth = lineWidth;
+
+		ctx.stroke();
+	};
+
+	/**
+	 * Draw the scale of the chart
+	 */
+	var drawScale = function() {
+		var offset;
+		var length;
+
+		ctx.lineWidth = 1;
+		ctx.fillStyle = options.scaleColor;
+
+		ctx.save();
+		for (var i = 24; i > 0; --i) {
+			if (i % 6 === 0) {
+				length = options.scaleLength;
+				offset = 0;
+			} else {
+				length = options.scaleLength * 0.6;
+				offset = options.scaleLength - length;
+			}
+			ctx.fillRect(-options.size/2 + offset, 0, length, 1);
+			ctx.rotate(Math.PI / 12);
+		}
+		ctx.restore();
+	};
+
+	/**
+	 * Request animation frame wrapper with polyfill
+	 * @return {function} Request animation frame method or timeout fallback
+	 */
+	var reqAnimationFrame = (function() {
+		return  window.requestAnimationFrame ||
+				window.webkitRequestAnimationFrame ||
+				window.mozRequestAnimationFrame ||
+				function(callback) {
+					window.setTimeout(callback, 1000 / 60);
+				};
+	}());
+
+	/**
+	 * Draw the background of the plugin including the scale and the track
+	 */
+	var drawBackground = function() {
+		if(options.scaleColor) drawScale();
+		if(options.trackColor) drawCircle(options.trackColor, options.trackWidth || options.lineWidth, 1);
+	};
+
+  /**
+    * Canvas accessor
+   */
+  this.getCanvas = function() {
+    return canvas;
+  };
+
+  /**
+    * Canvas 2D context 'ctx' accessor
+   */
+  this.getCtx = function() {
+    return ctx;
+  };
+
+	/**
+	 * Clear the complete canvas
+	 */
+	this.clear = function() {
+		ctx.clearRect(options.size / -2, options.size / -2, options.size, options.size);
+	};
+
+	/**
+	 * Draw the complete chart
+	 * @param {number} percent Percent shown by the chart between -100 and 100
+	 */
+	this.draw = function(percent) {
+		// do we need to render a background
+		if (!!options.scaleColor || !!options.trackColor) {
+			// getImageData and putImageData are supported
+			if (ctx.getImageData && ctx.putImageData) {
+				if (!cachedBackground) {
+					drawBackground();
+					cachedBackground = ctx.getImageData(0, 0, options.size * scaleBy, options.size * scaleBy);
+				} else {
+					ctx.putImageData(cachedBackground, 0, 0);
+				}
+			} else {
+				this.clear();
+				drawBackground();
+			}
+		} else {
+			this.clear();
+		}
+
+		ctx.lineCap = options.lineCap;
+
+		// if barcolor is a function execute it and pass the percent as a value
+		var color;
+		if (typeof(options.barColor) === 'function') {
+			color = options.barColor(percent);
+		} else {
+			color = options.barColor;
+		}
+
+		// draw bar
+		drawCircle(color, options.lineWidth, percent / 100);
+	}.bind(this);
+
+	/**
+	 * Animate from some percent to some other percentage
+	 * @param {number} from Starting percentage
+	 * @param {number} to   Final percentage
+	 */
+	this.animate = function(from, to) {
+		var startTime = Date.now();
+		options.onStart(from, to);
+		var animation = function() {
+			var process = Math.min(Date.now() - startTime, options.animate.duration);
+			var currentValue = options.easing(this, process, from, to - from, options.animate.duration);
+			this.draw(currentValue);
+			options.onStep(from, to, currentValue);
+			if (process >= options.animate.duration) {
+				options.onStop(from, to);
+			} else {
+				reqAnimationFrame(animation);
+			}
+		}.bind(this);
+
+		reqAnimationFrame(animation);
+	}.bind(this);
+};
+
+var EasyPieChart = function(el, opts) {
+	var defaultOptions = {
+		barColor: '#ef1e25',
+		trackColor: '#f9f9f9',
+		scaleColor: '#dfe0e0',
+		scaleLength: 5,
+		lineCap: 'round',
+		lineWidth: 3,
+		trackWidth: undefined,
+		size: 110,
+		rotate: 0,
+		animate: {
+			duration: 1000,
+			enabled: true
+		},
+		easing: function (x, t, b, c, d) { // more can be found here: http://gsgd.co.uk/sandbox/jquery/easing/
+			t = t / (d/2);
+			if (t < 1) {
+				return c / 2 * t * t + b;
+			}
+			return -c/2 * ((--t)*(t-2) - 1) + b;
+		},
+		onStart: function(from, to) {
+			return;
+		},
+		onStep: function(from, to, currentValue) {
+			return;
+		},
+		onStop: function(from, to) {
+			return;
+		}
+	};
+
+	// detect present renderer
+	if (typeof(CanvasRenderer) !== 'undefined') {
+		defaultOptions.renderer = CanvasRenderer;
+	} else if (typeof(SVGRenderer) !== 'undefined') {
+		defaultOptions.renderer = SVGRenderer;
+	} else {
+		throw new Error('Please load either the SVG- or the CanvasRenderer');
+	}
+
+	var options = {};
+	var currentValue = 0;
+
+	/**
+	 * Initialize the plugin by creating the options object and initialize rendering
+	 */
+	var init = function() {
+		this.el = el;
+		this.options = options;
+
+		// merge user options into default options
+		for (var i in defaultOptions) {
+			if (defaultOptions.hasOwnProperty(i)) {
+				options[i] = opts && typeof(opts[i]) !== 'undefined' ? opts[i] : defaultOptions[i];
+				if (typeof(options[i]) === 'function') {
+					options[i] = options[i].bind(this);
+				}
+			}
+		}
+
+		// check for jQuery easing
+		if (typeof(options.easing) === 'string' && typeof(jQuery) !== 'undefined' && jQuery.isFunction(jQuery.easing[options.easing])) {
+			options.easing = jQuery.easing[options.easing];
+		} else {
+			options.easing = defaultOptions.easing;
+		}
+
+		// process earlier animate option to avoid bc breaks
+		if (typeof(options.animate) === 'number') {
+			options.animate = {
+				duration: options.animate,
+				enabled: true
+			};
+		}
+
+		if (typeof(options.animate) === 'boolean' && !options.animate) {
+			options.animate = {
+				duration: 1000,
+				enabled: options.animate
+			};
+		}
+
+		// create renderer
+		this.renderer = new options.renderer(el, options);
+
+		// initial draw
+		this.renderer.draw(currentValue);
+
+		// initial update
+		if (el.dataset && el.dataset.percent) {
+			this.update(parseFloat(el.dataset.percent));
+		} else if (el.getAttribute && el.getAttribute('data-percent')) {
+			this.update(parseFloat(el.getAttribute('data-percent')));
+		}
+	}.bind(this);
+
+	/**
+	 * Update the value of the chart
+	 * @param  {number} newValue Number between 0 and 100
+	 * @return {object}          Instance of the plugin for method chaining
+	 */
+	this.update = function(newValue) {
+		newValue = parseFloat(newValue);
+		if (options.animate.enabled) {
+			this.renderer.animate(currentValue, newValue);
+		} else {
+			this.renderer.draw(newValue);
+		}
+		currentValue = newValue;
+		return this;
+	}.bind(this);
+
+	/**
+	 * Disable animation
+	 * @return {object} Instance of the plugin for method chaining
+	 */
+	this.disableAnimation = function() {
+		options.animate.enabled = false;
+		return this;
+	};
+
+	/**
+	 * Enable animation
+	 * @return {object} Instance of the plugin for method chaining
+	 */
+	this.enableAnimation = function() {
+		options.animate.enabled = true;
+		return this;
+	};
+
+	init();
+};
+
+$.fn.easyPieChart = function(options) {
+	return this.each(function() {
+		var instanceOptions;
+
+		if (!$.data(this, 'easyPieChart')) {
+			instanceOptions = $.extend({}, options, $(this).data());
+			$.data(this, 'easyPieChart', new EasyPieChart(this, instanceOptions));
+		}
+	});
+};
+
+
+}));
+
+'use strict';
+
+(function ($) {
+
+  $(document).on('change', '.file-field input[type="file"]', function (e) {
+
+    var $this = $(e.target);
     var $fileField = $this.closest('.file-field');
     var $pathInput = $fileField.find('input.file-path');
-    var files = $this.get(0).files;
+    var files = $this[0].files;
     var fileNames = [];
-
-    if (Array.isArray(files)) {
-      fileNames = files.map(function (file) {
-        return file.name;
-      });
-    } else {
-      fileNames = Object.values(files).map(function (file) {
-        return file.name;
-      });
-    }
-
+    files.forEach(function (file) {
+      return fileNames.push(file.name);
+    });
     $pathInput.val(fileNames.join(', '));
     $pathInput.trigger('change');
   });
-});
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+})(jQuery);
+"use strict";
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-jQuery(function ($) {
-  var Dropdown =
-  /*#__PURE__*/
-  function () {
-    function Dropdown($activator, options) {
-      if (options === void 0) {
-        options = {};
-      }
-
-      this.$activator = $activator;
-      this.$activates = $("#" + $activator.attr('data-activates'));
-      /* eslint-disable newline-per-chained-call */
-
-      this.options = {
-        inDuration: this.fallback().or($activator.data('induration')).or($activator.attr('data-in-duration')).or(options.inDuration).or(300).value(),
-        outDuration: this.fallback().or($activator.data('outduration')).or($activator.attr('data-out-duration')).or(options.outDuration).or(225).value(),
-        easingEffectIn: this.fallback().or($activator.data('easingeffectin')).or($activator.attr('data-easing-effect-in')).or(options.easingEffectIn).or('easeOutCubic').value(),
-        easingEffectOut: this.fallback().or($activator.data('easingeffectout')).or($activator.attr('data-easing-effect-out')).or(options.easingEffectOut).or('swing').value(),
-        constrainWidth: this.fallback().or($activator.data('constrainwidth')).or($activator.attr('data-constrain-width')).or(options.constrainWidth).or(true).value(),
-        hover: this.fallback().or($activator.data('hover')).or($activator.attr('data-hover')).or(options.hover).or(false).value(),
-        gutter: this.fallback().or($activator.data('gutter')).or($activator.attr('data-gutter')).or(options.gutter).or(0).value(),
-        belowOrigin: this.fallback().or($activator.data('beloworigin')).or($activator.attr('data-below-origin')).or(options.belowOrigin).or(false).value(),
-        alignment: this.fallback().or($activator.data('alignment')).or($activator.attr('data-alignment')).or(options.alignment).or('left').value(),
-        maxHeight: this.fallback().or($activator.data('maxheight')).or($activator.attr('data-max-height')).or(options.maxHeight).or('').value(),
-        resetScroll: this.fallback().or($activator.data('resetscroll')).or($activator.attr('data-reset-scroll')).or(options.resetScroll).or(true).value()
-      };
-      /* eslint-enable newline-per-chained-call */
-
-      this.isFocused = false;
-    }
-
-    Dropdown.mdbDropdownAutoInit = function mdbDropdownAutoInit() {
-      $('.dropdown-button').dropdown();
-      this.bindMultiLevelDropdownEvents();
-      this.bindBootstrapEvents();
-    };
-
-    Dropdown.bindMultiLevelDropdownEvents = function bindMultiLevelDropdownEvents() {
-      var $multiLevelDropdown = $('.multi-level-dropdown');
-      $multiLevelDropdown.find('.dropdown-submenu > a').on('mouseenter', function (e) {
-        var $submenu = $(this);
-        $multiLevelDropdown.find('.dropdown-submenu .dropdown-menu').removeClass('show');
-        $submenu.next('.dropdown-menu').addClass('show');
-        e.stopPropagation();
-      });
-      $multiLevelDropdown.find('.dropdown').on('hidden.bs.dropdown', function () {
-        $multiLevelDropdown.find('.dropdown-menu.show').removeClass('show');
-      });
-    };
-
-    Dropdown.bindBootstrapEvents = function bindBootstrapEvents() {
-      var _this = this;
-
-      var $dropdowns = $('.dropdown, .dropup');
-      $dropdowns.on({
-        'show.bs.dropdown': function showBsDropdown(e) {
-          var $dropdown = $(e.target);
-
-          var effects = _this._getDropdownEffects($dropdown);
-
-          _this._dropdownEffectStart($dropdown, effects.effectIn);
-        },
-        'shown.bs.dropdown': function shownBsDropdown(e) {
-          var $dropdown = $(e.target);
-
-          var effects = _this._getDropdownEffects($dropdown);
-
-          if (effects.effectIn && effects.effectOut) {
-            _this._dropdownEffectEnd($dropdown, effects);
-          }
-        },
-        'hide.bs.dropdown': function hideBsDropdown(e) {
-          var $dropdown = $(e.target);
-
-          var effects = _this._getDropdownEffects($dropdown);
-
-          if (effects.effectOut) {
-            e.preventDefault();
-
-            _this._dropdownEffectStart($dropdown, effects.effectOut);
-
-            _this._dropdownEffectEnd($dropdown, effects, function () {
-              $dropdown.removeClass('show');
-              $dropdown.find('.dropdown-menu').removeClass('show');
-            });
-          }
-        }
-      });
-    };
-
-    Dropdown._getDropdownEffects = function _getDropdownEffects($dropdown) {
-      var defaultInEffect = 'fadeIn';
-      var defaultOutEffect = 'fadeOut';
-      var $dropdownMenu = $dropdown.find('.dropdown-menu');
-      var $parentUl = $dropdown.parents('ul.nav');
-
-      if ($parentUl.height > 0) {
-        defaultInEffect = $parentUl.data('dropdown-in') || null;
-        defaultOutEffect = $parentUl.data('dropdown-out') || null;
-      }
-
-      return {
-        effectIn: $dropdownMenu.data('dropdown-in') || defaultInEffect,
-        effectOut: $dropdownMenu.data('dropdown-out') || defaultOutEffect
-      };
-    };
-
-    Dropdown._dropdownEffectStart = function _dropdownEffectStart($dropdown, effectToStart) {
-      if (effectToStart) {
-        $dropdown.addClass('dropdown-animating');
-        $dropdown.find('.dropdown-menu').addClass(['animated', effectToStart].join(' '));
-      }
-    };
-
-    Dropdown._dropdownEffectEnd = function _dropdownEffectEnd($dropdown, effects, callback) {
-      $dropdown.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
-        $dropdown.removeClass('dropdown-animating');
-        $dropdown.find('.dropdown-menu').removeClass(['animated', effects.effectIn, effects.effectOut].join(' '));
-
-        if (typeof callback === 'function') {
-          callback();
-        }
-      });
-    };
-
-    var _proto = Dropdown.prototype;
-
-    _proto.returnPublicInterface = function returnPublicInterface() {
-      return {
-        $activator: this.$activator,
-        $activates: this.$activates,
-        updatePosition: this.updatePosition.bind(this)
-      };
-    };
-
-    _proto.init = function init() {
-      this.appendDropdownToActivator();
-
-      if (this.options.hover) {
-        this.handleHoverableDropdown();
-      } else {
-        this.handleClickableDropdown();
-      }
-
-      this.bindEvents();
-    };
-
-    _proto.appendDropdownToActivator = function appendDropdownToActivator() {
-      this.$activator.after(this.$activates);
-    };
-
-    _proto.handleHoverableDropdown = function handleHoverableDropdown() {
-      var _this2 = this;
-
-      var opened = false;
-      this.$activator.unbind("click." + this.$activator.attr('id'));
-      this.$activator.on('mouseenter', function () {
-        if (opened === false) {
-          _this2.placeDropdown();
-
-          opened = true;
-        }
-      });
-      this.$activator.on('mouseleave', function (e) {
-        var toEl = e.toElement || e.relatedTarget;
-        var mouseHoversDropdown = $(toEl).closest('.dropdown-content').is(_this2.$activates);
-
-        if (!mouseHoversDropdown) {
-          _this2.$activates.stop(true, true);
-
-          _this2.hideDropdown();
-
-          opened = false;
-        }
-      });
-      this.$activates.on('mouseleave', function (e) {
-        var toEl = e.toElement || e.relatedTarget;
-        var mouseHoversActivator = $(toEl).closest('.dropdown-button').is(_this2.$activator);
-
-        if (!mouseHoversActivator) {
-          _this2.$activates.stop(true, true);
-
-          _this2.hideDropdown();
-
-          opened = false;
-        }
-      });
-    };
-
-    _proto.handleClickableDropdown = function handleClickableDropdown() {
-      var _this3 = this;
-
-      this.$activator.unbind("click." + this.$activator.attr('id'));
-      this.$activator.bind("click." + this.$activator.attr('id'), function (e) {
-        if (_this3.isFocused) {
-          return;
-        }
-
-        var activatorClicked = _this3.$activator.get(0) === e.currentTarget;
-
-        var activatorActive = _this3.$activator.hasClass('active');
-
-        var dropdownContentClicked = $(e.target).closest('.dropdown-content').length !== 0;
-
-        if (activatorClicked && !activatorActive && !dropdownContentClicked) {
-          e.preventDefault();
-
-          _this3.placeDropdown('click');
-        } else if (activatorActive) {
-          _this3.hideDropdown();
-
-          $(document).unbind("click." + _this3.$activates.attr('id') + " touchstart." + _this3.$activates.attr('id'));
-        }
-
-        if (_this3.$activates.hasClass('active')) {
-          $(document).bind("click." + _this3.$activates.attr('id') + " touchstart." + _this3.$activates.attr('id'), function (e) {
-            var clickedOutsideDropdown = !_this3.$activates.is(e.target) && !_this3.$activator.is(e.target) && !_this3.$activator.find(e.target).length;
-
-            if (clickedOutsideDropdown) {
-              _this3.hideDropdown();
-
-              $(document).unbind("click." + _this3.$activates.attr('id') + " touchstart." + _this3.$activates.attr('id'));
-            }
-          });
-        }
-      });
-    };
-
-    _proto.bindEvents = function bindEvents() {
-      var _this4 = this;
-
-      this.$activator.on('open', function (e, eventType) {
-        _this4.placeDropdown(eventType);
-      });
-      this.$activator.on('close', this.hideDropdown.bind(this));
-    };
-
-    _proto.placeDropdown = function placeDropdown(eventType) {
-      if (eventType === 'focus') {
-        this.isFocused = true;
-      }
-
-      this.$activates.addClass('active');
-      this.$activator.addClass('active');
-
-      if (this.options.constrainWidth === true) {
-        this.$activates.css('width', this.$activator.outerWidth());
-      } else {
-        this.$activates.css('white-space', 'nowrap');
-      }
-
-      this.updatePosition();
-      this.showDropdown();
-    };
-
-    _proto.showDropdown = function showDropdown() {
-      this.$activates.stop(true, true).css('opacity', 0).slideDown({
-        queue: false,
-        duration: this.options.inDuration,
-        easing: this.options.easingEffectIn,
-        complete: function complete() {
-          $(this).css('height', '');
-        }
-      }).animate(_objectSpread({
-        opacity: 1
-      }, this.options.resetScroll && {
-        scrollTop: 0
-      }), {
-        queue: false,
-        duration: this.options.inDuration,
-        easing: 'easeOutSine'
-      });
-    };
-
-    _proto.hideDropdown = function hideDropdown() {
-      var _this5 = this;
-
-      this.isFocused = false;
-      this.$activates.fadeOut({
-        durations: this.options.outDuration,
-        easing: this.options.easingEffectOut
-      });
-      this.$activates.removeClass('active');
-      this.$activator.removeClass('active');
-      setTimeout(function () {
-        _this5.$activates.css('max-height', _this5.options.maxHeight);
-      }, this.options.outDuration);
-    };
-
-    _proto.updatePosition = function updatePosition() {
-      var windowHeight = window.innerHeight;
-      var originHeight = this.$activator.innerHeight();
-      var offsetTop = this.$activator.offset().top - $(window).scrollTop();
-
-      var currAlignment = this._getHorizontalAlignment();
-
-      var gutterSpacing = 0;
-      var leftPosition = 0;
-      var $wrapper = this.$activator.parent();
-      var verticalOffset = this.options.belowOrigin ? originHeight : 0;
-      var scrollOffset = !$wrapper.is('body') && $wrapper.get(0).scrollHeight > $wrapper.get(0).clientHeight ? $wrapper.get(0).scrollTop : 0;
-      var doesNotFitFromBottom = offsetTop + this.$activates.innerHeight() > windowHeight;
-      var doesNotFitFromTop = offsetTop + originHeight - this.$activates.innerHeight() < 0;
-
-      if (doesNotFitFromBottom && doesNotFitFromTop) {
-        var adjustedHeight = windowHeight - offsetTop - verticalOffset;
-        this.$activates.css('max-height', adjustedHeight);
-      } else if (doesNotFitFromBottom) {
-        if (!verticalOffset) {
-          verticalOffset += originHeight;
-        }
-
-        verticalOffset -= this.$activates.innerHeight();
-      }
-
-      if (currAlignment === 'left') {
-        gutterSpacing = this.options.gutter;
-        leftPosition = this.$activator.position().left + gutterSpacing;
-      } else if (currAlignment === 'right') {
-        var offsetRight = this.$activator.position().left + this.$activator.outerWidth() - this.$activates.outerWidth();
-        gutterSpacing = -this.options.gutter;
-        leftPosition = offsetRight + gutterSpacing;
-      }
-
-      this.$activates.css({
-        position: 'absolute',
-        top: this.$activator.position().top + verticalOffset + scrollOffset,
-        left: leftPosition
-      });
-    };
-
-    _proto._getHorizontalAlignment = function _getHorizontalAlignment() {
-      var offsetLeft = this.$activator.offset().left;
-
-      if (offsetLeft + this.$activates.innerWidth() > $(window).width()) {
-        return 'right';
-      } else if (offsetLeft - this.$activates.innerWidth() + this.$activator.innerWidth() < 0) {
-        return 'left';
-      }
-
-      return this.options.alignment;
-    };
-
-    _proto.fallback = function fallback() {
-      return {
-        _value: undefined,
-        or: function or(value) {
-          if (typeof value !== 'undefined' && typeof this._value === 'undefined') {
-            this._value = value;
-          }
-
-          return this;
-        },
-        value: function value() {
-          return this._value;
-        }
-      };
-    };
-
-    return Dropdown;
-  }();
-
-  $.fn.scrollTo = function (elem) {
-    this.scrollTop(this.scrollTop() - this.offset().top + $(elem).offset().top);
-    return this;
-  };
-
-  $.fn.dropdown = function (options) {
-    if (this.length > 1) {
-      var instances = [];
-      this.each(function () {
-        var dropdown = new Dropdown(this, options);
-        dropdown.init();
-        instances.push(dropdown.returnPublicInterface());
-      });
-      return instances;
-    }
-
-    var dropdown = new Dropdown(this, options);
-    dropdown.init();
-    return dropdown.returnPublicInterface();
-  };
-
-  Dropdown.mdbDropdownAutoInit();
-});
-jQuery(function ($) {
-  var DropdownSearchable =
-  /*#__PURE__*/
-  function () {
-    function DropdownSearchable($searchWrappers, options) {
-      if (options === void 0) {
-        options = {};
-      }
-
-      this.$searchWrappers = $searchWrappers;
-      this.options = {
-        color: this.fallback().or(options.color).or('#000').value(),
-        backgroundColor: this.fallback().or(options.backgroundColor).or('').value(),
-        fontSize: this.fallback().or(options.fontSize).or('.9rem').value(),
-        fontWeight: this.fallback().or(options.fontWeight).or('400').value(),
-        borderRadius: this.fallback().or(options.borderRadius).or('').value(),
-        borderColor: this.fallback().or(options.borderColor).or('').value(),
-        margin: this.fallback().or(options.margin).or('').value()
-      };
-    }
-
-    var _proto = DropdownSearchable.prototype;
-
-    _proto.init = function init() {
-      this.bindSearchEvents();
-      return this.$searchWrappers.css({
-        color: this.options.color,
-        backgroundColor: this.options.backgroundColor,
-        fontSize: this.options.fontSize,
-        fontWeight: this.options.fontWeight,
-        borderRadius: this.options.borderRadius,
-        borderColor: this.options.borderColor,
-        margin: this.options.margin
-      });
-    };
-
-    _proto.bindSearchEvents = function bindSearchEvents() {
-      this.$searchWrappers.each(function () {
-        var $searchInput = $(this).find('input').first();
-        $searchInput.on('keyup', function () {
-          var $linksInDropMenu = $searchInput.closest('div[id]').find('a, li');
-          $linksInDropMenu.each(function () {
-            var $this = $(this);
-
-            if ($this.html().toLowerCase().indexOf($searchInput.val().toLowerCase()) > -1) {
-              $this.css({
-                display: ''
-              });
-            } else {
-              $this.css({
-                display: 'none'
-              });
-            }
-          });
-        });
-      });
-    };
-
-    _proto.fallback = function fallback() {
-      return {
-        _value: undefined,
-        or: function or(value) {
-          if (typeof value !== 'undefined' && typeof this._value === 'undefined') {
-            this._value = value;
-          }
-
-          return this;
-        },
-        value: function value() {
-          return this._value;
-        }
-      };
-    };
-
-    return DropdownSearchable;
-  }();
-
-  $.fn.mdbDropSearch = function (options) {
-    var dropdownSearchable = new DropdownSearchable(this, options);
-    return dropdownSearchable.init();
-  };
-});
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+// eslint-disable-next-line no-unused-vars
 var MaterialSelectViewRenderer =
 /*#__PURE__*/
 function () {
   function MaterialSelectViewRenderer(view) {
+    _classCallCheck(this, MaterialSelectViewRenderer);
+
     this.view = view;
   }
 
-  var _proto = MaterialSelectViewRenderer.prototype;
-
-  _proto.destroy = function destroy() {
-    var currentUuid = this.view.$nativeSelect.data('select-id');
-    this.view.$nativeSelect.data('select-id', null).removeClass('initialized');
-    this.view.$nativeSelect.parent().find('span.caret').remove();
-    this.view.$nativeSelect.parent().find('input').remove();
-    this.view.$nativeSelect.unwrap();
-    $("ul#select-options-" + currentUuid).remove();
-  };
-
-  _proto.render = function render() {
-    this.setWrapperClasses();
-    this.setMaterialSelectInitialValue();
-    this.view.$nativeSelect.data('select-id', this.view.properties.id);
-    this.view.$nativeSelect.before(this.view.$selectWrapper);
-
-    if (this.view.options.showResetButton) {
-      this.appendResetButton();
+  _createClass(MaterialSelectViewRenderer, [{
+    key: "destroy",
+    value: function destroy() {
+      var currentUuid = this.view.$nativeSelect.data('select-id');
+      this.view.$nativeSelect.data('select-id', null).removeClass('initialized');
+      this.view.$nativeSelect.parent().find('span.caret').remove();
+      this.view.$nativeSelect.parent().find('input').remove();
+      this.view.$nativeSelect.unwrap();
+      $("ul#select-options-".concat(currentUuid)).remove();
     }
+  }, {
+    key: "render",
+    value: function render() {
+      this.setWrapperClasses();
+      this.setMaterialSelectInitialValue();
+      this.view.$nativeSelect.data('select-id', this.view.properties.id);
+      this.view.$nativeSelect.before(this.view.$selectWrapper);
+      this.appendDropdownIcon();
+      this.appendMaterialSelect();
+      this.appendMaterialOptionsList();
+      this.appendNativeSelect();
+      this.appendSelectLabel();
+      this.appendCustomTemplateParts();
 
-    this.appendDropdownIcon();
-    this.appendMaterialSelect();
-    this.appendMaterialOptionsList();
-    this.appendNativeSelect();
-    this.appendSelectLabel();
-    this.appendCustomTemplateParts();
-
-    if (this.shouldValidate) {
-      this.appendValidationFeedbackElements();
-    }
-
-    if (this.isRequired) {
-      this.enableValidation();
-    }
-
-    if (!this.isDisabled) {
-      this.setMaterialOptionsListMaxHeight();
-      this.view.dropdown = this.view.$materialSelect.dropdown({
-        hover: false,
-        closeOnClick: false,
-        resetScroll: false
-      });
-    }
-
-    if (this.shouldInheritTabindex) {
-      this.view.$materialSelect.attr('tabindex', this.view.$nativeSelect.attr('tabindex'));
-    }
-
-    if (this.isDefaultMaterialInput) {
-      this.view.$mainLabel.css('top', '-7px');
-    }
-
-    if (this.isCustomSelect) {
-      this.view.$materialSelect.css({
-        display: 'inline-block',
-        width: '100%',
-        height: 'calc(1.5em + .75rem + 2px)',
-        padding: '.375rem 1.75rem .375rem .75rem',
-        fontSize: '1rem',
-        lineHeight: '1.5',
-        backgroundColor: '#fff',
-        border: '1px solid #ced4da'
-      });
-    }
-
-    this.addAccessibilityAttributes();
-    this.markInitialized();
-  };
-
-  _proto.setWrapperClasses = function setWrapperClasses() {
-    if (this.isDefaultMaterialInput) {
-      this.view.$selectWrapper.addClass(this.view.$nativeSelect.attr('class').split(' ').filter(function (el) {
-        return el !== 'md-form';
-      }).join(' ')).css({
-        marginTop: '1.5rem',
-        marginBottom: '1.5rem'
-      });
-    } else {
-      this.view.$selectWrapper.addClass(this.view.$nativeSelect.attr('class'));
-    }
-  };
-
-  _proto.setMaterialSelectInitialValue = function setMaterialSelectInitialValue() {
-    if (!this.view.options.placeholder) {
-      var sanitizedLabelHtml = this.view.$materialSelectInitialOption.replace(/"/g, '&quot;').replace(/  +/g, ' ').trim();
-      this.view.$materialSelect.val(sanitizedLabelHtml);
-    } else {
-      this.view.$materialSelect.attr('placeholder', this.view.options.placeholder);
-
-      if (!this.view.$nativeSelect.find('option[value=""][selected][disabled][data-mdb-placeholder]').length) {
-        this.view.$nativeSelect.prepend('<option value="" selected disabled data-mdb-placeholder></option>');
+      if (this.shouldValidate) {
+        this.appendValidationFeedbackElements();
       }
-    }
-  };
 
-  _proto.appendDropdownIcon = function appendDropdownIcon() {
-    if (this.isDisabled) {
-      this.view.$dropdownIcon.addClass('disabled');
-    }
+      if (this.isRequired) {
+        this.enableValidation();
+      }
 
-    this.view.$selectWrapper.append(this.view.$dropdownIcon);
-  };
-
-  _proto.appendResetButton = function appendResetButton() {
-    if (this.isDisabled) {
-      this.view.$btnReset.addClass('disabled');
-    }
-
-    if (this.view.$nativeSelect.get(0).selectedIndex === -1) {
-      this.view.$btnReset.hide();
-    }
-
-    this.view.$selectWrapper.append(this.view.$btnReset);
-  };
-
-  _proto.appendMaterialSelect = function appendMaterialSelect() {
-    this.view.$selectWrapper.append(this.view.$materialSelect);
-  };
-
-  _proto.appendMaterialOptionsList = function appendMaterialOptionsList() {
-    if (this.isSearchable) {
-      this.appendSearchInputOption();
-    }
-
-    if (this.isEditable && this.isSearchable) {
-      this.appendAddOptionBtn();
-    }
-
-    this.buildMaterialOptions();
-
-    if (this.isMultiple) {
-      this.appendToggleAllCheckbox();
-    }
-
-    this.view.$selectWrapper.append(this.view.$materialOptionsList);
-  };
-
-  _proto.appendNativeSelect = function appendNativeSelect() {
-    this.view.$nativeSelect.appendTo(this.view.$selectWrapper);
-  };
-
-  _proto.appendSelectLabel = function appendSelectLabel() {
-    if (this.view.$materialSelect.val() || this.view.options.placeholder) {
-      this.view.$mainLabel.addClass('active');
-    }
-
-    this.view.$mainLabel[this.isDisabled ? 'addClass' : 'removeClass']('disabled');
-    this.view.$mainLabel.appendTo(this.view.$selectWrapper);
-  };
-
-  _proto.appendCustomTemplateParts = function appendCustomTemplateParts() {
-    var _this = this;
-
-    this.view.$customTemplateParts.each(function (_, element) {
-      var $templatePart = $(element);
-      $templatePart.appendTo(_this.view.$materialOptionsList).wrap('<li></li>');
-    });
-    this.view.$btnSave.appendTo(this.view.$materialOptionsList); // @Depreciated
-  };
-
-  _proto.appendValidationFeedbackElements = function appendValidationFeedbackElements() {
-    this.view.$validFeedback.insertAfter(this.view.$selectWrapper);
-    this.view.$invalidFeedback.insertAfter(this.view.$selectWrapper);
-  };
-
-  _proto.enableValidation = function enableValidation() {
-    this.view.$nativeSelect.css({
-      position: 'absolute',
-      top: '1rem',
-      left: '0',
-      height: '0',
-      width: '0',
-      opacity: '0',
-      padding: '0',
-      'pointer-events': 'none'
-    });
-
-    if (this.view.$nativeSelect.attr('style').indexOf('inline!important') === -1) {
-      this.view.$nativeSelect.attr('style', this.view.$nativeSelect.attr('style') + " display: inline!important;");
-    }
-
-    this.view.$nativeSelect.attr('tabindex', -1);
-    this.view.$nativeSelect.data('inherit-tabindex', false);
-  };
-
-  _proto.setMaterialOptionsListMaxHeight = function setMaterialOptionsListMaxHeight() {
-    var $tempWrapper = $('<div />').appendTo($('body'));
-    $tempWrapper.css({
-      position: 'absolute !important',
-      visibility: 'hidden !important',
-      display: 'block !important'
-    });
-    this.view.$materialOptionsList.show();
-    var $optionsListClone = this.view.$materialOptionsList.clone().appendTo($tempWrapper);
-    var multiplier = this.view.options.visibleOptions;
-    var additionalHeight = 0;
-    var $materialOptions = $optionsListClone.find('li').not('.disabled');
-    var optionHeight = $materialOptions.first().height();
-    var optionsCount = $materialOptions.length;
-
-    if (this.isSearchable) {
-      additionalHeight += this.view.$searchInput.height();
-    }
-
-    if (this.isMultiple) {
-      additionalHeight += this.view.$toggleAll.height();
-    }
-
-    this.view.$materialOptionsList.hide();
-    $tempWrapper.remove();
-
-    if (multiplier >= 0 && multiplier < optionsCount) {
-      var maxHeight = optionHeight * multiplier + additionalHeight;
-      this.view.$materialOptionsList.css('max-height', maxHeight);
-      this.view.$materialSelect.data('maxheight', maxHeight);
-    }
-  };
-
-  _proto.addAccessibilityAttributes = function addAccessibilityAttributes() {
-    this.view.$materialSelect.attr({
-      role: this.isSearchable ? 'combobox' : 'listbox',
-      'aria-multiselectable': this.isMultiple,
-      'aria-disabled': this.isDisabled,
-      'aria-required': this.isRequired,
-      'aria-labelledby': this.view.$mainLabel.attr('id'),
-      'aria-haspopup': true,
-      'aria-expanded': false
-    });
-
-    if (this.view.$searchInput) {
-      this.view.$searchInput.attr('role', 'searchbox');
-    }
-
-    this.view.$materialOptionsList.find('li').each(function () {
-      var $this = $(this);
-      $this.attr({
-        role: 'option',
-        'aria-selected': $this.hasClass('active'),
-        'aria-disabled': $this.hasClass('disabled')
-      });
-    });
-  };
-
-  _proto.markInitialized = function markInitialized() {
-    this.view.$nativeSelect.addClass('initialized');
-  };
-
-  _proto.appendSearchInputOption = function appendSearchInputOption() {
-    var placeholder = this.view.$nativeSelect.attr('searchable');
-    var divClass = this.isDefaultMaterialInput ? '' : 'md-form';
-    var inputClass = this.isDefaultMaterialInput ? 'select-default mb-2' : '';
-    this.view.$searchInput = $("<span class=\"search-wrap ml-2\"><div class=\"" + divClass + " mt-0\"><input type=\"text\" class=\"search w-100 d-block " + inputClass + "\" tabindex=\"-1\" placeholder=\"" + placeholder + "\"></div></span>");
-    this.view.$materialOptionsList.append(this.view.$searchInput);
-    this.view.$searchInput.on('click', function (e) {
-      return e.stopPropagation();
-    });
-  };
-
-  _proto.appendAddOptionBtn = function appendAddOptionBtn() {
-    this.view.$searchInput.append(this.view.$addOptionBtn);
-  };
-
-  _proto.buildMaterialOptions = function buildMaterialOptions() {
-    var _this2 = this;
-
-    this.view.$nativeSelectChildren.each(function (index, option) {
-      var $this = $(option);
-
-      if ($this.is('option')) {
-        _this2.buildSingleOption($this, _this2.isMultiple ? 'multiple' : '');
-      } else if ($this.is('optgroup')) {
-        var $materialOptgroup = $("<li class=\"optgroup\"><span>" + $this.attr('label') + "</span></li>");
-
-        _this2.view.$materialOptionsList.append($materialOptgroup);
-
-        var $optgroupOptions = $this.children('option');
-        $optgroupOptions.each(function (index, optgroupOption) {
-          _this2.buildSingleOption($(optgroupOption), 'optgroup-option');
+      if (!this.isDisabled) {
+        this.setMaterialOptionsListMaxHeight();
+        this.view.dropdown = this.view.$materialSelect.dropdown({
+          hover: false,
+          closeOnClick: false,
+          resetScroll: false
         });
       }
-    });
-  };
 
-  _proto.appendToggleAllCheckbox = function appendToggleAllCheckbox() {
-    var firstOption = this.view.$materialOptionsList.find('li').first();
+      if (this.shouldInheritTabindex) {
+        this.view.$materialSelect.attr('tabindex', this.view.$nativeSelect.attr('tabindex'));
+      }
 
-    if (firstOption.hasClass('disabled') && firstOption.find('input').prop('disabled')) {
-      firstOption.after(this.view.$toggleAll);
-    } else {
-      this.view.$materialOptionsList.find('li').first().before(this.view.$toggleAll);
+      if (this.isDefaultMaterialInput) {
+        this.view.$mainLabel.css('top', '-7px');
+      }
+
+      if (this.isCustomSelect) {
+        this.view.$materialSelect.css({
+          display: 'inline-block',
+          width: '100%',
+          height: 'calc(1.5em + .75rem + 2px)',
+          padding: '.375rem 1.75rem .375rem .75rem',
+          fontSize: '1rem',
+          lineHeight: '1.5',
+          backgroundColor: '#fff',
+          border: '1px solid #ced4da'
+        });
+      }
+
+      this.addAccessibilityAttributes();
+      this.markInitialized();
     }
-  };
+  }, {
+    key: "setWrapperClasses",
+    value: function setWrapperClasses() {
+      if (this.isDefaultMaterialInput) {
+        this.view.$selectWrapper.addClass(this.view.$nativeSelect.attr('class').split(' ').filter(function (el) {
+          return el !== 'md-form';
+        }).join(' ')).css({
+          marginTop: '1.5rem',
+          marginBottom: '1.5rem'
+        });
+      } else {
+        this.view.$selectWrapper.addClass(this.view.$nativeSelect.attr('class'));
+      }
+    }
+  }, {
+    key: "setMaterialSelectInitialValue",
+    value: function setMaterialSelectInitialValue() {
+      if (!this.view.options.placeholder) {
+        var sanitizedLabelHtml = this.view.$materialSelectInitialOption.replace(/"/g, '&quot;').replace(/  +/g, ' ').trim();
+        this.view.$materialSelect.val(sanitizedLabelHtml);
+      } else {
+        this.view.$materialSelect.attr('placeholder', this.view.options.placeholder);
 
-  _proto.addNewOption = function addNewOption() {
-    var val = this.view.$searchInput.find('input').val();
-    var $newOption = $("<option value=\"" + val.toLowerCase() + "\" selected>" + val + "</option>").prop('selected', true);
+        if (!this.view.$nativeSelect.find('option[value=""][selected][disabled][data-mdb-placeholder]').length) {
+          this.view.$nativeSelect.prepend('<option value="" selected disabled data-mdb-placeholder></option>');
+        }
+      }
+    }
+  }, {
+    key: "appendDropdownIcon",
+    value: function appendDropdownIcon() {
+      if (this.isDisabled) {
+        this.view.$dropdownIcon.addClass('disabled');
+      }
 
-    if (!this.isMultiple) {
-      this.view.$nativeSelectChildren.each(function (index, option) {
-        $(option).attr('selected', false);
+      this.view.$selectWrapper.append(this.view.$dropdownIcon);
+    }
+  }, {
+    key: "appendMaterialSelect",
+    value: function appendMaterialSelect() {
+      this.view.$selectWrapper.append(this.view.$materialSelect);
+    }
+  }, {
+    key: "appendMaterialOptionsList",
+    value: function appendMaterialOptionsList() {
+      if (this.isSearchable) {
+        this.appendSearchInputOption();
+      }
+
+      if (this.isEditable && this.isSearchable) {
+        this.appendAddOptionBtn();
+      }
+
+      this.buildMaterialOptions();
+
+      if (this.isMultiple) {
+        this.appendToggleAllCheckbox();
+      }
+
+      this.view.$selectWrapper.append(this.view.$materialOptionsList);
+    }
+  }, {
+    key: "appendNativeSelect",
+    value: function appendNativeSelect() {
+      this.view.$nativeSelect.appendTo(this.view.$selectWrapper);
+    }
+  }, {
+    key: "appendSelectLabel",
+    value: function appendSelectLabel() {
+      if (this.view.$materialSelect.val() || this.view.options.placeholder) {
+        this.view.$mainLabel.addClass('active');
+      }
+
+      this.view.$mainLabel[this.isDisabled ? 'addClass' : 'removeClass']('disabled');
+      this.view.$mainLabel.appendTo(this.view.$selectWrapper);
+    }
+  }, {
+    key: "appendCustomTemplateParts",
+    value: function appendCustomTemplateParts() {
+      var _this = this;
+
+      this.view.$customTemplateParts.each(function (_, element) {
+        var $templatePart = $(element);
+        $templatePart.appendTo(_this.view.$materialOptionsList).wrap('<li></li>');
+      });
+      this.view.$btnSave.appendTo(this.view.$materialOptionsList); // @Depreciated
+    }
+  }, {
+    key: "appendValidationFeedbackElements",
+    value: function appendValidationFeedbackElements() {
+      this.view.$validFeedback.insertAfter(this.view.$selectWrapper);
+      this.view.$invalidFeedback.insertAfter(this.view.$selectWrapper);
+    }
+  }, {
+    key: "enableValidation",
+    value: function enableValidation() {
+      this.view.$nativeSelect.css({
+        position: 'absolute',
+        top: '1rem',
+        left: '0',
+        height: '0',
+        width: '0',
+        opacity: '0',
+        padding: '0',
+        'pointer-events': 'none'
+      });
+
+      if (this.view.$nativeSelect.attr('style').indexOf('inline!important') === -1) {
+        this.view.$nativeSelect.attr('style', "".concat(this.view.$nativeSelect.attr('style'), " display: inline!important;"));
+      }
+
+      this.view.$nativeSelect.attr('tabindex', -1);
+      this.view.$nativeSelect.data('inherit-tabindex', false);
+    }
+  }, {
+    key: "setMaterialOptionsListMaxHeight",
+    value: function setMaterialOptionsListMaxHeight() {
+      var multiplier = this.view.options.visibleOptions;
+      var additionalHeight = 0;
+      this.view.$materialOptionsList.show();
+      var $materialOptions = this.view.$materialOptionsList.find('li').not('.disabled');
+      var optionHeight = $materialOptions.first().height();
+      var optionsCount = $materialOptions.length;
+
+      if (this.isSearchable) {
+        additionalHeight += this.view.$searchInput.height();
+      }
+
+      if (this.isMultiple) {
+        additionalHeight += this.view.$toggleAll.height();
+      }
+
+      this.view.$materialOptionsList.hide();
+
+      if (multiplier >= 0 && multiplier < optionsCount) {
+        var maxHeight = optionHeight * multiplier + additionalHeight;
+        this.view.$materialOptionsList.css('max-height', maxHeight);
+        this.view.$materialSelect.data('maxheight', maxHeight);
+      }
+    }
+  }, {
+    key: "addAccessibilityAttributes",
+    value: function addAccessibilityAttributes() {
+      this.view.$materialSelect.attr({
+        role: this.isSearchable ? 'combobox' : 'listbox',
+        'aria-multiselectable': this.isMultiple,
+        'aria-disabled': this.isDisabled,
+        'aria-required': this.isRequired,
+        'aria-labelledby': this.view.$mainLabel.attr('id'),
+        'aria-haspopup': true,
+        'aria-expanded': false
+      });
+
+      if (this.view.$searchInput) {
+        this.view.$searchInput.attr('role', 'searchbox');
+      }
+
+      this.view.$materialOptionsList.find('li').each(function () {
+        var $this = $(this);
+        $this.attr({
+          role: 'option',
+          'aria-selected': $this.hasClass('active'),
+          'aria-disabled': $this.hasClass('disabled')
+        });
       });
     }
+  }, {
+    key: "markInitialized",
+    value: function markInitialized() {
+      this.view.$nativeSelect.addClass('initialized');
+    }
+  }, {
+    key: "appendSearchInputOption",
+    value: function appendSearchInputOption() {
+      var placeholder = this.view.$nativeSelect.attr('searchable');
+      var divClass = this.isDefaultMaterialInput ? '' : 'md-form';
+      var inputClass = this.isDefaultMaterialInput ? 'select-default mb-2' : '';
+      this.view.$searchInput = $("<span class=\"search-wrap ml-2\"><div class=\"".concat(divClass, " mt-0\"><input type=\"text\" class=\"search w-100 d-block ").concat(inputClass, "\" tabindex=\"-1\" placeholder=\"").concat(placeholder, "\"></div></span>"));
+      this.view.$materialOptionsList.append(this.view.$searchInput);
+      this.view.$searchInput.on('click', function (e) {
+        return e.stopPropagation();
+      });
+    }
+  }, {
+    key: "appendAddOptionBtn",
+    value: function appendAddOptionBtn() {
+      this.view.$searchInput.append(this.view.$addOptionBtn);
+      this.view.$addOptionBtn.on('click', this.addNewOption.bind(this));
+    }
+  }, {
+    key: "buildMaterialOptions",
+    value: function buildMaterialOptions() {
+      var _this2 = this;
 
-    this.view.$nativeSelect.append($newOption);
-  };
+      this.view.$nativeSelectChildren.each(function (index, option) {
+        var $this = $(option);
 
-  _proto.buildSingleOption = function buildSingleOption($nativeSelectChild, type) {
-    var disabled = $nativeSelectChild.is(':disabled') ? 'disabled' : '';
-    var active = $nativeSelectChild.is(':selected') ? 'active' : '';
-    var optgroupClass = type === 'optgroup-option' ? 'optgroup-option' : '';
-    var iconUrl = $nativeSelectChild.data('icon');
-    var fas = $nativeSelectChild.data('fas') ? "<i class=\"fa-pull-right m-2 fas fa-" + $nativeSelectChild.data('fas') + " " + this.view.options.fasClasses + "\"></i> " : '';
-    var far = $nativeSelectChild.data('far') ? "<i class=\"fa-pull-right m-2 far fa-" + $nativeSelectChild.data('far') + " " + this.view.options.farClasses + "\"></i> " : '';
-    var fab = $nativeSelectChild.data('fab') ? "<i class=\"fa-pull-right m-2 fab fa-" + $nativeSelectChild.data('fab') + " " + this.view.options.fabClasses + "\"></i> " : '';
-    var classes = $nativeSelectChild.attr('class');
-    var iconHtml = iconUrl ? "<img alt=\"\" src=\"" + iconUrl + "\" class=\"" + classes + "\">" : '';
-    var checkboxHtml = this.isMultiple ? "<input type=\"checkbox\" class=\"form-check-input\" " + disabled + "/><label></label>" : '';
-    var secondaryText = $nativeSelectChild.data('secondary-text') ? "<p class=\"text-muted pt-0 mb-0\" disabled>" + $nativeSelectChild.data('secondary-text') + "</p>" : '';
-    this.view.$materialOptionsList.append($("<li class=\"" + disabled + " " + active + " " + optgroupClass + " " + (this.view.options.copyClassesOption ? classes : '') + " \">" + iconHtml + "<span class=\"filtrable\">" + checkboxHtml + " " + $nativeSelectChild.html() + " " + fas + " " + far + " " + fab + " " + secondaryText + "</span></li>"));
-  };
+        if ($this.is('option')) {
+          _this2.buildSingleOption($this, _this2.isMultiple ? 'multiple' : '');
+        } else if ($this.is('optgroup')) {
+          var $materialOptgroup = $("<li class=\"optgroup\"><span>".concat($this.attr('label'), "</span></li>"));
 
-  _createClass(MaterialSelectViewRenderer, [{
+          _this2.view.$materialOptionsList.append($materialOptgroup);
+
+          var $optgroupOptions = $this.children('option');
+          $optgroupOptions.each(function (index, optgroupOption) {
+            _this2.buildSingleOption($(optgroupOption), 'optgroup-option');
+          });
+        }
+      });
+    }
+  }, {
+    key: "appendToggleAllCheckbox",
+    value: function appendToggleAllCheckbox() {
+      var firstOption = this.view.$materialOptionsList.find('li').first();
+
+      if (firstOption.hasClass('disabled') && firstOption.find('input').prop('disabled')) {
+        firstOption.after(this.view.$toggleAll);
+      } else {
+        this.view.$materialOptionsList.find('li').first().before(this.view.$toggleAll);
+      }
+    }
+  }, {
+    key: "addNewOption",
+    value: function addNewOption() {
+      var val = this.view.$searchInput.find('input').val();
+      var $newOption = $("<option value=\"".concat(val.toLowerCase(), "\" selected>").concat(val, "</option>")).prop('selected', true);
+
+      if (!this.isMultiple) {
+        this.view.$nativeSelectChildren.each(function (index, option) {
+          $(option).attr('selected', false);
+        });
+      }
+
+      this.view.$nativeSelect.append($newOption);
+    }
+  }, {
+    key: "buildSingleOption",
+    value: function buildSingleOption($nativeSelectChild, type) {
+      var disabled = $nativeSelectChild.is(':disabled') ? 'disabled' : '';
+      var active = $nativeSelectChild.is(':selected') ? 'active' : '';
+      var optgroupClass = type === 'optgroup-option' ? 'optgroup-option' : '';
+      var iconUrl = $nativeSelectChild.data('icon');
+      var fas = $nativeSelectChild.data('fas') ? "<i class=\"fa-pull-right m-2 fas fa-".concat($nativeSelectChild.data('fas'), " ").concat(this.view.options.fasClasses, "\"></i> ") : '';
+      var far = $nativeSelectChild.data('far') ? "<i class=\"fa-pull-right m-2 far fa-".concat($nativeSelectChild.data('far'), " ").concat(this.view.options.farClasses, "\"></i> ") : '';
+      var fab = $nativeSelectChild.data('fab') ? "<i class=\"fa-pull-right m-2 fab fa-".concat($nativeSelectChild.data('fab'), " ").concat(this.view.options.fabClasses, "\"></i> ") : '';
+      var classes = $nativeSelectChild.attr('class');
+      var iconHtml = iconUrl ? "<img alt=\"\" src=\"".concat(iconUrl, "\" class=\"").concat(classes, "\">") : '';
+      var checkboxHtml = this.isMultiple ? "<input type=\"checkbox\" class=\"form-check-input\" ".concat(disabled, "/><label></label>") : '';
+      this.view.$materialOptionsList.append($("<li class=\"".concat(disabled, " ").concat(active, " ").concat(optgroupClass, " ").concat(this.view.options.copyClassesOption ? classes : '', " \">").concat(iconHtml, "<span class=\"filtrable\">").concat(checkboxHtml, " ").concat($nativeSelectChild.html(), " ").concat(fas, " ").concat(far, " ").concat(fab, "</span></li>")));
+    }
+  }, {
     key: "shouldValidate",
     get: function get() {
       return this.view.options.validate;
@@ -19268,17 +18249,29 @@ function () {
 
   return MaterialSelectViewRenderer;
 }();
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+// eslint-disable-next-line no-unused-vars
 var MaterialSelectView =
 /*#__PURE__*/
 function () {
   // eslint-disable-next-line object-curly-newline
   function MaterialSelectView($nativeSelect, _ref) {
-    var options = _ref.options,
-        id = _ref.properties.id;
+    var {
+      options: options,
+      properties: {
+        id: id
+      }
+    } = _ref;
+
+    _classCallCheck(this, MaterialSelectView);
+
     this.properties = {
       id: id,
       isMultiple: Boolean($nativeSelect.attr('multiple')),
@@ -19289,31 +18282,25 @@ function () {
     this.options = this._copyOptions(options);
     this.$nativeSelect = $nativeSelect;
     this.$selectWrapper = $('<div class="select-wrapper"></div>');
-    this.$materialOptionsList = $("<ul id=\"select-options-" + this.properties.id + "\" class=\"dropdown-content select-dropdown w-100 " + (this.properties.isMultiple ? 'multiple-select-dropdown' : '') + "\"></ul>");
+    this.$materialOptionsList = $("<ul id=\"select-options-".concat(this.properties.id, "\" class=\"dropdown-content select-dropdown w-100 ").concat(this.properties.isMultiple ? 'multiple-select-dropdown' : '', "\"></ul>"));
     this.$materialSelectInitialOption = $nativeSelect.find('option:selected').text() || $nativeSelect.find('option:first').text() || '';
     this.$nativeSelectChildren = this.$nativeSelect.children('option, optgroup');
-    this.$materialSelect = $("<input type=\"text\" class=\"" + (this.options.defaultMaterialInput ? 'browser-default custom-select multi-bs-select select-dropdown form-control' : 'select-dropdown form-control') + "\" " + (!this.options.validate && 'readonly="true"') + " required=\"" + (this.options.validate ? 'true' : 'false') + "\" " + (this.$nativeSelect.is(' :disabled') ? 'disabled' : '') + " data-activates=\"select-options-" + this.properties.id + "\" value=\"\"/>");
+    this.$materialSelect = $("<input type=\"text\" class=\"".concat(this.options.defaultMaterialInput ? 'browser-default custom-select multi-bs-select select-dropdown form-control' : 'select-dropdown form-control', "\" ").concat(!this.options.validate && 'readonly="true"', " required=\"").concat(this.options.validate ? 'true' : 'false', "\" ").concat(this.$nativeSelect.is(' :disabled') ? 'disabled' : '', " data-activates=\"select-options-").concat(this.properties.id, "\" value=\"\"/>"));
     this.$dropdownIcon = this.options.defaultMaterialInput ? '' : $('<span class="caret">&#9660;</span>');
     this.$searchInput = null;
-    this.$noSearchResultsInfo = $("<li><span><i>" + this.options.labels.noSearchResults + "</i></span></li>");
-    this.$toggleAll = $("<li class=\"select-toggle-all\"><span><input type=\"checkbox\" class=\"form-check-input\"><label>" + this.options.labels.selectAll + "</label></span></li>");
+    this.$noSearchResultsInfo = $("<li><span><i>".concat(this.options.labels.noSearchResults, "</i></span></li>"));
+    this.$toggleAll = $("<li class=\"select-toggle-all\"><span><input type=\"checkbox\" class=\"form-check-input\"><label>".concat(this.options.labels.selectAll, "</label></span></li>"));
     this.$addOptionBtn = $('<i class="select-add-option fas fa-plus"></i>');
-    this.$mainLabel = this._jQueryFallback(this.$nativeSelect.next('label.mdb-main-label'), $("label[for='" + this.properties.id + "']"));
-    this.$customTemplateParts = this._jQueryFallback(this.$nativeSelect.nextUntil('select', '.mdb-select-template-part'), $("[data-mdb-select-template-part-for='" + this.properties.id + "']"));
+    this.$mainLabel = this._jQueryFallback(this.$nativeSelect.next('label.mdb-main-label'), $("label[for='".concat(this.properties.id, "']")));
+    this.$customTemplateParts = this._jQueryFallback(this.$nativeSelect.nextUntil('select', '.mdb-select-template-part'), $("[data-mdb-select-template-part-for='".concat(this.properties.id, "']")));
     this.$btnSave = this.$nativeSelect.nextUntil('select', '.btn-save'); // @Depreciated
 
-    this.$btnReset = $('<span class="reset-select-btn">&times;</span>');
-    this.$validFeedback = $("<div class=\"valid-feedback\">" + this.options.labels.validFeedback + "</div>");
-    this.$invalidFeedback = $("<div class=\"invalid-feedback\">" + this.options.labels.invalidFeedback + "</div>");
+    this.$validFeedback = $("<div class=\"valid-feedback\">".concat(this.options.labels.validFeedback, "</div>"));
+    this.$invalidFeedback = $("<div class=\"invalid-feedback\">".concat(this.options.labels.invalidFeedback, "</div>"));
     this.keyCodes = {
       tab: 9,
-      enter: 13,
-      shift: 16,
-      alt: 18,
       esc: 27,
-      space: 32,
-      end: 35,
-      home: 36,
+      enter: 13,
       arrowUp: 38,
       arrowDown: 40
     }; // eslint-disable-next-line no-undef
@@ -19322,725 +18309,634 @@ function () {
     this.dropdown = null;
   }
 
-  var _proto = MaterialSelectView.prototype;
-
-  _proto.destroy = function destroy() {
-    this.renderer.destroy();
-  };
-
-  _proto.render = function render() {
-    this.renderer.render();
-  };
-
-  _proto.selectPreselectedOptions = function selectPreselectedOptions(handler) {
-    var _this = this;
-
-    if (this.isMultiple) {
-      this.$nativeSelect.find('option:selected:not(:disabled)').each(function (i, element) {
-        var index = element.index;
-
-        _this.$materialOptionsList.find('li:not(.optgroup):not(.select-toggle-all)').eq(index).addClass('selected active').find(':checkbox').prop('checked', true);
-
-        handler(index);
-      });
-    } else {
-      var $preselectedOption = this.$nativeSelect.find('option:selected').first();
-      var indexOfPreselectedOption = this.$nativeSelect.find('option').index($preselectedOption.get(0));
-
-      if ($preselectedOption.get(0) && $preselectedOption.attr('disabled') !== 'disabled') {
-        handler(indexOfPreselectedOption);
-      }
+  _createClass(MaterialSelectView, [{
+    key: "destroy",
+    value: function destroy() {
+      this.renderer.destroy();
     }
-  };
-
-  _proto.bindResetButtonClick = function bindResetButtonClick(handler) {
-    var _this2 = this;
-
-    this.$btnReset.on('click', function (e) {
-      e.preventDefault();
-
-      if (!_this2.$nativeSelect.find('option[value=""][selected][disabled][data-mdb-novalue]').length) {
-        _this2._toggleResetButton(true);
-
-        _this2.$materialSelect.val(_this2.isMultiple ? [] : '');
-
-        _this2.$materialSelect.trigger('close');
-
-        _this2.$mainLabel.removeClass('active');
-
-        _this2.$materialOptionsList.find('li.active, li.selected').removeClass('active').removeClass('selected');
-
-        _this2.$materialOptionsList.find('li[aria-selected="true"]').attr('aria-selected', 'false');
-
-        _this2.$materialOptionsList.find('input[type="checkbox"]').prop('checked', false);
-
-        handler();
-      }
-    });
-  };
-
-  _proto.bindAddNewOptionClick = function bindAddNewOptionClick() {
-    this.$addOptionBtn.on('click', this.renderer.addNewOption.bind(this.renderer));
-  };
-
-  _proto.bindMaterialSelectFocus = function bindMaterialSelectFocus() {
-    var _this3 = this;
-
-    this.$materialSelect.on('focus', function (e) {
-      var $this = $(e.target);
-      $this.parent().addClass('active');
-
-      if ($('ul.select-dropdown').not(_this3.$materialOptionsList.get(0)).is(':visible')) {
-        $('input.select-dropdown').trigger('close');
-      }
-
-      _this3.$mainLabel.addClass('active');
-
-      if (!_this3.$materialOptionsList.is(':visible')) {
-        var label = $this.val();
-
-        var $selectedOption = _this3.$materialOptionsList.find('li').filter(function () {
-          return $(this).text().toLowerCase() === label.toLowerCase();
-        }).get(0);
-
-        _this3._selectSingleOption($selectedOption);
-      }
-
-      if (!_this3.isMultiple) {
-        _this3.$mainLabel.addClass('active');
-      }
-    });
-  };
-
-  _proto.bindMaterialSelectClick = function bindMaterialSelectClick() {
-    var _this4 = this;
-
-    this.$materialSelect.on('mousedown', function (e) {
-      if (e.which === 3) {
-        e.preventDefault();
-      }
-    });
-    this.$materialSelect.on('click', function (e) {
-      e.stopPropagation();
-
-      _this4.$mainLabel.addClass('active');
-
-      _this4._updateDropdownScrollTop();
-    });
-  };
-
-  _proto.bindMaterialSelectBlur = function bindMaterialSelectBlur() {
-    var _this5 = this;
-
-    this.$materialSelect.on('blur', function (e) {
-      var $this = $(e.target);
-      $this.parent().removeClass('active');
-
-      if (!_this5.isMultiple && !_this5.isSearchable) {
-        $this.trigger('close');
-      }
-
-      _this5.$materialOptionsList.find('li.selected').removeClass('selected');
-    });
-  };
-
-  _proto.bindMaterialOptionsListTouchstart = function bindMaterialOptionsListTouchstart() {
-    this.$materialOptionsList.on('touchstart', function (e) {
-      return e.stopPropagation();
-    });
-  };
-
-  _proto.bindMaterialSelectKeydown = function bindMaterialSelectKeydown() {
-    var _this6 = this;
-
-    // eslint-disable-next-line complexity
-    this.$materialSelect.on('keydown', function (e) {
-      var $this = $(e.target);
-      var isTab = e.which === _this6.keyCodes.tab;
-      var isArrowUp = e.which === _this6.keyCodes.arrowUp;
-      var isArrowDown = e.which === _this6.keyCodes.arrowDown;
-      var isEnter = e.which === _this6.keyCodes.enter;
-      var isEsc = e.which === _this6.keyCodes.esc;
-      var isAltWithArrowDown = isArrowDown && e.altKey;
-      var isAltWithArrowUp = isArrowUp && e.altKey;
-      var isHome = e.which === _this6.keyCodes.home;
-      var isEnd = e.which === _this6.keyCodes.end;
-      var isSpace = e.which === _this6.keyCodes.space;
-
-      var isDropdownExpanded = _this6.$materialOptionsList.is(':visible');
-
-      switch (true) {
-        case isTab:
-          return _this6._handleTabKey($this);
-
-        case !isDropdownExpanded && (isEnter || isAltWithArrowDown):
-        case _this6.isMultiple && !isDropdownExpanded && (isArrowDown || isArrowUp):
-          $this.trigger('open');
-          return _this6._updateDropdownScrollTop();
-
-        case isDropdownExpanded && (isEsc || isAltWithArrowUp):
-          return $this.trigger('close');
-
-        case !isDropdownExpanded && (isArrowDown || isArrowUp):
-          return _this6._handleClosedArrowUpDownKey(e.which);
-
-        case isDropdownExpanded && (isArrowDown || isArrowUp):
-          return _this6._handleArrowUpDownKey(e.which);
-
-        case isDropdownExpanded && isHome:
-          return _this6._handleHomeKey();
-
-        case isDropdownExpanded && isEnd:
-          return _this6._handleEndKey();
-
-        case isDropdownExpanded && (isEnter || isSpace):
-          return _this6._handleEnterKey($this);
-
-        default:
-          return _this6._handleLetterKey(e);
-      }
-    });
-  };
-
-  _proto.bindMaterialSelectDropdownToggle = function bindMaterialSelectDropdownToggle() {
-    var _this7 = this;
-
-    this.$materialSelect.on('open', function () {
-      return _this7.$materialSelect.attr('aria-expanded', 'true');
-    });
-    this.$materialSelect.on('close', function () {
-      return _this7.$materialSelect.attr('aria-expanded', 'false');
-    });
-  };
-
-  _proto.bindToggleAllClick = function bindToggleAllClick(handler) {
-    var _this8 = this;
-
-    this.$toggleAll.on('click', function (e) {
-      var checkbox = $(_this8.$toggleAll).find('input[type="checkbox"]').first();
-      var currentState = Boolean($(checkbox).prop('checked'));
-      var isToggleChecked = !currentState;
-      $(checkbox).prop('checked', !currentState);
-
-      _this8.$materialOptionsList.find('li:not(.optgroup):not(.select-toggle-all)').each(function (materialOptionIndex, materialOption) {
-        var $materialOption = $(materialOption);
-        var $optionCheckbox = $materialOption.find('input[type="checkbox"]');
-        $materialOption.attr('aria-selected', isToggleChecked);
-
-        if (isToggleChecked && $optionCheckbox.is(':checked') || !isToggleChecked && !$optionCheckbox.is(':checked') || $(materialOption).is(':hidden') || $(materialOption).is('.disabled')) {
-          return;
-        }
-
-        $optionCheckbox.prop('checked', isToggleChecked);
-
-        _this8.$nativeSelect.find('option').eq(materialOptionIndex).prop('selected', isToggleChecked);
-
-        $materialOption.toggleClass('active');
-
-        _this8._selectOption(materialOption);
-
-        handler(materialOptionIndex);
-      });
-
-      _this8.$nativeSelect.data('stop-refresh', true);
-
-      _this8._triggerChangeOnNativeSelect();
-
-      _this8.$nativeSelect.removeData('stop-refresh');
-
-      e.stopPropagation();
-    });
-  };
-
-  _proto.bindMaterialOptionMousedown = function bindMaterialOptionMousedown() {
-    var _this9 = this;
-
-    this.$materialOptionsList.on('mousedown', function (e) {
-      var option = e.target;
-      var inModal = $('.modal-content').find(_this9.$materialOptionsList).length;
-
-      if (inModal && option.scrollHeight > option.offsetHeight) {
-        e.preventDefault();
-      }
-    });
-  };
-
-  _proto.bindMaterialOptionClick = function bindMaterialOptionClick(handler) {
-    var _this10 = this;
-
-    this.$materialOptionsList.find('li:not(.optgroup)').not(this.$toggleAll).each(function (materialOptionIndex, materialOption) {
-      $(materialOption).on('click', function (e) {
-        e.stopPropagation();
-
-        _this10._toggleResetButton(false);
-
-        var $this = $(materialOption);
-
-        if ($this.hasClass('disabled') || $this.hasClass('optgroup')) {
-          return;
-        }
-
-        var selected = true;
-
-        if (_this10.isMultiple) {
-          $this.find('input[type="checkbox"]').prop('checked', function (index, oldPropertyValue) {
-            return !oldPropertyValue;
-          });
-          var hasOptgroup = Boolean(_this10.$nativeSelect.find('optgroup').length);
-          var thisIndex = _this10._isToggleAllPresent() ? $this.index() - 1 : $this.index();
-          /* eslint-disable max-statements-per-line */
-
-          switch (true) {
-            case _this10.isSearchable && hasOptgroup:
-              selected = handler(thisIndex - $this.prevAll('.optgroup').length - 1);
-              break;
-
-            case _this10.isSearchable:
-              selected = handler(thisIndex - 1);
-              break;
-
-            case hasOptgroup:
-              selected = handler(thisIndex - $this.prevAll('.optgroup').length);
-              break;
-
-            default:
-              selected = handler(thisIndex);
-              break;
-          }
-          /* eslint-enable max-statements-per-line */
-
-
-          if (_this10._isToggleAllPresent()) {
-            _this10._updateToggleAllOption();
-          }
-
-          _this10.$materialSelect.trigger('focus');
-        } else {
-          _this10.$materialOptionsList.find('li').removeClass('active').attr('aria-selected', 'false');
-
-          var $selectedOption = $this.children().last()[0].childNodes[0];
-
-          _this10.$materialSelect.val($($selectedOption).text().replace(/  +/g, ' ').trim());
-
-          _this10.$materialSelect.trigger('close');
-        }
-
-        $this.toggleClass('active');
-        var ariaSelected = $this.attr('aria-selected');
-        $this.attr('aria-selected', ariaSelected === 'true' ? 'false' : 'true');
-
-        _this10._selectSingleOption($this);
-
-        _this10.$nativeSelect.data('stop-refresh', true);
-
-        var selectedOptionIndex = _this10.$nativeSelect.attr('data-placeholder') ? materialOptionIndex + 1 : materialOptionIndex;
-
-        _this10.$nativeSelect.find('option').eq(selectedOptionIndex).prop('selected', selected);
-
-        _this10.$nativeSelect.removeData('stop-refresh');
-
-        _this10._triggerChangeOnNativeSelect();
-
-        if (_this10.$materialSelect.val()) {
-          _this10.$mainLabel.addClass('active');
-        }
-
-        if ($this.hasClass('li-added')) {
-          _this10.renderer.buildSingleOption($this, '');
-        }
-      });
-    });
-  };
-
-  _proto.bindSingleMaterialOptionClick = function bindSingleMaterialOptionClick() {
-    var _this11 = this;
-
-    this.$materialOptionsList.find('li').on('click', function () {
-      _this11.$materialSelect.trigger('close');
-    });
-  };
-
-  _proto.bindSearchInputKeyup = function bindSearchInputKeyup() {
-    var _this12 = this;
-
-    this.$searchInput.find('.search').on('keyup', function (e) {
-      var $this = $(e.target);
-      var isTab = e.which === _this12.keyCodes.tab;
-      var isEsc = e.which === _this12.keyCodes.esc;
-      var isEnter = e.which === _this12.keyCodes.enter;
-      var isEnterWithShift = isEnter && e.shiftKey;
-      var isArrowUp = e.which === _this12.keyCodes.arrowUp;
-      var isArrowDown = e.which === _this12.keyCodes.arrowDown;
-
-      if (isArrowDown || isTab || isEsc || isArrowUp) {
-        _this12.$materialSelect.focus();
-
-        _this12._handleArrowUpDownKey(e.which);
-
-        return;
-      }
-
-      var $ul = $this.closest('ul');
-      var searchValue = $this.val();
-      var $options = $ul.find('li span.filtrable');
-      var isOptionInList = false;
-      $options.each(function () {
-        var $option = $(this);
-
-        if (typeof this.outerHTML === 'string') {
-          var liValue = this.textContent.toLowerCase();
-
-          if (liValue.includes(searchValue.toLowerCase())) {
-            $option.show().parent().show();
-          } else {
-            $option.hide().parent().hide();
-          }
-
-          if (liValue.trim() === searchValue.toLowerCase()) {
-            isOptionInList = true;
-          }
-        }
-      });
-
-      if (isEnter) {
-        if (_this12.isEditable && !isOptionInList) {
-          _this12.renderer.addNewOption();
-
-          return;
-        }
-
-        if (isEnterWithShift) {
-          _this12._handleEnterWithShiftKey($this);
-        }
-
-        _this12.$materialSelect.trigger('open');
-
-        return;
-      }
-
-      _this12.$addOptionBtn[searchValue && _this12.isEditable && !isOptionInList ? 'show' : 'hide']();
-
-      var anyOptionMatch = $options.filter(function (_, e) {
-        return $(e).is(':visible') && !$(e).parent().hasClass('disabled');
-      }).length !== 0;
-
-      if (!anyOptionMatch) {
-        _this12.$toggleAll.hide();
-
-        _this12.$materialOptionsList.append(_this12.$noSearchResultsInfo);
+  }, {
+    key: "render",
+    value: function render() {
+      this.renderer.render();
+    }
+  }, {
+    key: "selectPreselectedOptions",
+    value: function selectPreselectedOptions(handler) {
+      var _this = this;
+
+      if (this.isMultiple) {
+        this.$nativeSelect.find('option:selected:not(:disabled)').each(function (i, element) {
+          var index = element.index;
+
+          _this.$materialOptionsList.find('li:not(.optgroup):not(.select-toggle-all)').eq(index).addClass('selected active').find(':checkbox').prop('checked', true);
+
+          handler(index);
+        });
       } else {
-        _this12.$toggleAll.show();
+        var $preselectedOption = this.$nativeSelect.find('option:selected').first();
+        var indexOfPreselectedOption = this.$nativeSelect.find('option').index($preselectedOption.get(0));
 
-        _this12.$materialOptionsList.find(_this12.$noSearchResultsInfo).remove();
-
-        _this12._updateToggleAllOption();
-      }
-
-      _this12.dropdown.updatePosition(_this12.$materialSelect, _this12.$materialOptionsList);
-    });
-  };
-
-  _proto.bindHtmlClick = function bindHtmlClick() {
-    var _this13 = this;
-
-    $('html').on('click', function (e) {
-      if (!$(e.target).closest("#select-options-" + _this13.properties.id).length && !$(e.target).hasClass('mdb-select') && $("#select-options-" + _this13.properties.id).hasClass('active')) {
-        _this13.$materialSelect.trigger('close');
-
-        if (!_this13.$materialSelect.val() && !_this13.options.placeholder) {
-          _this13.$mainLabel.removeClass('active');
+        if ($preselectedOption.get(0) && $preselectedOption.attr('disabled') !== 'disabled') {
+          handler(indexOfPreselectedOption);
         }
       }
+    }
+  }, {
+    key: "bindMaterialSelectFocus",
+    value: function bindMaterialSelectFocus() {
+      var _this2 = this;
 
-      if (_this13.isSearchable && _this13.$searchInput !== null && _this13.$materialOptionsList.hasClass('active')) {
-        _this13.$materialOptionsList.find('.search-wrap input.search').focus();
-      }
-    });
-  };
+      this.$materialSelect.on('focus', function (e) {
+        var $this = $(e.target);
 
-  _proto.bindMobileDevicesMousedown = function bindMobileDevicesMousedown() {
-    $('select').siblings('input.select-dropdown', 'input.multi-bs-select').on('mousedown', function (e) {
-      if (MaterialSelectView.isMobileDevice && (e.clientX >= e.target.clientWidth || e.clientY >= e.target.clientHeight)) {
+        if ($('ul.select-dropdown').not(_this2.$materialOptionsList.get(0)).is(':visible')) {
+          $('input.select-dropdown').trigger('close');
+        }
+
+        _this2.$mainLabel.addClass('active');
+
+        if (!_this2.$materialOptionsList.is(':visible')) {
+          $this.trigger('open', ['focus']);
+          var label = $this.val();
+
+          var $selectedOption = _this2.$materialOptionsList.find('li').filter(function () {
+            return $(this).text().toLowerCase() === label.toLowerCase();
+          }).get(0);
+
+          _this2._selectSingleOption($selectedOption);
+
+          _this2._updateDropdownScrollTop();
+        }
+
+        if (!_this2.isMultiple) {
+          _this2.$mainLabel.addClass('active');
+        }
+      });
+    }
+  }, {
+    key: "bindMaterialSelectClick",
+    value: function bindMaterialSelectClick() {
+      var _this3 = this;
+
+      this.$materialSelect.on('mousedown', function (e) {
+        if (e.which === 3) {
+          e.preventDefault();
+        }
+      });
+      this.$materialSelect.on('click', function (e) {
+        _this3.$mainLabel.addClass('active');
+
+        e.stopPropagation();
+      });
+    }
+  }, {
+    key: "bindMaterialSelectBlur",
+    value: function bindMaterialSelectBlur() {
+      var _this4 = this;
+
+      this.$materialSelect.on('blur', function (e) {
+        var $this = $(e);
+
+        if (!_this4.isMultiple && !_this4.isSearchable) {
+          $this.trigger('close');
+        }
+
+        _this4.$materialOptionsList.find('li.selected').removeClass('selected');
+      });
+    }
+  }, {
+    key: "bindMaterialSelectKeydown",
+    value: function bindMaterialSelectKeydown() {
+      var _this5 = this;
+
+      this.$materialSelect.on('keydown', function (e) {
+        var $this = $(e.target);
+        var isTab = e.which === _this5.keyCodes.tab;
+        var isEsc = e.which === _this5.keyCodes.esc;
+        var isEnter = e.which === _this5.keyCodes.enter;
+        var isEnterWithShift = isEnter && e.shiftKey;
+        var isArrowUp = e.which === _this5.keyCodes.arrowUp;
+        var isArrowDown = e.which === _this5.keyCodes.arrowDown;
+
+        var isMaterialSelectVisible = _this5.$materialOptionsList.is(':visible');
+
+        if (isTab) {
+          _this5._handleTabKey($this);
+
+          return;
+        } else if (isArrowDown && !isMaterialSelectVisible) {
+          $this.trigger('open');
+          return;
+        } else if (isEnter && !isMaterialSelectVisible) {
+          return;
+        }
+
         e.preventDefault();
+        /* eslint-disable consistent-return */
+
+        switch (true) {
+          case isEnterWithShift:
+            return _this5._handleEnterWithShiftKey($this);
+
+          case isEnter:
+            return _this5._handleEnterKey($this);
+
+          case isArrowDown || isArrowUp:
+            return _this5._handleArrowUpDownKey(e.which);
+
+          case isEsc:
+            return _this5._handleEscKey($this);
+
+          default:
+            return _this5._handleLetterKey(e);
+        }
+        /* eslint-disable consistent-return */
+
+      });
+    }
+  }, {
+    key: "bindMaterialSelectDropdownToggle",
+    value: function bindMaterialSelectDropdownToggle() {
+      var _this6 = this;
+
+      this.$materialSelect.on('open', function () {
+        return _this6.$materialSelect.attr('aria-expanded', 'true');
+      });
+      this.$materialSelect.on('close', function () {
+        return _this6.$materialSelect.attr('aria-expanded', 'false');
+      });
+    }
+  }, {
+    key: "bindToggleAllClick",
+    value: function bindToggleAllClick(handler) {
+      var _this7 = this;
+
+      this.$toggleAll.on('click', function (e) {
+        var checkbox = $(_this7.$toggleAll).find('input[type="checkbox"]').first();
+        var currentState = Boolean($(checkbox).prop('checked'));
+        var isToggleChecked = !currentState;
+        $(checkbox).prop('checked', !currentState);
+
+        _this7.$materialOptionsList.find('li:not(.optgroup):not(.select-toggle-all)').each(function (materialOptionIndex, materialOption) {
+          var $materialOption = $(materialOption);
+          var $optionCheckbox = $materialOption.find('input[type="checkbox"]');
+          $materialOption.attr('aria-selected', isToggleChecked);
+
+          if (isToggleChecked && $optionCheckbox.is(':checked') || !isToggleChecked && !$optionCheckbox.is(':checked') || $(materialOption).is(':hidden') || $(materialOption).is('.disabled')) {
+            return;
+          }
+
+          $optionCheckbox.prop('checked', isToggleChecked);
+
+          _this7.$nativeSelect.find('option').eq(materialOptionIndex).prop('selected', isToggleChecked);
+
+          $materialOption.toggleClass('active');
+
+          _this7._selectOption(materialOption);
+
+          handler(materialOptionIndex);
+        });
+
+        _this7.$nativeSelect.data('stop-refresh', true);
+
+        _this7._triggerChangeOnNativeSelect();
+
+        _this7.$nativeSelect.removeData('stop-refresh');
+
+        e.stopPropagation();
+      });
+    }
+  }, {
+    key: "bindMaterialOptionMousedown",
+    value: function bindMaterialOptionMousedown() {
+      var _this8 = this;
+
+      this.$materialOptionsList.on('mousedown', function (e) {
+        var option = e.target;
+        var inModal = $('.modal-content').find(_this8.$materialOptionsList).length;
+
+        if (inModal && option.scrollHeight > option.offsetHeight) {
+          e.preventDefault();
+        }
+      });
+    }
+  }, {
+    key: "bindMaterialOptionClick",
+    value: function bindMaterialOptionClick(handler) {
+      var _this9 = this;
+
+      this.$materialOptionsList.find('li:not(.optgroup)').not(this.$toggleAll).each(function (materialOptionIndex, materialOption) {
+        $(materialOption).on('click', function (e) {
+          e.stopPropagation();
+          var $this = $(materialOption);
+
+          if ($this.hasClass('disabled') || $this.hasClass('optgroup')) {
+            return;
+          }
+
+          var selected = true;
+
+          if (_this9.isMultiple) {
+            $this.find('input[type="checkbox"]').prop('checked', function (index, oldPropertyValue) {
+              return !oldPropertyValue;
+            });
+            var hasOptgroup = Boolean(_this9.$nativeSelect.find('optgroup').length);
+            var thisIndex = _this9._isToggleAllPresent() ? $this.index() - 1 : $this.index();
+            /* eslint-disable max-statements-per-line */
+
+            switch (true) {
+              case _this9.isSearchable && hasOptgroup:
+                selected = handler(thisIndex - $this.prevAll('.optgroup').length - 1);
+                break;
+
+              case _this9.isSearchable:
+                selected = handler(thisIndex - 1);
+                break;
+
+              case hasOptgroup:
+                selected = handler(thisIndex - $this.prevAll('.optgroup').length);
+                break;
+
+              default:
+                selected = handler(thisIndex);
+                break;
+            }
+            /* eslint-disable max-statements-per-line */
+
+
+            if (_this9._isToggleAllPresent()) {
+              _this9._updateToggleAllOption();
+            }
+
+            _this9.$materialSelect.trigger('focus');
+          } else {
+            _this9.$materialOptionsList.find('li').removeClass('active').attr('aria-selected', 'false');
+
+            _this9.$materialSelect.val($this.text().replace(/  +/g, ' ').trim());
+
+            _this9.$materialSelect.trigger('close');
+          }
+
+          $this.toggleClass('active');
+          var ariaSelected = $this.attr('aria-selected');
+          $this.attr('aria-selected', ariaSelected === 'true' ? 'false' : 'true');
+
+          _this9._selectSingleOption($this);
+
+          _this9.$nativeSelect.data('stop-refresh', true);
+
+          _this9.$nativeSelect.find('option').eq(materialOptionIndex).prop('selected', selected);
+
+          _this9.$nativeSelect.removeData('stop-refresh');
+
+          _this9._triggerChangeOnNativeSelect();
+
+          if (_this9.$materialSelect.val()) {
+            _this9.$mainLabel.addClass('active');
+          }
+
+          if ($this.hasClass('li-added')) {
+            _this9.renderer.buildSingleOption($this, '');
+          }
+        });
+      });
+    }
+  }, {
+    key: "bindSingleMaterialOptionClick",
+    value: function bindSingleMaterialOptionClick() {
+      var _this10 = this;
+
+      this.$materialOptionsList.find('li').on('click', function () {
+        _this10.$materialSelect.trigger('close');
+      });
+    }
+  }, {
+    key: "bindSearchInputKeyup",
+    value: function bindSearchInputKeyup() {
+      var _this11 = this;
+
+      this.$searchInput.find('.search').on('keyup', function (e) {
+        var $this = $(e.target);
+        var isTab = e.which === _this11.keyCodes.tab;
+        var isEsc = e.which === _this11.keyCodes.esc;
+        var isEnter = e.which === _this11.keyCodes.enter;
+        var isEnterWithShift = isEnter && e.shiftKey;
+        var isArrowUp = e.which === _this11.keyCodes.arrowUp;
+        var isArrowDown = e.which === _this11.keyCodes.arrowDown;
+
+        if (isArrowDown || isTab || isEsc || isArrowUp) {
+          _this11.$materialSelect.focus();
+
+          _this11._handleArrowUpDownKey(e.which);
+
+          return;
+        }
+
+        var $ul = $this.closest('ul');
+        var searchValue = $this.val();
+        var $options = $ul.find('li span.filtrable');
+        var isOptionInList = false;
+        $options.each(function () {
+          var $option = $(this);
+
+          if (typeof this.outerHTML === 'string') {
+            var liValue = this.textContent.toLowerCase();
+
+            if (liValue.includes(searchValue.toLowerCase())) {
+              $option.show().parent().show();
+            } else {
+              $option.hide().parent().hide();
+            }
+
+            if (liValue.trim() === searchValue.toLowerCase()) {
+              isOptionInList = true;
+            }
+          }
+        });
+
+        if (isEnter) {
+          if (_this11.isEditable && !isOptionInList) {
+            _this11.renderer.addNewOption();
+
+            return;
+          }
+
+          if (isEnterWithShift) {
+            _this11._handleEnterWithShiftKey($this);
+          }
+
+          _this11.$materialSelect.trigger('open');
+
+          return;
+        }
+
+        _this11.$addOptionBtn[searchValue && _this11.isEditable && !isOptionInList ? 'show' : 'hide']();
+
+        var anyOptionMatch = $options.filter(function (_, e) {
+          return $(e).is(':visible') && !$(e).parent().hasClass('disabled');
+        }).length !== 0;
+
+        if (!anyOptionMatch) {
+          _this11.$toggleAll.hide();
+
+          _this11.$materialOptionsList.append(_this11.$noSearchResultsInfo);
+        } else {
+          _this11.$toggleAll.show();
+
+          _this11.$materialOptionsList.find(_this11.$noSearchResultsInfo).remove();
+
+          _this11._updateToggleAllOption();
+        }
+
+        _this11.dropdown.updatePosition(_this11.$materialSelect, _this11.$materialOptionsList);
+      });
+    }
+  }, {
+    key: "bindHtmlClick",
+    value: function bindHtmlClick() {
+      var _this12 = this;
+
+      $('html').on('click', function (e) {
+        if (!$(e.target).closest("#select-options-".concat(_this12.properties.id)).length && !$(e.target).hasClass('mdb-select') && $("#select-options-".concat(_this12.properties.id)).hasClass('active')) {
+          _this12.$materialSelect.trigger('close');
+
+          if (!_this12.$materialSelect.val() && !_this12.options.placeholder) {
+            _this12.$mainLabel.removeClass('active');
+          }
+        }
+
+        if (_this12.isSearchable && _this12.$searchInput !== null && _this12.$materialOptionsList.hasClass('active')) {
+          _this12.$materialOptionsList.find('.search-wrap input.search').focus();
+        }
+      });
+    }
+  }, {
+    key: "bindMobileDevicesMousedown",
+    value: function bindMobileDevicesMousedown() {
+      $('select').siblings('input.select-dropdown', 'input.multi-bs-select').on('mousedown', function (e) {
+        if (MaterialSelectView.isMobileDevice && (e.clientX >= e.target.clientWidth || e.clientY >= e.target.clientHeight)) {
+          e.preventDefault();
+        }
+      });
+    }
+  }, {
+    key: "bindSaveBtnClick",
+    value: function bindSaveBtnClick() {
+      var _this13 = this;
+
+      // @Depreciated
+      this.$btnSave.on('click', function () {
+        _this13.$materialSelect.trigger('close');
+      });
+    }
+  }, {
+    key: "_isToggleAllPresent",
+    value: function _isToggleAllPresent() {
+      return this.$materialOptionsList.find(this.$toggleAll).length;
+    }
+  }, {
+    key: "_updateToggleAllOption",
+    value: function _updateToggleAllOption() {
+      var $allOptionsButToggleAll = this.$materialOptionsList.find('li').not('.select-toggle-all, .disabled, :hidden').find('[type=checkbox]');
+      var $checkedOptionsButToggleAll = $allOptionsButToggleAll.filter(':checked');
+      var isToggleAllChecked = this.$toggleAll.find('[type=checkbox]').is(':checked');
+
+      if ($checkedOptionsButToggleAll.length === $allOptionsButToggleAll.length && !isToggleAllChecked) {
+        this.$toggleAll.find('[type=checkbox]').prop('checked', true);
+      } else if ($checkedOptionsButToggleAll.length < $allOptionsButToggleAll.length && isToggleAllChecked) {
+        this.$toggleAll.find('[type=checkbox]').prop('checked', false);
       }
-    });
-  };
-
-  _proto.bindSaveBtnClick = function bindSaveBtnClick() {
-    var _this14 = this;
-
-    // @Depreciated
-    this.$btnSave.on('click', function () {
-      _this14.$materialSelect.trigger('close');
-    });
-  };
-
-  _proto._toggleResetButton = function _toggleResetButton(hide) {
-    var previousValue = this.$nativeSelect.data('stop-refresh');
-    this.$nativeSelect.attr('data-stop-refresh', 'true');
-
-    if (hide) {
-      this.$nativeSelect.prepend('<option value="" selected disabled data-mdb-novalue></option>');
-    } else {
-      this.$nativeSelect.find('option[data-mdb-novalue]').remove();
     }
-
-    this.$nativeSelect.attr('data-stop-refresh', previousValue);
-    this.$btnReset[hide ? 'hide' : 'show']();
-  };
-
-  _proto._isToggleAllPresent = function _isToggleAllPresent() {
-    return this.$materialOptionsList.find(this.$toggleAll).length;
-  };
-
-  _proto._updateToggleAllOption = function _updateToggleAllOption() {
-    var $allOptionsButToggleAll = this.$materialOptionsList.find('li').not('.select-toggle-all, .disabled, :hidden').find('[type=checkbox]');
-    var $checkedOptionsButToggleAll = $allOptionsButToggleAll.filter(':checked');
-    var isToggleAllChecked = this.$toggleAll.find('[type=checkbox]').is(':checked');
-
-    if ($checkedOptionsButToggleAll.length === $allOptionsButToggleAll.length && !isToggleAllChecked) {
-      this.$toggleAll.find('[type=checkbox]').prop('checked', true);
-    } else if ($checkedOptionsButToggleAll.length < $allOptionsButToggleAll.length && isToggleAllChecked) {
-      this.$toggleAll.find('[type=checkbox]').prop('checked', false);
+  }, {
+    key: "_handleTabKey",
+    value: function _handleTabKey($materialSelect) {
+      this._handleEscKey($materialSelect);
     }
-  };
-
-  _proto._handleTabKey = function _handleTabKey($materialSelect) {
-    this._handleEscKey($materialSelect);
-  };
-
-  _proto._handleEnterWithShiftKey = function _handleEnterWithShiftKey($materialSelect) {
-    if (!this.isMultiple) {
-      this._handleEnterKey($materialSelect);
-    } else {
-      this.$toggleAll.trigger('click');
+  }, {
+    key: "_handleEnterWithShiftKey",
+    value: function _handleEnterWithShiftKey($materialSelect) {
+      if (!this.isMultiple) {
+        this._handleEnterKey($materialSelect);
+      } else {
+        this.$toggleAll.trigger('click');
+      }
     }
-  };
+  }, {
+    key: "_handleEnterKey",
+    value: function _handleEnterKey($materialSelect) {
+      var $activeOption = this.$materialOptionsList.find('li.selected:not(.disabled)');
+      $activeOption.trigger('click').addClass('active');
 
-  _proto._handleEnterKey = function _handleEnterKey($materialSelect) {
-    var $activeOption = this.$materialOptionsList.find('li.selected:not(.disabled)');
-    $activeOption.trigger('click').addClass('active');
+      if (!this.isMultiple) {
+        $materialSelect.trigger('close');
+      }
+    }
+  }, {
+    key: "_handleArrowUpDownKey",
+    value: function _handleArrowUpDownKey(keyCode) {
+      var _this14 = this;
 
-    this._removeKeyboardActiveClass();
+      var $availableOptions = this.$materialOptionsList.find('li:visible').not('.disabled, .select-toggle-all');
+      var $firstOption = $availableOptions.first();
+      var $lastOption = $availableOptions.last();
+      var anySelected = this.$materialOptionsList.find('li.selected').length > 0;
+      var $matchedMaterialOption = null;
+      var $activeOption = null;
+      var isArrowUp = keyCode === this.keyCodes.arrowUp;
 
-    if (!this.isMultiple) {
+      if (isArrowUp) {
+        var $currentOption = anySelected ? this.$materialOptionsList.find('li.selected').first() : $lastOption;
+        var $prevOption = $currentOption.prev('li:visible:not(.disabled, .select-toggle-all)');
+        $activeOption = $prevOption;
+        $availableOptions.each(function (key, el) {
+          if ($(el).hasClass(_this14.options.keyboardActiveClass)) {
+            $prevOption = $availableOptions.eq(key - 1);
+            $activeOption = $availableOptions.eq(key);
+          }
+        });
+        $matchedMaterialOption = $currentOption.is($firstOption) || !anySelected ? $currentOption : $prevOption;
+      } else {
+        var _$currentOption = anySelected ? this.$materialOptionsList.find('li.selected').first() : $firstOption;
+
+        var $nextOption = _$currentOption.next('li:visible:not(.disabled, .select-toggle-all)');
+
+        $activeOption = $nextOption;
+        $availableOptions.each(function (key, el) {
+          if ($(el).hasClass(_this14.options.keyboardActiveClass)) {
+            $nextOption = $availableOptions.eq(key + 1);
+            $activeOption = $availableOptions.eq(key);
+          }
+        });
+        $matchedMaterialOption = _$currentOption.is($lastOption) || !anySelected ? _$currentOption : $nextOption;
+      }
+
+      this._selectSingleOption($matchedMaterialOption);
+
+      this._removeKeyboardActiveClass();
+
+      if (!$matchedMaterialOption.find('input').is(':checked')) {
+        $matchedMaterialOption.removeClass(this.options.keyboardActiveClass);
+      }
+
+      if (!$activeOption.hasClass('selected') && !$activeOption.find('input').is(':checked') && this.isMultiple) {
+        $activeOption.removeClass('active', this.options.keyboardActiveClass);
+      }
+
+      $matchedMaterialOption.addClass(this.options.keyboardActiveClass);
+
+      if ($matchedMaterialOption.position()) {
+        this.$materialOptionsList.scrollTop(this.$materialOptionsList.scrollTop() + $matchedMaterialOption.position().top);
+      }
+    }
+  }, {
+    key: "_handleEscKey",
+    value: function _handleEscKey($materialSelect) {
+      this._removeKeyboardActiveClass();
+
       $materialSelect.trigger('close');
     }
-  };
+  }, {
+    key: "_handleLetterKey",
+    value: function _handleLetterKey(e) {
+      var _this15 = this;
 
-  _proto._handleArrowUpDownKey = function _handleArrowUpDownKey(keyCode) {
-    // eslint-disable-next-line object-curly-newline
-    var _this$_getArrowMatche = this._getArrowMatchedActiveOptions(keyCode, false),
-        $matchedMaterialOption = _this$_getArrowMatche.$matchedMaterialOption,
-        $activeOption = _this$_getArrowMatche.$activeOption;
+      this._removeKeyboardActiveClass();
 
-    this._selectSingleOption($matchedMaterialOption);
+      if (this.isSearchable) {
+        var isLetter = e.which > 46 && e.which < 91;
+        var isNumber = e.which > 93 && e.which < 106;
+        var isBackspace = e.which === 8;
 
-    this._removeKeyboardActiveClass();
-
-    if (!$matchedMaterialOption.find('input').is(':checked')) {
-      $matchedMaterialOption.removeClass(this.options.keyboardActiveClass);
-    }
-
-    if (!$activeOption.hasClass('selected') && !$activeOption.find('input').is(':checked') && this.isMultiple) {
-      $activeOption.removeClass('active', this.options.keyboardActiveClass);
-    }
-
-    $matchedMaterialOption.addClass(this.options.keyboardActiveClass);
-
-    if ($matchedMaterialOption.position()) {
-      this.$materialOptionsList.scrollTop(this.$materialOptionsList.scrollTop() + $matchedMaterialOption.position().top);
-    }
-  };
-
-  _proto._handleClosedArrowUpDownKey = function _handleClosedArrowUpDownKey(keyCode) {
-    // eslint-disable-next-line object-curly-newline
-    var _this$_getArrowMatche2 = this._getArrowMatchedActiveOptions(keyCode, true),
-        $matchedMaterialOption = _this$_getArrowMatche2.$matchedMaterialOption;
-
-    $matchedMaterialOption.trigger('click').addClass('active');
-
-    this._updateDropdownScrollTop();
-
-    this._selectSingleOption($matchedMaterialOption);
-  };
-
-  _proto._getArrowMatchedActiveOptions = function _getArrowMatchedActiveOptions(keyCode, closedDropdown) {
-    var _this15 = this;
-
-    var visible = closedDropdown ? '' : ':visible';
-    var $availableOptions = this.$materialOptionsList.find("li" + visible).not('.disabled, .select-toggle-all');
-    var $firstOption = $availableOptions.first();
-    var $lastOption = $availableOptions.last();
-    var anySelected = this.$materialOptionsList.find('li.selected').length > 0;
-    var $matchedMaterialOption = null;
-    var $activeOption = null;
-    var isArrowUp = keyCode === this.keyCodes.arrowUp;
-
-    if (isArrowUp) {
-      var $currentOption = anySelected ? this.$materialOptionsList.find('li.selected').first() : $lastOption;
-      var $prevOption = $currentOption.prev("li" + visible + ":not(.disabled, .select-toggle-all)");
-      $activeOption = $prevOption;
-      $availableOptions.each(function (key, el) {
-        if ($(el).hasClass(_this15.options.keyboardActiveClass)) {
-          $prevOption = $availableOptions.eq(key - 1);
-          $activeOption = $availableOptions.eq(key);
-        }
-      });
-      $matchedMaterialOption = $currentOption.is($firstOption) || !anySelected ? $currentOption : $prevOption;
-    } else {
-      var _$currentOption = anySelected ? this.$materialOptionsList.find('li.selected').first() : $firstOption;
-
-      var $nextOption = _$currentOption.next("li" + visible + ":not(.disabled, .select-toggle-all)");
-
-      $activeOption = $nextOption;
-      $availableOptions.each(function (key, el) {
-        if ($(el).hasClass(_this15.options.keyboardActiveClass)) {
-          $nextOption = $availableOptions.eq(key + 1);
-          $activeOption = $availableOptions.eq(key);
-        }
-      });
-      $matchedMaterialOption = _$currentOption.is($lastOption) || !anySelected ? _$currentOption : $nextOption;
-    }
-
-    return {
-      $matchedMaterialOption: $matchedMaterialOption,
-      $activeOption: $activeOption
-    };
-  };
-
-  _proto._handleHomeKey = function _handleHomeKey() {
-    this._selectBoundaryOption('first');
-  };
-
-  _proto._handleEndKey = function _handleEndKey() {
-    this._selectBoundaryOption('last');
-  };
-
-  _proto._selectBoundaryOption = function _selectBoundaryOption(firstOrLast) {
-    if (firstOrLast === void 0) {
-      firstOrLast = '';
-    }
-
-    var $boundaryOption = this.$materialOptionsList.find('li:visible').not('.disabled, .select-toggle-all')[firstOrLast]();
-
-    this._selectSingleOption($boundaryOption);
-
-    this._removeKeyboardActiveClass();
-
-    if (!$boundaryOption.find('input').is(':checked')) {
-      $boundaryOption.removeClass(this.options.keyboardActiveClass);
-    }
-
-    $boundaryOption.addClass(this.options.keyboardActiveClass);
-
-    if ($boundaryOption.position()) {
-      this.$materialOptionsList.scrollTop(this.$materialOptionsList.scrollTop() + $boundaryOption.position().top);
-    }
-  };
-
-  _proto._handleEscKey = function _handleEscKey($materialSelect) {
-    this._removeKeyboardActiveClass();
-
-    $materialSelect.trigger('close');
-  };
-
-  _proto._handleLetterKey = function _handleLetterKey(e) {
-    var _this16 = this;
-
-    this._removeKeyboardActiveClass();
-
-    if (this.isSearchable) {
-      var isLetter = e.which > 46 && e.which < 91;
-      var isNumber = e.which > 93 && e.which < 106;
-      var isBackspace = e.which === 8;
-
-      if (isLetter || isNumber) {
-        this.$searchInput.find('input').val(e.key).focus();
-      }
-
-      if (isBackspace) {
-        this.$searchInput.find('input').val('').focus();
-      }
-    } else {
-      var filterQueryString = '';
-      var letter = String.fromCharCode(e.which).toLowerCase();
-      var nonLetters = Object.keys(this.keyCodes).map(function (key) {
-        return _this16.keyCodes[key];
-      });
-      var isLetterSearchable = letter && nonLetters.indexOf(e.which) === -1;
-
-      if (isLetterSearchable) {
-        filterQueryString += letter;
-        var $matchedMaterialOption = this.$materialOptionsList.find('li').filter(function (index, element) {
-          return $(element).text().toLowerCase().includes(filterQueryString);
-        }).first();
-
-        if (!this.isMultiple) {
-          this.$materialOptionsList.find('li').removeClass('active');
+        if (isLetter || isNumber) {
+          this.$searchInput.find('input').val(e.key).focus();
         }
 
-        $matchedMaterialOption.addClass('active');
+        if (isBackspace) {
+          this.$searchInput.find('input').val('').focus();
+        }
+      } else {
+        var filterQueryString = '';
+        var letter = String.fromCharCode(e.which).toLowerCase();
+        var nonLetters = Object.keys(this.keyCodes).map(function (key) {
+          return _this15.keyCodes[key];
+        });
+        var isLetterSearchable = letter && nonLetters.indexOf(e.which) === -1;
 
-        this._selectSingleOption($matchedMaterialOption);
+        if (isLetterSearchable) {
+          filterQueryString += letter;
+          var $matchedMaterialOption = this.$materialOptionsList.find('li').filter(function (index, element) {
+            return $(element).text().toLowerCase().includes(filterQueryString);
+          }).first();
 
-        this._updateDropdownScrollTop();
+          if (!this.isMultiple) {
+            this.$materialOptionsList.find('li').removeClass('active');
+          }
+
+          $matchedMaterialOption.addClass('active');
+
+          this._selectSingleOption($matchedMaterialOption);
+        }
       }
     }
-  };
-
-  _proto._removeKeyboardActiveClass = function _removeKeyboardActiveClass() {
-    this.$materialOptionsList.find('li').removeClass(this.options.keyboardActiveClass);
-  };
-
-  _proto._triggerChangeOnNativeSelect = function _triggerChangeOnNativeSelect() {
-    var keyboardEvt = new KeyboardEvent('change', {
-      bubbles: true,
-      cancelable: true
-    });
-    this.$nativeSelect.get(0).dispatchEvent(keyboardEvt);
-  };
-
-  _proto._selectSingleOption = function _selectSingleOption(newOption) {
-    this.$materialOptionsList.find('li.selected').removeClass('selected');
-
-    this._selectOption(newOption);
-  };
-
-  _proto._updateDropdownScrollTop = function _updateDropdownScrollTop() {
-    var $preselected = this.$materialOptionsList.find('li.active').not('.disabled').first();
-
-    if ($preselected.length) {
-      this.$materialOptionsList.scrollTo($preselected);
-    } else {
-      this.$materialOptionsList.scrollTop(0);
+  }, {
+    key: "_removeKeyboardActiveClass",
+    value: function _removeKeyboardActiveClass() {
+      this.$materialOptionsList.find('li').removeClass(this.options.keyboardActiveClass);
     }
-  };
+  }, {
+    key: "_triggerChangeOnNativeSelect",
+    value: function _triggerChangeOnNativeSelect() {
+      var keyboardEvt = new KeyboardEvent('change', {
+        bubbles: true,
+        cancelable: true
+      });
+      this.$nativeSelect.get(0).dispatchEvent(keyboardEvt);
+    }
+  }, {
+    key: "_selectSingleOption",
+    value: function _selectSingleOption(newOption) {
+      this.$materialOptionsList.find('li.selected').removeClass('selected');
 
-  _proto._selectOption = function _selectOption(newOption) {
-    var option = $(newOption);
-    option.addClass('selected');
-  };
+      this._selectOption(newOption);
+    }
+  }, {
+    key: "_updateDropdownScrollTop",
+    value: function _updateDropdownScrollTop() {
+      var $preselected = this.$materialOptionsList.find('li.active').first();
 
-  _proto._copyOptions = function _copyOptions(options) {
-    return $.extend({}, options);
-  };
-
-  _proto._jQueryFallback = function _jQueryFallback() {
-    var $lastElem = null;
-
-    for (var i = 0; i < arguments.length; i++) {
-      $lastElem = i < 0 || arguments.length <= i ? undefined : arguments[i];
-
-      if ($lastElem.length) {
-        return $lastElem;
+      if ($preselected.length) {
+        this.$materialOptionsList.scrollTo($preselected);
+      } else {
+        this.$materialOptionsList.scrollTop(0);
       }
     }
+  }, {
+    key: "_selectOption",
+    value: function _selectOption(newOption) {
+      var option = $(newOption);
+      option.addClass('selected');
+    }
+  }, {
+    key: "_copyOptions",
+    value: function _copyOptions(options) {
+      return $.extend({}, options);
+    }
+  }, {
+    key: "_jQueryFallback",
+    value: function _jQueryFallback() {
+      var $lastElem = null;
 
-    return $lastElem;
-  };
+      for (var i = 0; i < arguments.length; i++) {
+        $lastElem = i < 0 || arguments.length <= i ? undefined : arguments[i];
 
-  _createClass(MaterialSelectView, [{
+        if ($lastElem.length) {
+          return $lastElem;
+        }
+      }
+
+      return $lastElem;
+    }
+  }, {
     key: "isMultiple",
     get: function get() {
       return this.properties.isMultiple;
@@ -20074,6 +18970,10 @@ function () {
 
   return MaterialSelectView;
 }();
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -20082,15 +18982,15 @@ jQuery(function ($) {
   var MaterialSelect =
   /*#__PURE__*/
   function () {
-    function MaterialSelect($nativeSelect, options) {
-      if (options === void 0) {
-        options = {};
-      }
+    function MaterialSelect($nativeSelect) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      _classCallCheck(this, MaterialSelect);
 
       this.options = {
         destroy: this.fallback().or(options.destroy).or(false).value(),
         validate: this.fallback().or($nativeSelect.attr('data-validate')).or(options.validate).or(false).value(),
-        selectId: this.fallback().or($nativeSelect.attr('data-select-id')).or(options.selectId).or(null).value(),
+        selectId: this.fallback().or($nativeSelect.attr('data-native-id')).or(options.selectId).or(null).value(),
         defaultMaterialInput: this.fallback().or($nativeSelect.attr('data-default-material-input')).or(options.defaultMaterialInput).or(false).value(),
         fasClasses: this.fallback().or($nativeSelect.attr('data-fas-classes')).or(options.fasClasses).or('').value(),
         farClasses: this.fallback().or($nativeSelect.attr('data-far-classes')).or(options.farClasses).or('').value(),
@@ -20106,8 +19006,7 @@ jQuery(function ($) {
         keyboardActiveClass: this.fallback().or($nativeSelect.attr('data-keyboard-active-class')).or(options.keyboardActiveClass).or('heavy-rain-gradient').value(),
         placeholder: this.fallback().or($nativeSelect.attr('data-placeholder')).or(options.placeholder).or(null).value(),
         visibleOptions: this.fallback().or($nativeSelect.attr('data-visible-options')).or(options.visibleOptions).or(5).value(),
-        maxSelectedOptions: this.fallback().or($nativeSelect.attr('data-max-selected-options')).or(options.maxSelectedOptions).or(5).value(),
-        showResetButton: this.fallback().or($nativeSelect.attr('data-show-reset-button')).or(options.showResetButton).or(false).value()
+        maxSelectedOptions: this.fallback().or($nativeSelect.attr('data-max-selected-options')).or(options.maxSelectedOptions).or(5).value()
       };
       this.uuid = $nativeSelect.attr('id') || this.options.selectId || this._randomUUID(); // eslint-disable-next-line no-undef
 
@@ -20122,182 +19021,171 @@ jQuery(function ($) {
       MaterialSelect.mutationObservers = [];
     }
 
-    MaterialSelect.clearMutationObservers = function clearMutationObservers() {
-      MaterialSelect.mutationObservers.forEach(function (observer) {
-        observer.disconnect();
-        observer.customStatus = 'stopped';
-      });
-    };
+    _createClass(MaterialSelect, [{
+      key: "init",
+      value: function init() {
+        var _this = this;
 
-    MaterialSelect.mdbSelectAutoInit = function mdbSelectAutoInit() {
-      $('.mdb-select.mdb-select-autoinit').materialSelect();
-    };
+        if (this.options.destroy) {
+          this.view.destroy();
+          return;
+        }
 
-    var _proto = MaterialSelect.prototype;
+        if (this.isInitialized) {
+          this.view.destroy();
+        }
 
-    _proto.init = function init() {
-      var _this = this;
-
-      if (this.options.destroy) {
-        this.view.destroy();
-        return;
+        this.view.render();
+        this.view.selectPreselectedOptions(function (optionIndex) {
+          return _this._toggleSelectedValue(optionIndex);
+        });
+        this.bindEvents();
       }
+    }, {
+      key: "bindEvents",
+      value: function bindEvents() {
+        var _this2 = this;
 
-      if (this.isInitialized) {
-        this.view.destroy();
+        this.bindMutationObserverChange();
+        this.view.bindMaterialSelectFocus();
+        this.view.bindMaterialSelectClick();
+        this.view.bindMaterialSelectBlur();
+        this.view.bindMaterialSelectKeydown();
+        this.view.bindMaterialSelectDropdownToggle();
+        this.view.bindToggleAllClick(function (materialOptionIndex) {
+          return _this2._toggleSelectedValue(materialOptionIndex);
+        });
+        this.view.bindMaterialOptionMousedown();
+        this.view.bindMaterialOptionClick(function (optionIndex) {
+          return _this2._toggleSelectedValue(optionIndex);
+        });
+
+        if (!this.view.isMultiple && this.view.isSearchable) {
+          this.view.bindSingleMaterialOptionClick();
+        }
+
+        if (this.view.isSearchable) {
+          this.view.bindSearchInputKeyup();
+        }
+
+        this.view.bindHtmlClick();
+        this.view.bindMobileDevicesMousedown();
+        this.view.bindSaveBtnClick(); // @Depreciated
       }
+    }, {
+      key: "bindMutationObserverChange",
+      value: function bindMutationObserverChange() {
+        var config = {
+          attributes: true,
+          childList: true,
+          characterData: true,
+          subtree: true
+        };
+        var observer = new MutationObserver(this._onMutationObserverChange.bind(this));
+        observer.observe(this.view.$nativeSelect.get(0), config);
+        observer.customId = this.uuid;
+        observer.customStatus = 'observing';
+        MaterialSelect.clearMutationObservers();
+        MaterialSelect.mutationObservers.push(observer);
+      }
+    }, {
+      key: "_onMutationObserverChange",
+      value: function _onMutationObserverChange(mutationsList) {
+        mutationsList.forEach(function (mutation) {
+          var $select = $(mutation.target).closest('select');
 
-      this.view.render();
-      this.view.selectPreselectedOptions(function (optionIndex) {
-        return _this._toggleSelectedValue(optionIndex);
-      });
-      this.bindEvents();
-    };
+          if ($select.data('stop-refresh') !== true && (mutation.type === 'childList' || mutation.type === 'attributes' && $(mutation.target).is('option'))) {
+            MaterialSelect.clearMutationObservers(); // eslint-disable-next-line object-curly-newline
 
-    _proto.bindEvents = function bindEvents() {
-      var _this2 = this;
-
-      this.bindMutationObserverChange();
-
-      if (this.view.isEditable && this.view.isSearchable) {
-        this.view.bindResetButtonClick(function () {
-          return _this2._resetSelection();
+            $select.materialSelect({
+              destroy: true
+            });
+            $select.materialSelect();
+          }
         });
       }
+    }, {
+      key: "_toggleSelectedValue",
+      value: function _toggleSelectedValue(optionIndex) {
+        var selectedValueIndex = this.selectedOptionsIndexes.indexOf(optionIndex);
+        var isSelected = selectedValueIndex !== -1;
 
-      this.view.bindAddNewOptionClick();
-      this.view.bindMaterialSelectFocus();
-      this.view.bindMaterialSelectClick();
-      this.view.bindMaterialSelectBlur();
-      this.view.bindMaterialOptionsListTouchstart();
-      this.view.bindMaterialSelectKeydown();
-      this.view.bindMaterialSelectDropdownToggle();
-      this.view.bindToggleAllClick(function (materialOptionIndex) {
-        return _this2._toggleSelectedValue(materialOptionIndex);
-      });
-      this.view.bindMaterialOptionMousedown();
-      this.view.bindMaterialOptionClick(function (optionIndex) {
-        return _this2._toggleSelectedValue(optionIndex);
-      });
-
-      if (!this.view.isMultiple && this.view.isSearchable) {
-        this.view.bindSingleMaterialOptionClick();
-      }
-
-      if (this.view.isSearchable) {
-        this.view.bindSearchInputKeyup();
-      }
-
-      this.view.bindHtmlClick();
-      this.view.bindMobileDevicesMousedown();
-      this.view.bindSaveBtnClick(); // @Depreciated
-    };
-
-    _proto.bindMutationObserverChange = function bindMutationObserverChange() {
-      var config = {
-        attributes: true,
-        childList: true,
-        characterData: true,
-        subtree: true
-      };
-      var observer = new MutationObserver(this._onMutationObserverChange.bind(this));
-      observer.observe(this.view.$nativeSelect.get(0), config);
-      observer.customId = this.uuid;
-      observer.customStatus = 'observing';
-      MaterialSelect.clearMutationObservers();
-      MaterialSelect.mutationObservers.push(observer);
-    };
-
-    _proto._onMutationObserverChange = function _onMutationObserverChange(mutationsList) {
-      mutationsList.forEach(function (mutation) {
-        var $select = $(mutation.target).closest('select');
-
-        if ($select.data('stop-refresh') !== true && (mutation.type === 'childList' || mutation.type === 'attributes' && $(mutation.target).is('option'))) {
-          MaterialSelect.clearMutationObservers(); // eslint-disable-next-line object-curly-newline
-
-          $select.materialSelect({
-            destroy: true
-          });
-          $select.materialSelect();
+        if (!isSelected) {
+          this.selectedOptionsIndexes.push(optionIndex);
+        } else {
+          this.selectedOptionsIndexes.splice(selectedValueIndex, 1);
         }
-      });
-    };
 
-    _proto._resetSelection = function _resetSelection() {
-      this.selectedOptionsIndexes = [];
-      this.view.$nativeSelect.find('option').prop('selected', false);
-    };
+        this.view.$nativeSelect.find('option').eq(optionIndex).prop('selected', !isSelected);
 
-    _proto._toggleSelectedValue = function _toggleSelectedValue(optionIndex) {
-      var selectedValueIndex = this.selectedOptionsIndexes.indexOf(optionIndex);
-      var isSelected = selectedValueIndex !== -1;
+        this._setValueToMaterialSelect();
 
-      if (!isSelected) {
-        this.selectedOptionsIndexes.push(optionIndex);
-      } else {
-        this.selectedOptionsIndexes.splice(selectedValueIndex, 1);
+        return !isSelected;
       }
+    }, {
+      key: "_setValueToMaterialSelect",
+      value: function _setValueToMaterialSelect() {
+        var _this3 = this;
 
-      this.view.$nativeSelect.find('option').eq(optionIndex).prop('selected', !isSelected);
+        var value = '';
+        var selectedValuesCount = this.selectedOptionsIndexes.length;
+        this.selectedOptionsIndexes.forEach(function (index) {
+          return value += ", ".concat(_this3.view.$nativeSelect.find('option').eq(index).text().replace(/  +/g, ' ').trim());
+        });
 
-      this._setValueToMaterialSelect();
+        if (this.options.maxSelectedOptions >= 0 && selectedValuesCount > this.options.maxSelectedOptions) {
+          value = "".concat(selectedValuesCount, " ").concat(this.options.labels.optionsSelected);
+        } else {
+          value = value.substring(2);
+        }
 
-      return !isSelected;
-    };
+        if (value.length === 0) {
+          value = this.view.$nativeSelect.find('option:disabled').eq(0).text();
+        }
 
-    _proto._setValueToMaterialSelect = function _setValueToMaterialSelect() {
-      var _this3 = this;
-
-      var value = '';
-      var selectedValuesCount = this.selectedOptionsIndexes.length;
-      this.selectedOptionsIndexes.forEach(function (index) {
-        return value += ", " + _this3.view.$nativeSelect.find('option').eq(index).text().replace(/  +/g, ' ').trim();
-      });
-
-      if (this.options.maxSelectedOptions >= 0 && selectedValuesCount > this.options.maxSelectedOptions) {
-        value = selectedValuesCount + " " + this.options.labels.optionsSelected;
-      } else {
-        value = value.substring(2);
+        this.view.$nativeSelect.siblings("".concat(this.options.defaultMaterialInput ? 'input.multi-bs-select' : 'input.select-dropdown')).val(value);
       }
+    }, {
+      key: "_randomUUID",
+      value: function _randomUUID() {
+        var d = new Date().getTime();
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+          // eslint-disable-next-line no-bitwise
+          var r = (d + Math.random() * 16) % 16 | 0;
+          d = Math.floor(d / 16); // eslint-disable-next-line no-bitwise
 
-      if (value.length === 0) {
-        value = this.view.$nativeSelect.find('option:disabled').eq(0).text();
+          return (c === 'x' ? r : r & 0x3 | 0x8).toString(16);
+        });
       }
+    }, {
+      key: "fallback",
+      value: function fallback() {
+        return {
+          _value: undefined,
+          or: function or(value) {
+            if (typeof value !== 'undefined' && typeof this._value === 'undefined') {
+              this._value = value;
+            }
 
-      this.view.$nativeSelect.siblings("" + (this.options.defaultMaterialInput ? 'input.multi-bs-select' : 'input.select-dropdown')).val(value);
-    };
-
-    _proto._randomUUID = function _randomUUID() {
-      var d = new Date().getTime();
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        // eslint-disable-next-line no-bitwise
-        var r = (d + Math.random() * 16) % 16 | 0;
-        d = Math.floor(d / 16); // eslint-disable-next-line no-bitwise
-
-        return (c === 'x' ? r : r & 0x3 | 0x8).toString(16);
-      });
-    };
-
-    _proto.fallback = function fallback() {
-      return {
-        _value: undefined,
-        or: function or(value) {
-          if (typeof value !== 'undefined' && typeof this._value === 'undefined') {
-            this._value = value;
+            return this;
+          },
+          value: function value() {
+            return this._value;
           }
-
-          return this;
-        },
-        value: function value() {
-          return this._value;
-        }
-      };
-    };
-
-    _createClass(MaterialSelect, [{
+        };
+      }
+    }, {
       key: "isInitialized",
       get: function get() {
         return Boolean(this.view.$nativeSelect.data('select-id')) && this.view.$nativeSelect.hasClass('initialized');
+      }
+    }], [{
+      key: "clearMutationObservers",
+      value: function clearMutationObservers() {
+        MaterialSelect.mutationObservers.forEach(function (observer) {
+          observer.disconnect();
+          observer.customStatus = 'stopped';
+        });
       }
     }]);
 
@@ -20330,8 +19218,6 @@ jQuery(function ($) {
       return originalVal.call(this, value);
     };
   })($.fn.val);
-
-  MaterialSelect.mdbSelectAutoInit();
 });
 /*!
  * pickadate.js v3.6.3, 2019/04/03
@@ -20351,7 +19237,7 @@ jQuery(function ($) {
         module.exports = factory( require('jquery') )
   
     // Browser globals.
-    else window.Picker = factory( jQuery )
+    else this.Picker = factory( jQuery )
   
   }(function( $ ) {
   
@@ -22950,16 +21836,6 @@ $.extend($.fn.pickadate.defaults, {
   }
 });
 
-$('.picker-opener').on('click', function (event) {
-  event.preventDefault();
-  event.stopPropagation();
-
-  const elementOpenData = event.target.dataset.open;
-  const $input = $(`#${elementOpenData}`).pickadate();
-  const picker = $input.pickadate('picker');
-
-  picker.open();
-});
 /*!
  * ClockPicker v0.0.7 (http://weareoutman.github.io/clockpicker/)
  * Copyright 2014 Wang Shenwei.
@@ -23754,64 +22630,14 @@ ClockPicker.prototype.parseInputValue = function(){
 
     // If we do have a list then we do not care about return values
     return this.each(handleClockPickerRequest);
-	};
-	
-	$('.time-picker-opener').on('click', e => {
-		e.stopPropagation();
-		e.preventDefault();
-
-		const openElementData = e.target.dataset.open;
-		const $picker = $(`#${openElementData}`).pickatime('picker');
-		$picker.data('clockpicker').show();
-	});
+    };
 }());
-
-jQuery(($) => {
-
-  $.fn.dateTimePicker = function(delimiter = ', ') {
-
-    const $this = $(this)[0];
-
-    let result = $(`.picker-opener[data-open='${$this.dataset.open}']`);
-    const $timePicker = $(`.timepicker[data-open='${$this.dataset.open}']`);
-    const $datePicker = $(`#${$this.dataset.open}`);
-
-    $datePicker.pickadate({
-      onClose: function () {
-
-        const input = $timePicker.pickatime({
-          afterHide: () => {
-            $timePicker.trigger("change");
-          }
-        });
-        const picker = input.pickatime('picker');
-        picker.data('clockpicker').show();
-      },
-      format: 'yyyy/mm/dd',
-      formatSubmit: 'yyyy/mm/dd',
-    });
-
-    $datePicker.on('change', () => {
-      let timeValue = $timePicker.val();
-      let dateValue = $datePicker.val();
-      result[0].value = `${dateValue}${timeValue !=='' && dateValue !=='' ? delimiter : ''}${timeValue}`;
-    });
-
-    $timePicker.on('change', () => {
-      let timeValue = $timePicker.val();
-      let dateValue = $datePicker.val();
-      result[0].value = `${dateValue}${timeValue !=='' && dateValue !=='' ? delimiter : ''}${timeValue}`;
-    });
-
-  };
-
-});
 
 /*! PhotoSwipe - v4.1.1 - 2015-12-24
  * http://photoswipe.com
  * Copyright (c) 2015 Dmitry Semenov; */
 ! function (a, b) {
-    "function" == typeof define && define.amd ? define(b) : "object" == typeof exports ? module.exports = b() : window.PhotoSwipe = b()
+    "function" == typeof define && define.amd ? define(b) : "object" == typeof exports ? module.exports = b() : a.PhotoSwipe = b()
 }(this, function () {
     "use strict";
     var a = function (a, b, c, d) {
@@ -24890,7 +23716,7 @@ jQuery(($) => {
  * http://photoswipe.com
  * Copyright (c) 2015 Dmitry Semenov; */
 ! function (a, b) {
-    "function" == typeof define && define.amd ? define(b) : "object" == typeof exports ? module.exports = b() : window.PhotoSwipeUI_Default = b()
+    "function" == typeof define && define.amd ? define(b) : "object" == typeof exports ? module.exports = b() : a.PhotoSwipeUI_Default = b()
 }(this, function () {
     "use strict";
     var a = function (a, b) {
@@ -25415,1336 +24241,138 @@ var initPhotoSwipeFromDOM = function (gallerySelector) {
 
 // execute above function
 initPhotoSwipeFromDOM('.mdb-lightbox');
+/* jSticky Plugin
+ * =============
+ * Author: Andrew Henderson (@AndrewHenderson)
+ * Contributor: Mike Street (@mikestreety)
+ * Date: 9/7/2012
+ * Update: 09/20/2016
+ * Website: http://github.com/andrewhenderson/jsticky/
+ * Description: A jQuery plugin that keeps select DOM
+ * element(s) in view while scrolling the page.
+ */
+
+;(function($) {
+
+  $.fn.sticky = function(options) {
+    var defaults = {
+      topSpacing: 0, // No spacing by default
+      zIndex: '', // No default z-index
+      stopper: '.sticky-stopper', // Default stopper class, also accepts number value
+      stickyClass: false // Class applied to element when it's stuck
+    };
+    var settings = $.extend({}, defaults, options); // Accepts custom stopper id or class
+
+    // Checks if custom z-index was defined
+    function checkIndex() {
+      if (typeof settings.zIndex == 'number') {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    var hasIndex = checkIndex(); // True or false
+
+    // Checks if a stopper exists in the DOM or number defined
+    function checkStopper() {
+      if (0 < $(settings.stopper).length || typeof settings.stopper === 'number') {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    var hasStopper = checkStopper(); // True or false
+
+    return this.each(function() {
+
+      var $this = $(this);
+      var thisHeight = $this.outerHeight();
+      var thisWidth = $this.outerWidth();
+      var topSpacing = settings.topSpacing;
+      var zIndex = settings.zIndex;
+      var pushPoint = $this.offset().top - topSpacing; // Point at which the sticky element starts pushing
+      var placeholder = $('<div></div>').width(thisWidth).height(thisHeight).addClass('sticky-placeholder'); // Cache a clone sticky element
+      var stopper = settings.stopper;
+      var $window = $(window);
+
+      function stickyScroll() {
+
+        var windowTop  = $window.scrollTop(); // Check window's scroll position
+        var stopPoint = stopper;
+        var parentWidth = $this.parent().width();
+
+        placeholder.width(parentWidth)
+
+        if ( hasStopper && typeof stopper === 'string' ) {
+          var stopperTop = $(stopper).offset().top;
+          stopPoint  = (stopperTop - thisHeight) - topSpacing;
+        }
+
+        if (pushPoint < windowTop) {
+          // Create a placeholder for sticky element to occupy vertical real estate
+          if(settings.stickyClass)
+            $this.addClass(settings.stickyClass);
+
+          $this.after(placeholder).css({
+            position: 'fixed',
+            top: topSpacing,
+            width: parentWidth
+          });
+
+          if (hasIndex) {
+            $this.css({
+              zIndex: zIndex
+            });
+          }
+
+          if (hasStopper) {
+            if (stopPoint < windowTop) {
+              var diff = (stopPoint - windowTop) + topSpacing;
+              $this.css({
+                top: diff
+              });
+            }
+          }
+        } else {
+          if(settings.stickyClass)
+            $this.removeClass(settings.stickyClass);
+
+          $this.css({
+            position: 'static',
+            top: null,
+            left: null,
+            width: 'auto'
+          });
+
+          placeholder.remove();
+        }
+      }
+
+      if($window.innerHeight() > thisHeight) {
+
+        $window.bind('scroll', stickyScroll);
+        $window.bind('load', stickyScroll);
+        $window.bind('resize', stickyScroll);
+      }
+    });
+  };
+})(jQuery);
 /*!
  * perfect-scrollbar v1.4.0
  * (c) 2018 Hyunje Jun
  * @license MIT
  */
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(window.PerfectScrollbar = factory());
-}(this, (function () { 'use strict';
+!function(t,e){"object"==typeof exports&&"undefined"!=typeof module?module.exports=e():"function"==typeof define&&define.amd?define(e):t.PerfectScrollbar=e()}(this,function(){"use strict";function t(t){return getComputedStyle(t)}function e(t,e){for(var i in e){var r=e[i];"number"==typeof r&&(r+="px"),t.style[i]=r}return t}function i(t){var e=document.createElement("div");return e.className=t,e}function r(t,e){if(!v)throw new Error("No element matching method supported");return v.call(t,e)}function l(t){t.remove?t.remove():t.parentNode&&t.parentNode.removeChild(t)}function n(t,e){return Array.prototype.filter.call(t.children,function(t){return r(t,e)})}function o(t,e){var i=t.element.classList,r=m.state.scrolling(e);i.contains(r)?clearTimeout(Y[e]):i.add(r)}function s(t,e){Y[e]=setTimeout(function(){return t.isAlive&&t.element.classList.remove(m.state.scrolling(e))},t.settings.scrollingThreshold)}function a(t,e){o(t,e),s(t,e)}function c(t){if("function"==typeof window.CustomEvent)return new CustomEvent(t);var e=document.createEvent("CustomEvent");return e.initCustomEvent(t,!1,!1,void 0),e}function h(t,e,i,r,l){var n=i[0],o=i[1],s=i[2],h=i[3],u=i[4],d=i[5];void 0===r&&(r=!0),void 0===l&&(l=!1);var f=t.element;t.reach[h]=null,f[s]<1&&(t.reach[h]="start"),f[s]>t[n]-t[o]-1&&(t.reach[h]="end"),e&&(f.dispatchEvent(c("ps-scroll-"+h)),e<0?f.dispatchEvent(c("ps-scroll-"+u)):e>0&&f.dispatchEvent(c("ps-scroll-"+d)),r&&a(t,h)),t.reach[h]&&(e||l)&&f.dispatchEvent(c("ps-"+h+"-reach-"+t.reach[h]))}function u(t){return parseInt(t,10)||0}function d(t){return r(t,"input,[contenteditable]")||r(t,"select,[contenteditable]")||r(t,"textarea,[contenteditable]")||r(t,"button,[contenteditable]")}function f(e){var i=t(e);return u(i.width)+u(i.paddingLeft)+u(i.paddingRight)+u(i.borderLeftWidth)+u(i.borderRightWidth)}function p(t,e){return t.settings.minScrollbarLength&&(e=Math.max(e,t.settings.minScrollbarLength)),t.settings.maxScrollbarLength&&(e=Math.min(e,t.settings.maxScrollbarLength)),e}function b(t,i){var r={width:i.railXWidth},l=Math.floor(t.scrollTop);i.isRtl?r.left=i.negativeScrollAdjustment+t.scrollLeft+i.containerWidth-i.contentWidth:r.left=t.scrollLeft,i.isScrollbarXUsingBottom?r.bottom=i.scrollbarXBottom-l:r.top=i.scrollbarXTop+l,e(i.scrollbarXRail,r);var n={top:l,height:i.railYHeight};i.isScrollbarYUsingRight?i.isRtl?n.right=i.contentWidth-(i.negativeScrollAdjustment+t.scrollLeft)-i.scrollbarYRight-i.scrollbarYOuterWidth:n.right=i.scrollbarYRight-t.scrollLeft:i.isRtl?n.left=i.negativeScrollAdjustment+t.scrollLeft+2*i.containerWidth-i.contentWidth-i.scrollbarYLeft-i.scrollbarYOuterWidth:n.left=i.scrollbarYLeft+t.scrollLeft,e(i.scrollbarYRail,n),e(i.scrollbarX,{left:i.scrollbarXLeft,width:i.scrollbarXWidth-i.railBorderXWidth}),e(i.scrollbarY,{top:i.scrollbarYTop,height:i.scrollbarYHeight-i.railBorderYWidth})}function g(t,e){function i(e){b[d]=g+Y*(e[a]-v),o(t,f),R(t),e.stopPropagation(),e.preventDefault()}function r(){s(t,f),t[p].classList.remove(m.state.clicking),t.event.unbind(t.ownerDocument,"mousemove",i)}var l=e[0],n=e[1],a=e[2],c=e[3],h=e[4],u=e[5],d=e[6],f=e[7],p=e[8],b=t.element,g=null,v=null,Y=null;t.event.bind(t[h],"mousedown",function(e){g=b[d],v=e[a],Y=(t[n]-t[l])/(t[c]-t[u]),t.event.bind(t.ownerDocument,"mousemove",i),t.event.once(t.ownerDocument,"mouseup",r),t[p].classList.add(m.state.clicking),e.stopPropagation(),e.preventDefault()})}var v="undefined"!=typeof Element&&(Element.prototype.matches||Element.prototype.webkitMatchesSelector||Element.prototype.mozMatchesSelector||Element.prototype.msMatchesSelector),m={main:"ps",element:{thumb:function(t){return"ps__thumb-"+t},rail:function(t){return"ps__rail-"+t},consuming:"ps__child--consume"},state:{focus:"ps--focus",clicking:"ps--clicking",active:function(t){return"ps--active-"+t},scrolling:function(t){return"ps--scrolling-"+t}}},Y={x:null,y:null},X=function(t){this.element=t,this.handlers={}},w={isEmpty:{configurable:!0}};X.prototype.bind=function(t,e){void 0===this.handlers[t]&&(this.handlers[t]=[]),this.handlers[t].push(e),this.element.addEventListener(t,e,!1)},X.prototype.unbind=function(t,e){var i=this;this.handlers[t]=this.handlers[t].filter(function(r){return!(!e||r===e)||(i.element.removeEventListener(t,r,!1),!1)})},X.prototype.unbindAll=function(){var t=this;for(var e in t.handlers)t.unbind(e)},w.isEmpty.get=function(){var t=this;return Object.keys(this.handlers).every(function(e){return 0===t.handlers[e].length})},Object.defineProperties(X.prototype,w);var y=function(){this.eventElements=[]};y.prototype.eventElement=function(t){var e=this.eventElements.filter(function(e){return e.element===t})[0];return e||(e=new X(t),this.eventElements.push(e)),e},y.prototype.bind=function(t,e,i){this.eventElement(t).bind(e,i)},y.prototype.unbind=function(t,e,i){var r=this.eventElement(t);r.unbind(e,i),r.isEmpty&&this.eventElements.splice(this.eventElements.indexOf(r),1)},y.prototype.unbindAll=function(){this.eventElements.forEach(function(t){return t.unbindAll()}),this.eventElements=[]},y.prototype.once=function(t,e,i){var r=this.eventElement(t),l=function(t){r.unbind(e,l),i(t)};r.bind(e,l)};var W=function(t,e,i,r,l){void 0===r&&(r=!0),void 0===l&&(l=!1);var n;if("top"===e)n=["contentHeight","containerHeight","scrollTop","y","up","down"];else{if("left"!==e)throw new Error("A proper axis should be provided");n=["contentWidth","containerWidth","scrollLeft","x","left","right"]}h(t,i,n,r,l)},L={isWebKit:"undefined"!=typeof document&&"WebkitAppearance"in document.documentElement.style,supportsTouch:"undefined"!=typeof window&&("ontouchstart"in window||window.DocumentTouch&&document instanceof window.DocumentTouch),supportsIePointer:"undefined"!=typeof navigator&&navigator.msMaxTouchPoints,isChrome:"undefined"!=typeof navigator&&/Chrome/i.test(navigator&&navigator.userAgent)},R=function(t){var e=t.element,i=Math.floor(e.scrollTop);t.containerWidth=e.clientWidth,t.containerHeight=e.clientHeight,t.contentWidth=e.scrollWidth,t.contentHeight=e.scrollHeight,e.contains(t.scrollbarXRail)||(n(e,m.element.rail("x")).forEach(function(t){return l(t)}),e.appendChild(t.scrollbarXRail)),e.contains(t.scrollbarYRail)||(n(e,m.element.rail("y")).forEach(function(t){return l(t)}),e.appendChild(t.scrollbarYRail)),!t.settings.suppressScrollX&&t.containerWidth+t.settings.scrollXMarginOffset<t.contentWidth?(t.scrollbarXActive=!0,t.railXWidth=t.containerWidth-t.railXMarginWidth,t.railXRatio=t.containerWidth/t.railXWidth,t.scrollbarXWidth=p(t,u(t.railXWidth*t.containerWidth/t.contentWidth)),t.scrollbarXLeft=u((t.negativeScrollAdjustment+e.scrollLeft)*(t.railXWidth-t.scrollbarXWidth)/(t.contentWidth-t.containerWidth))):t.scrollbarXActive=!1,!t.settings.suppressScrollY&&t.containerHeight+t.settings.scrollYMarginOffset<t.contentHeight?(t.scrollbarYActive=!0,t.railYHeight=t.containerHeight-t.railYMarginHeight,t.railYRatio=t.containerHeight/t.railYHeight,t.scrollbarYHeight=p(t,u(t.railYHeight*t.containerHeight/t.contentHeight)),t.scrollbarYTop=u(i*(t.railYHeight-t.scrollbarYHeight)/(t.contentHeight-t.containerHeight))):t.scrollbarYActive=!1,t.scrollbarXLeft>=t.railXWidth-t.scrollbarXWidth&&(t.scrollbarXLeft=t.railXWidth-t.scrollbarXWidth),t.scrollbarYTop>=t.railYHeight-t.scrollbarYHeight&&(t.scrollbarYTop=t.railYHeight-t.scrollbarYHeight),b(e,t),t.scrollbarXActive?e.classList.add(m.state.active("x")):(e.classList.remove(m.state.active("x")),t.scrollbarXWidth=0,t.scrollbarXLeft=0,e.scrollLeft=0),t.scrollbarYActive?e.classList.add(m.state.active("y")):(e.classList.remove(m.state.active("y")),t.scrollbarYHeight=0,t.scrollbarYTop=0,e.scrollTop=0)},T={"click-rail":function(t){t.event.bind(t.scrollbarY,"mousedown",function(t){return t.stopPropagation()}),t.event.bind(t.scrollbarYRail,"mousedown",function(e){var i=e.pageY-window.pageYOffset-t.scrollbarYRail.getBoundingClientRect().top>t.scrollbarYTop?1:-1;t.element.scrollTop+=i*t.containerHeight,R(t),e.stopPropagation()}),t.event.bind(t.scrollbarX,"mousedown",function(t){return t.stopPropagation()}),t.event.bind(t.scrollbarXRail,"mousedown",function(e){var i=e.pageX-window.pageXOffset-t.scrollbarXRail.getBoundingClientRect().left>t.scrollbarXLeft?1:-1;t.element.scrollLeft+=i*t.containerWidth,R(t),e.stopPropagation()})},"drag-thumb":function(t){g(t,["containerWidth","contentWidth","pageX","railXWidth","scrollbarX","scrollbarXWidth","scrollLeft","x","scrollbarXRail"]),g(t,["containerHeight","contentHeight","pageY","railYHeight","scrollbarY","scrollbarYHeight","scrollTop","y","scrollbarYRail"])},keyboard:function(t){function e(e,r){var l=Math.floor(i.scrollTop);if(0===e){if(!t.scrollbarYActive)return!1;if(0===l&&r>0||l>=t.contentHeight-t.containerHeight&&r<0)return!t.settings.wheelPropagation}var n=i.scrollLeft;if(0===r){if(!t.scrollbarXActive)return!1;if(0===n&&e<0||n>=t.contentWidth-t.containerWidth&&e>0)return!t.settings.wheelPropagation}return!0}var i=t.element,l=function(){return r(i,":hover")},n=function(){return r(t.scrollbarX,":focus")||r(t.scrollbarY,":focus")};t.event.bind(t.ownerDocument,"keydown",function(r){if(!(r.isDefaultPrevented&&r.isDefaultPrevented()||r.defaultPrevented)&&(l()||n())){var o=document.activeElement?document.activeElement:t.ownerDocument.activeElement;if(o){if("IFRAME"===o.tagName)o=o.contentDocument.activeElement;else for(;o.shadowRoot;)o=o.shadowRoot.activeElement;if(d(o))return}var s=0,a=0;switch(r.which){case 37:s=r.metaKey?-t.contentWidth:r.altKey?-t.containerWidth:-30;break;case 38:a=r.metaKey?t.contentHeight:r.altKey?t.containerHeight:30;break;case 39:s=r.metaKey?t.contentWidth:r.altKey?t.containerWidth:30;break;case 40:a=r.metaKey?-t.contentHeight:r.altKey?-t.containerHeight:-30;break;case 32:a=r.shiftKey?t.containerHeight:-t.containerHeight;break;case 33:a=t.containerHeight;break;case 34:a=-t.containerHeight;break;case 36:a=t.contentHeight;break;case 35:a=-t.contentHeight;break;default:return}t.settings.suppressScrollX&&0!==s||t.settings.suppressScrollY&&0!==a||(i.scrollTop-=a,i.scrollLeft+=s,R(t),e(s,a)&&r.preventDefault())}})},wheel:function(e){function i(t,i){var r=Math.floor(o.scrollTop),l=0===o.scrollTop,n=r+o.offsetHeight===o.scrollHeight,s=0===o.scrollLeft,a=o.scrollLeft+o.offsetWidth===o.scrollWidth;return!(Math.abs(i)>Math.abs(t)?l||n:s||a)||!e.settings.wheelPropagation}function r(t){var e=t.deltaX,i=-1*t.deltaY;return void 0!==e&&void 0!==i||(e=-1*t.wheelDeltaX/6,i=t.wheelDeltaY/6),t.deltaMode&&1===t.deltaMode&&(e*=10,i*=10),e!==e&&i!==i&&(e=0,i=t.wheelDelta),t.shiftKey?[-i,-e]:[e,i]}function l(e,i,r){if(!L.isWebKit&&o.querySelector("select:focus"))return!0;if(!o.contains(e))return!1;for(var l=e;l&&l!==o;){if(l.classList.contains(m.element.consuming))return!0;var n=t(l);if([n.overflow,n.overflowX,n.overflowY].join("").match(/(scroll|auto)/)){var s=l.scrollHeight-l.clientHeight;if(s>0&&!(0===l.scrollTop&&r>0||l.scrollTop===s&&r<0))return!0;var a=l.scrollWidth-l.clientWidth;if(a>0&&!(0===l.scrollLeft&&i<0||l.scrollLeft===a&&i>0))return!0}l=l.parentNode}return!1}function n(t){var n=r(t),s=n[0],a=n[1];if(!l(t.target,s,a)){var c=!1;e.settings.useBothWheelAxes?e.scrollbarYActive&&!e.scrollbarXActive?(a?o.scrollTop-=a*e.settings.wheelSpeed:o.scrollTop+=s*e.settings.wheelSpeed,c=!0):e.scrollbarXActive&&!e.scrollbarYActive&&(s?o.scrollLeft+=s*e.settings.wheelSpeed:o.scrollLeft-=a*e.settings.wheelSpeed,c=!0):(o.scrollTop-=a*e.settings.wheelSpeed,o.scrollLeft+=s*e.settings.wheelSpeed),R(e),(c=c||i(s,a))&&!t.ctrlKey&&(t.stopPropagation(),t.preventDefault())}}var o=e.element;void 0!==window.onwheel?e.event.bind(o,"wheel",n):void 0!==window.onmousewheel&&e.event.bind(o,"mousewheel",n)},touch:function(e){function i(t,i){var r=Math.floor(h.scrollTop),l=h.scrollLeft,n=Math.abs(t),o=Math.abs(i);if(o>n){if(i<0&&r===e.contentHeight-e.containerHeight||i>0&&0===r)return 0===window.scrollY&&i>0&&L.isChrome}else if(n>o&&(t<0&&l===e.contentWidth-e.containerWidth||t>0&&0===l))return!0;return!0}function r(t,i){h.scrollTop-=i,h.scrollLeft-=t,R(e)}function l(t){return t.targetTouches?t.targetTouches[0]:t}function n(t){return!(t.pointerType&&"pen"===t.pointerType&&0===t.buttons||(!t.targetTouches||1!==t.targetTouches.length)&&(!t.pointerType||"mouse"===t.pointerType||t.pointerType===t.MSPOINTER_TYPE_MOUSE))}function o(t){if(n(t)){var e=l(t);u.pageX=e.pageX,u.pageY=e.pageY,d=(new Date).getTime(),null!==p&&clearInterval(p)}}function s(e,i,r){if(!h.contains(e))return!1;for(var l=e;l&&l!==h;){if(l.classList.contains(m.element.consuming))return!0;var n=t(l);if([n.overflow,n.overflowX,n.overflowY].join("").match(/(scroll|auto)/)){var o=l.scrollHeight-l.clientHeight;if(o>0&&!(0===l.scrollTop&&r>0||l.scrollTop===o&&r<0))return!0;var s=l.scrollLeft-l.clientWidth;if(s>0&&!(0===l.scrollLeft&&i<0||l.scrollLeft===s&&i>0))return!0}l=l.parentNode}return!1}function a(t){if(n(t)){var e=l(t),o={pageX:e.pageX,pageY:e.pageY},a=o.pageX-u.pageX,c=o.pageY-u.pageY;if(s(t.target,a,c))return;r(a,c),u=o;var h=(new Date).getTime(),p=h-d;p>0&&(f.x=a/p,f.y=c/p,d=h),i(a,c)&&t.preventDefault()}}function c(){e.settings.swipeEasing&&(clearInterval(p),p=setInterval(function(){e.isInitialized?clearInterval(p):f.x||f.y?Math.abs(f.x)<.01&&Math.abs(f.y)<.01?clearInterval(p):(r(30*f.x,30*f.y),f.x*=.8,f.y*=.8):clearInterval(p)},10))}if(L.supportsTouch||L.supportsIePointer){var h=e.element,u={},d=0,f={},p=null;L.supportsTouch?(e.event.bind(h,"touchstart",o),e.event.bind(h,"touchmove",a),e.event.bind(h,"touchend",c)):L.supportsIePointer&&(window.PointerEvent?(e.event.bind(h,"pointerdown",o),e.event.bind(h,"pointermove",a),e.event.bind(h,"pointerup",c)):window.MSPointerEvent&&(e.event.bind(h,"MSPointerDown",o),e.event.bind(h,"MSPointerMove",a),e.event.bind(h,"MSPointerUp",c)))}}},H=function(r,l){var n=this;if(void 0===l&&(l={}),"string"==typeof r&&(r=document.querySelector(r)),!r||!r.nodeName)throw new Error("no element is specified to initialize PerfectScrollbar");this.element=r,r.classList.add(m.main),this.settings={handlers:["click-rail","drag-thumb","keyboard","wheel","touch"],maxScrollbarLength:null,minScrollbarLength:null,scrollingThreshold:1e3,scrollXMarginOffset:0,scrollYMarginOffset:0,suppressScrollX:!1,suppressScrollY:!1,swipeEasing:!0,useBothWheelAxes:!1,wheelPropagation:!0,wheelSpeed:1};for(var o in l)n.settings[o]=l[o];this.containerWidth=null,this.containerHeight=null,this.contentWidth=null,this.contentHeight=null;var s=function(){return r.classList.add(m.state.focus)},a=function(){return r.classList.remove(m.state.focus)};this.isRtl="rtl"===t(r).direction,this.isNegativeScroll=function(){var t=r.scrollLeft,e=null;return r.scrollLeft=-1,e=r.scrollLeft<0,r.scrollLeft=t,e}(),this.negativeScrollAdjustment=this.isNegativeScroll?r.scrollWidth-r.clientWidth:0,this.event=new y,this.ownerDocument=r.ownerDocument||document,this.scrollbarXRail=i(m.element.rail("x")),r.appendChild(this.scrollbarXRail),this.scrollbarX=i(m.element.thumb("x")),this.scrollbarXRail.appendChild(this.scrollbarX),this.scrollbarX.setAttribute("tabindex",0),this.event.bind(this.scrollbarX,"focus",s),this.event.bind(this.scrollbarX,"blur",a),this.scrollbarXActive=null,this.scrollbarXWidth=null,this.scrollbarXLeft=null;var c=t(this.scrollbarXRail);this.scrollbarXBottom=parseInt(c.bottom,10),isNaN(this.scrollbarXBottom)?(this.isScrollbarXUsingBottom=!1,this.scrollbarXTop=u(c.top)):this.isScrollbarXUsingBottom=!0,this.railBorderXWidth=u(c.borderLeftWidth)+u(c.borderRightWidth),e(this.scrollbarXRail,{display:"block"}),this.railXMarginWidth=u(c.marginLeft)+u(c.marginRight),e(this.scrollbarXRail,{display:""}),this.railXWidth=null,this.railXRatio=null,this.scrollbarYRail=i(m.element.rail("y")),r.appendChild(this.scrollbarYRail),this.scrollbarY=i(m.element.thumb("y")),this.scrollbarYRail.appendChild(this.scrollbarY),this.scrollbarY.setAttribute("tabindex",0),this.event.bind(this.scrollbarY,"focus",s),this.event.bind(this.scrollbarY,"blur",a),this.scrollbarYActive=null,this.scrollbarYHeight=null,this.scrollbarYTop=null;var h=t(this.scrollbarYRail);this.scrollbarYRight=parseInt(h.right,10),isNaN(this.scrollbarYRight)?(this.isScrollbarYUsingRight=!1,this.scrollbarYLeft=u(h.left)):this.isScrollbarYUsingRight=!0,this.scrollbarYOuterWidth=this.isRtl?f(this.scrollbarY):null,this.railBorderYWidth=u(h.borderTopWidth)+u(h.borderBottomWidth),e(this.scrollbarYRail,{display:"block"}),this.railYMarginHeight=u(h.marginTop)+u(h.marginBottom),e(this.scrollbarYRail,{display:""}),this.railYHeight=null,this.railYRatio=null,this.reach={x:r.scrollLeft<=0?"start":r.scrollLeft>=this.contentWidth-this.containerWidth?"end":null,y:r.scrollTop<=0?"start":r.scrollTop>=this.contentHeight-this.containerHeight?"end":null},this.isAlive=!0,this.settings.handlers.forEach(function(t){return T[t](n)}),this.lastScrollTop=Math.floor(r.scrollTop),this.lastScrollLeft=r.scrollLeft,this.event.bind(this.element,"scroll",function(t){return n.onScroll(t)}),R(this)};return H.prototype.update=function(){this.isAlive&&(this.negativeScrollAdjustment=this.isNegativeScroll?this.element.scrollWidth-this.element.clientWidth:0,e(this.scrollbarXRail,{display:"block"}),e(this.scrollbarYRail,{display:"block"}),this.railXMarginWidth=u(t(this.scrollbarXRail).marginLeft)+u(t(this.scrollbarXRail).marginRight),this.railYMarginHeight=u(t(this.scrollbarYRail).marginTop)+u(t(this.scrollbarYRail).marginBottom),e(this.scrollbarXRail,{display:"none"}),e(this.scrollbarYRail,{display:"none"}),R(this),W(this,"top",0,!1,!0),W(this,"left",0,!1,!0),e(this.scrollbarXRail,{display:""}),e(this.scrollbarYRail,{display:""}))},H.prototype.onScroll=function(t){this.isAlive&&(R(this),W(this,"top",this.element.scrollTop-this.lastScrollTop),W(this,"left",this.element.scrollLeft-this.lastScrollLeft),this.lastScrollTop=Math.floor(this.element.scrollTop),this.lastScrollLeft=this.element.scrollLeft)},H.prototype.destroy=function(){this.isAlive&&(this.event.unbindAll(),l(this.scrollbarX),l(this.scrollbarY),l(this.scrollbarXRail),l(this.scrollbarYRail),this.removePsClasses(),this.element=null,this.scrollbarX=null,this.scrollbarY=null,this.scrollbarXRail=null,this.scrollbarYRail=null,this.isAlive=!1)},H.prototype.removePsClasses=function(){this.element.className=this.element.className.split(" ").filter(function(t){return!t.match(/^ps([-_].+|)$/)}).join(" ")},H});
+"use strict";
 
-function get(element) {
-  return getComputedStyle(element);
-}
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function set(element, obj) {
-  for (var key in obj) {
-    var val = obj[key];
-    if (typeof val === 'number') {
-      val = val + "px";
-    }
-    element.style[key] = val;
-  }
-  return element;
-}
-
-function div(className) {
-  var div = document.createElement('div');
-  div.className = className;
-  return div;
-}
-
-var elMatches =
-  typeof Element !== 'undefined' &&
-  (Element.prototype.matches ||
-    Element.prototype.webkitMatchesSelector ||
-    Element.prototype.mozMatchesSelector ||
-    Element.prototype.msMatchesSelector);
-
-function matches(element, query) {
-  if (!elMatches) {
-    throw new Error('No element matching method supported');
-  }
-
-  return elMatches.call(element, query);
-}
-
-function remove(element) {
-  if (element.remove) {
-    element.remove();
-  } else {
-    if (element.parentNode) {
-      element.parentNode.removeChild(element);
-    }
-  }
-}
-
-function queryChildren(element, selector) {
-  return Array.prototype.filter.call(element.children, function (child) { return matches(child, selector); }
-  );
-}
-
-var cls = {
-  main: 'ps',
-  element: {
-    thumb: function (x) { return ("ps__thumb-" + x); },
-    rail: function (x) { return ("ps__rail-" + x); },
-    consuming: 'ps__child--consume',
-  },
-  state: {
-    focus: 'ps--focus',
-    clicking: 'ps--clicking',
-    active: function (x) { return ("ps--active-" + x); },
-    scrolling: function (x) { return ("ps--scrolling-" + x); },
-  },
-};
-
-/*
- * Helper methods
- */
-var scrollingClassTimeout = { x: null, y: null };
-
-function addScrollingClass(i, x) {
-  var classList = i.element.classList;
-  var className = cls.state.scrolling(x);
-
-  if (classList.contains(className)) {
-    clearTimeout(scrollingClassTimeout[x]);
-  } else {
-    classList.add(className);
-  }
-}
-
-function removeScrollingClass(i, x) {
-  scrollingClassTimeout[x] = setTimeout(
-    function () { return i.isAlive && i.element.classList.remove(cls.state.scrolling(x)); },
-    i.settings.scrollingThreshold
-  );
-}
-
-function setScrollingClassInstantly(i, x) {
-  addScrollingClass(i, x);
-  removeScrollingClass(i, x);
-}
-
-var EventElement = function EventElement(element) {
-  this.element = element;
-  this.handlers = {};
-};
-
-var prototypeAccessors = { isEmpty: { configurable: true } };
-
-EventElement.prototype.bind = function bind (eventName, handler) {
-  if (typeof this.handlers[eventName] === 'undefined') {
-    this.handlers[eventName] = [];
-  }
-  this.handlers[eventName].push(handler);
-  this.element.addEventListener(eventName, handler, false);
-};
-
-EventElement.prototype.unbind = function unbind (eventName, target) {
-    var this$1 = this;
-
-  this.handlers[eventName] = this.handlers[eventName].filter(function (handler) {
-    if (target && handler !== target) {
-      return true;
-    }
-    this$1.element.removeEventListener(eventName, handler, false);
-    return false;
-  });
-};
-
-EventElement.prototype.unbindAll = function unbindAll () {
-    var this$1 = this;
-
-  for (var name in this$1.handlers) {
-    this$1.unbind(name);
-  }
-};
-
-prototypeAccessors.isEmpty.get = function () {
-    var this$1 = this;
-
-  return Object.keys(this.handlers).every(
-    function (key) { return this$1.handlers[key].length === 0; }
-  );
-};
-
-Object.defineProperties( EventElement.prototype, prototypeAccessors );
-
-var EventManager = function EventManager() {
-  this.eventElements = [];
-};
-
-EventManager.prototype.eventElement = function eventElement (element) {
-  var ee = this.eventElements.filter(function (ee) { return ee.element === element; })[0];
-  if (!ee) {
-    ee = new EventElement(element);
-    this.eventElements.push(ee);
-  }
-  return ee;
-};
-
-EventManager.prototype.bind = function bind (element, eventName, handler) {
-  this.eventElement(element).bind(eventName, handler);
-};
-
-EventManager.prototype.unbind = function unbind (element, eventName, handler) {
-  var ee = this.eventElement(element);
-  ee.unbind(eventName, handler);
-
-  if (ee.isEmpty) {
-    // remove
-    this.eventElements.splice(this.eventElements.indexOf(ee), 1);
-  }
-};
-
-EventManager.prototype.unbindAll = function unbindAll () {
-  this.eventElements.forEach(function (e) { return e.unbindAll(); });
-  this.eventElements = [];
-};
-
-EventManager.prototype.once = function once (element, eventName, handler) {
-  var ee = this.eventElement(element);
-  var onceHandler = function (evt) {
-    ee.unbind(eventName, onceHandler);
-    handler(evt);
-  };
-  ee.bind(eventName, onceHandler);
-};
-
-function createEvent(name) {
-  if (typeof window.CustomEvent === 'function') {
-    return new CustomEvent(name);
-  } else {
-    var evt = document.createEvent('CustomEvent');
-    evt.initCustomEvent(name, false, false, undefined);
-    return evt;
-  }
-}
-
-var processScrollDiff = function(
-  i,
-  axis,
-  diff,
-  useScrollingClass,
-  forceFireReachEvent
-) {
-  if ( useScrollingClass === void 0 ) useScrollingClass = true;
-  if ( forceFireReachEvent === void 0 ) forceFireReachEvent = false;
-
-  var fields;
-  if (axis === 'top') {
-    fields = [
-      'contentHeight',
-      'containerHeight',
-      'scrollTop',
-      'y',
-      'up',
-      'down' ];
-  } else if (axis === 'left') {
-    fields = [
-      'contentWidth',
-      'containerWidth',
-      'scrollLeft',
-      'x',
-      'left',
-      'right' ];
-  } else {
-    throw new Error('A proper axis should be provided');
-  }
-
-  processScrollDiff$1(i, diff, fields, useScrollingClass, forceFireReachEvent);
-};
-
-function processScrollDiff$1(
-  i,
-  diff,
-  ref,
-  useScrollingClass,
-  forceFireReachEvent
-) {
-  var contentHeight = ref[0];
-  var containerHeight = ref[1];
-  var scrollTop = ref[2];
-  var y = ref[3];
-  var up = ref[4];
-  var down = ref[5];
-  if ( useScrollingClass === void 0 ) useScrollingClass = true;
-  if ( forceFireReachEvent === void 0 ) forceFireReachEvent = false;
-
-  var element = i.element;
-
-  // reset reach
-  i.reach[y] = null;
-
-  // 1 for subpixel rounding
-  if (element[scrollTop] < 1) {
-    i.reach[y] = 'start';
-  }
-
-  // 1 for subpixel rounding
-  if (element[scrollTop] > i[contentHeight] - i[containerHeight] - 1) {
-    i.reach[y] = 'end';
-  }
-
-  if (diff) {
-    element.dispatchEvent(createEvent(("ps-scroll-" + y)));
-
-    if (diff < 0) {
-      element.dispatchEvent(createEvent(("ps-scroll-" + up)));
-    } else if (diff > 0) {
-      element.dispatchEvent(createEvent(("ps-scroll-" + down)));
-    }
-
-    if (useScrollingClass) {
-      setScrollingClassInstantly(i, y);
-    }
-  }
-
-  if (i.reach[y] && (diff || forceFireReachEvent)) {
-    element.dispatchEvent(createEvent(("ps-" + y + "-reach-" + (i.reach[y]))));
-  }
-}
-
-function toInt(x) {
-  return parseInt(x, 10) || 0;
-}
-
-function isEditable(el) {
-  return (
-    matches(el, 'input,[contenteditable]') ||
-    matches(el, 'select,[contenteditable]') ||
-    matches(el, 'textarea,[contenteditable]') ||
-    matches(el, 'button,[contenteditable]')
-  );
-}
-
-function outerWidth(element) {
-  var styles = get(element);
-  return (
-    toInt(styles.width) +
-    toInt(styles.paddingLeft) +
-    toInt(styles.paddingRight) +
-    toInt(styles.borderLeftWidth) +
-    toInt(styles.borderRightWidth)
-  );
-}
-
-var env = {
-  isWebKit:
-    typeof document !== 'undefined' &&
-    'WebkitAppearance' in document.documentElement.style,
-  supportsTouch:
-    typeof window !== 'undefined' &&
-    ('ontouchstart' in window ||
-      (window.DocumentTouch && document instanceof window.DocumentTouch)),
-  supportsIePointer:
-    typeof navigator !== 'undefined' && navigator.msMaxTouchPoints,
-  isChrome:
-    typeof navigator !== 'undefined' &&
-    /Chrome/i.test(navigator && navigator.userAgent),
-};
-
-var updateGeometry = function(i) {
-  var element = i.element;
-  var roundedScrollTop = Math.floor(element.scrollTop);
-  var rect = element.getBoundingClientRect();
-
-  i.containerWidth = Math.ceil(rect.width);
-  i.containerHeight = Math.ceil(rect.height);
-  i.contentWidth = element.scrollWidth;
-  i.contentHeight = element.scrollHeight;
-
-  if (!element.contains(i.scrollbarXRail)) {
-    // clean up and append
-    queryChildren(element, cls.element.rail('x')).forEach(function (el) { return remove(el); }
-    );
-    element.appendChild(i.scrollbarXRail);
-  }
-  if (!element.contains(i.scrollbarYRail)) {
-    // clean up and append
-    queryChildren(element, cls.element.rail('y')).forEach(function (el) { return remove(el); }
-    );
-    element.appendChild(i.scrollbarYRail);
-  }
-
-  if (
-    !i.settings.suppressScrollX &&
-    i.containerWidth + i.settings.scrollXMarginOffset < i.contentWidth
-  ) {
-    i.scrollbarXActive = true;
-    i.railXWidth = i.containerWidth - i.railXMarginWidth;
-    i.railXRatio = i.containerWidth / i.railXWidth;
-    i.scrollbarXWidth = getThumbSize(
-      i,
-      toInt(i.railXWidth * i.containerWidth / i.contentWidth)
-    );
-    i.scrollbarXLeft = toInt(
-      (i.negativeScrollAdjustment + element.scrollLeft) *
-        (i.railXWidth - i.scrollbarXWidth) /
-        (i.contentWidth - i.containerWidth)
-    );
-  } else {
-    i.scrollbarXActive = false;
-  }
-
-  if (
-    !i.settings.suppressScrollY &&
-    i.containerHeight + i.settings.scrollYMarginOffset < i.contentHeight
-  ) {
-    i.scrollbarYActive = true;
-    i.railYHeight = i.containerHeight - i.railYMarginHeight;
-    i.railYRatio = i.containerHeight / i.railYHeight;
-    i.scrollbarYHeight = getThumbSize(
-      i,
-      toInt(i.railYHeight * i.containerHeight / i.contentHeight)
-    );
-    i.scrollbarYTop = toInt(
-      roundedScrollTop *
-        (i.railYHeight - i.scrollbarYHeight) /
-        (i.contentHeight - i.containerHeight)
-    );
-  } else {
-    i.scrollbarYActive = false;
-  }
-
-  if (i.scrollbarXLeft >= i.railXWidth - i.scrollbarXWidth) {
-    i.scrollbarXLeft = i.railXWidth - i.scrollbarXWidth;
-  }
-  if (i.scrollbarYTop >= i.railYHeight - i.scrollbarYHeight) {
-    i.scrollbarYTop = i.railYHeight - i.scrollbarYHeight;
-  }
-
-  updateCss(element, i);
-
-  if (i.scrollbarXActive) {
-    element.classList.add(cls.state.active('x'));
-  } else {
-    element.classList.remove(cls.state.active('x'));
-    i.scrollbarXWidth = 0;
-    i.scrollbarXLeft = 0;
-    element.scrollLeft = 0;
-  }
-  if (i.scrollbarYActive) {
-    element.classList.add(cls.state.active('y'));
-  } else {
-    element.classList.remove(cls.state.active('y'));
-    i.scrollbarYHeight = 0;
-    i.scrollbarYTop = 0;
-    element.scrollTop = 0;
-  }
-};
-
-function getThumbSize(i, thumbSize) {
-  if (i.settings.minScrollbarLength) {
-    thumbSize = Math.max(thumbSize, i.settings.minScrollbarLength);
-  }
-  if (i.settings.maxScrollbarLength) {
-    thumbSize = Math.min(thumbSize, i.settings.maxScrollbarLength);
-  }
-  return thumbSize;
-}
-
-function updateCss(element, i) {
-  var xRailOffset = { width: i.railXWidth };
-  var roundedScrollTop = Math.floor(element.scrollTop);
-
-  if (i.isRtl) {
-    xRailOffset.left =
-      i.negativeScrollAdjustment +
-      element.scrollLeft +
-      i.containerWidth -
-      i.contentWidth;
-  } else {
-    xRailOffset.left = element.scrollLeft;
-  }
-  if (i.isScrollbarXUsingBottom) {
-    xRailOffset.bottom = i.scrollbarXBottom - roundedScrollTop;
-  } else {
-    xRailOffset.top = i.scrollbarXTop + roundedScrollTop;
-  }
-  set(i.scrollbarXRail, xRailOffset);
-
-  var yRailOffset = { top: roundedScrollTop, height: i.railYHeight };
-  if (i.isScrollbarYUsingRight) {
-    if (i.isRtl) {
-      yRailOffset.right =
-        i.contentWidth -
-        (i.negativeScrollAdjustment + element.scrollLeft) -
-        i.scrollbarYRight -
-        i.scrollbarYOuterWidth;
-    } else {
-      yRailOffset.right = i.scrollbarYRight - element.scrollLeft;
-    }
-  } else {
-    if (i.isRtl) {
-      yRailOffset.left =
-        i.negativeScrollAdjustment +
-        element.scrollLeft +
-        i.containerWidth * 2 -
-        i.contentWidth -
-        i.scrollbarYLeft -
-        i.scrollbarYOuterWidth;
-    } else {
-      yRailOffset.left = i.scrollbarYLeft + element.scrollLeft;
-    }
-  }
-  set(i.scrollbarYRail, yRailOffset);
-
-  set(i.scrollbarX, {
-    left: i.scrollbarXLeft,
-    width: i.scrollbarXWidth - i.railBorderXWidth,
-  });
-  set(i.scrollbarY, {
-    top: i.scrollbarYTop,
-    height: i.scrollbarYHeight - i.railBorderYWidth,
-  });
-}
-
-var clickRail = function(i) {
-  i.event.bind(i.scrollbarY, 'mousedown', function (e) { return e.stopPropagation(); });
-  i.event.bind(i.scrollbarYRail, 'mousedown', function (e) {
-    var positionTop =
-      e.pageY -
-      window.pageYOffset -
-      i.scrollbarYRail.getBoundingClientRect().top;
-    var direction = positionTop > i.scrollbarYTop ? 1 : -1;
-
-    i.element.scrollTop += direction * i.containerHeight;
-    updateGeometry(i);
-
-    e.stopPropagation();
-  });
-
-  i.event.bind(i.scrollbarX, 'mousedown', function (e) { return e.stopPropagation(); });
-  i.event.bind(i.scrollbarXRail, 'mousedown', function (e) {
-    var positionLeft =
-      e.pageX -
-      window.pageXOffset -
-      i.scrollbarXRail.getBoundingClientRect().left;
-    var direction = positionLeft > i.scrollbarXLeft ? 1 : -1;
-
-    i.element.scrollLeft += direction * i.containerWidth;
-    updateGeometry(i);
-
-    e.stopPropagation();
-  });
-};
-
-var dragThumb = function(i) {
-  bindMouseScrollHandler(i, [
-    'containerWidth',
-    'contentWidth',
-    'pageX',
-    'railXWidth',
-    'scrollbarX',
-    'scrollbarXWidth',
-    'scrollLeft',
-    'x',
-    'scrollbarXRail' ]);
-  bindMouseScrollHandler(i, [
-    'containerHeight',
-    'contentHeight',
-    'pageY',
-    'railYHeight',
-    'scrollbarY',
-    'scrollbarYHeight',
-    'scrollTop',
-    'y',
-    'scrollbarYRail' ]);
-};
-
-function bindMouseScrollHandler(
-  i,
-  ref
-) {
-  var containerHeight = ref[0];
-  var contentHeight = ref[1];
-  var pageY = ref[2];
-  var railYHeight = ref[3];
-  var scrollbarY = ref[4];
-  var scrollbarYHeight = ref[5];
-  var scrollTop = ref[6];
-  var y = ref[7];
-  var scrollbarYRail = ref[8];
-
-  var element = i.element;
-
-  var startingScrollTop = null;
-  var startingMousePageY = null;
-  var scrollBy = null;
-
-  function mouseMoveHandler(e) {
-    element[scrollTop] =
-      startingScrollTop + scrollBy * (e[pageY] - startingMousePageY);
-    addScrollingClass(i, y);
-    updateGeometry(i);
-
-    e.stopPropagation();
-    e.preventDefault();
-  }
-
-  function mouseUpHandler() {
-    removeScrollingClass(i, y);
-    i[scrollbarYRail].classList.remove(cls.state.clicking);
-    i.event.unbind(i.ownerDocument, 'mousemove', mouseMoveHandler);
-  }
-
-  i.event.bind(i[scrollbarY], 'mousedown', function (e) {
-    startingScrollTop = element[scrollTop];
-    startingMousePageY = e[pageY];
-    scrollBy =
-      (i[contentHeight] - i[containerHeight]) /
-      (i[railYHeight] - i[scrollbarYHeight]);
-
-    i.event.bind(i.ownerDocument, 'mousemove', mouseMoveHandler);
-    i.event.once(i.ownerDocument, 'mouseup', mouseUpHandler);
-
-    i[scrollbarYRail].classList.add(cls.state.clicking);
-
-    e.stopPropagation();
-    e.preventDefault();
-  });
-}
-
-var keyboard = function(i) {
-  var element = i.element;
-
-  var elementHovered = function () { return matches(element, ':hover'); };
-  var scrollbarFocused = function () { return matches(i.scrollbarX, ':focus') || matches(i.scrollbarY, ':focus'); };
-
-  function shouldPreventDefault(deltaX, deltaY) {
-    var scrollTop = Math.floor(element.scrollTop);
-    if (deltaX === 0) {
-      if (!i.scrollbarYActive) {
-        return false;
-      }
-      if (
-        (scrollTop === 0 && deltaY > 0) ||
-        (scrollTop >= i.contentHeight - i.containerHeight && deltaY < 0)
-      ) {
-        return !i.settings.wheelPropagation;
-      }
-    }
-
-    var scrollLeft = element.scrollLeft;
-    if (deltaY === 0) {
-      if (!i.scrollbarXActive) {
-        return false;
-      }
-      if (
-        (scrollLeft === 0 && deltaX < 0) ||
-        (scrollLeft >= i.contentWidth - i.containerWidth && deltaX > 0)
-      ) {
-        return !i.settings.wheelPropagation;
-      }
-    }
-    return true;
-  }
-
-  i.event.bind(i.ownerDocument, 'keydown', function (e) {
-    if (
-      (e.isDefaultPrevented && e.isDefaultPrevented()) ||
-      e.defaultPrevented
-    ) {
-      return;
-    }
-
-    if (!elementHovered() && !scrollbarFocused()) {
-      return;
-    }
-
-    var activeElement = document.activeElement
-      ? document.activeElement
-      : i.ownerDocument.activeElement;
-    if (activeElement) {
-      if (activeElement.tagName === 'IFRAME') {
-        activeElement = activeElement.contentDocument.activeElement;
-      } else {
-        // go deeper if element is a webcomponent
-        while (activeElement.shadowRoot) {
-          activeElement = activeElement.shadowRoot.activeElement;
-        }
-      }
-      if (isEditable(activeElement)) {
-        return;
-      }
-    }
-
-    var deltaX = 0;
-    var deltaY = 0;
-
-    switch (e.which) {
-      case 37: // left
-        if (e.metaKey) {
-          deltaX = -i.contentWidth;
-        } else if (e.altKey) {
-          deltaX = -i.containerWidth;
-        } else {
-          deltaX = -30;
-        }
-        break;
-      case 38: // up
-        if (e.metaKey) {
-          deltaY = i.contentHeight;
-        } else if (e.altKey) {
-          deltaY = i.containerHeight;
-        } else {
-          deltaY = 30;
-        }
-        break;
-      case 39: // right
-        if (e.metaKey) {
-          deltaX = i.contentWidth;
-        } else if (e.altKey) {
-          deltaX = i.containerWidth;
-        } else {
-          deltaX = 30;
-        }
-        break;
-      case 40: // down
-        if (e.metaKey) {
-          deltaY = -i.contentHeight;
-        } else if (e.altKey) {
-          deltaY = -i.containerHeight;
-        } else {
-          deltaY = -30;
-        }
-        break;
-      case 32: // space bar
-        if (e.shiftKey) {
-          deltaY = i.containerHeight;
-        } else {
-          deltaY = -i.containerHeight;
-        }
-        break;
-      case 33: // page up
-        deltaY = i.containerHeight;
-        break;
-      case 34: // page down
-        deltaY = -i.containerHeight;
-        break;
-      case 36: // home
-        deltaY = i.contentHeight;
-        break;
-      case 35: // end
-        deltaY = -i.contentHeight;
-        break;
-      default:
-        return;
-    }
-
-    if (i.settings.suppressScrollX && deltaX !== 0) {
-      return;
-    }
-    if (i.settings.suppressScrollY && deltaY !== 0) {
-      return;
-    }
-
-    element.scrollTop -= deltaY;
-    element.scrollLeft += deltaX;
-    updateGeometry(i);
-
-    if (shouldPreventDefault(deltaX, deltaY)) {
-      e.preventDefault();
-    }
-  });
-};
-
-var wheel = function(i) {
-  var element = i.element;
-
-  function shouldPreventDefault(deltaX, deltaY) {
-    var roundedScrollTop = Math.floor(element.scrollTop);
-    var isTop = element.scrollTop === 0;
-    var isBottom =
-      roundedScrollTop + element.offsetHeight === element.scrollHeight;
-    var isLeft = element.scrollLeft === 0;
-    var isRight =
-      element.scrollLeft + element.offsetWidth === element.scrollWidth;
-
-    var hitsBound;
-
-    // pick axis with primary direction
-    if (Math.abs(deltaY) > Math.abs(deltaX)) {
-      hitsBound = isTop || isBottom;
-    } else {
-      hitsBound = isLeft || isRight;
-    }
-
-    return hitsBound ? !i.settings.wheelPropagation : true;
-  }
-
-  function getDeltaFromEvent(e) {
-    var deltaX = e.deltaX;
-    var deltaY = -1 * e.deltaY;
-
-    if (typeof deltaX === 'undefined' || typeof deltaY === 'undefined') {
-      // OS X Safari
-      deltaX = -1 * e.wheelDeltaX / 6;
-      deltaY = e.wheelDeltaY / 6;
-    }
-
-    if (e.deltaMode && e.deltaMode === 1) {
-      // Firefox in deltaMode 1: Line scrolling
-      deltaX *= 10;
-      deltaY *= 10;
-    }
-
-    if (deltaX !== deltaX && deltaY !== deltaY /* NaN checks */) {
-      // IE in some mouse drivers
-      deltaX = 0;
-      deltaY = e.wheelDelta;
-    }
-
-    if (e.shiftKey) {
-      // reverse axis with shift key
-      return [-deltaY, -deltaX];
-    }
-    return [deltaX, deltaY];
-  }
-
-  function shouldBeConsumedByChild(target, deltaX, deltaY) {
-    // FIXME: this is a workaround for <select> issue in FF and IE #571
-    if (!env.isWebKit && element.querySelector('select:focus')) {
-      return true;
-    }
-
-    if (!element.contains(target)) {
-      return false;
-    }
-
-    var cursor = target;
-
-    while (cursor && cursor !== element) {
-      if (cursor.classList.contains(cls.element.consuming)) {
-        return true;
-      }
-
-      var style = get(cursor);
-      var overflow = [style.overflow, style.overflowX, style.overflowY].join(
-        ''
-      );
-
-      // if scrollable
-      if (overflow.match(/(scroll|auto)/)) {
-        var maxScrollTop = cursor.scrollHeight - cursor.clientHeight;
-        if (maxScrollTop > 0) {
-          if (
-            !(cursor.scrollTop === 0 && deltaY > 0) &&
-            !(cursor.scrollTop === maxScrollTop && deltaY < 0)
-          ) {
-            return true;
-          }
-        }
-        var maxScrollLeft = cursor.scrollWidth - cursor.clientWidth;
-        if (maxScrollLeft > 0) {
-          if (
-            !(cursor.scrollLeft === 0 && deltaX < 0) &&
-            !(cursor.scrollLeft === maxScrollLeft && deltaX > 0)
-          ) {
-            return true;
-          }
-        }
-      }
-
-      cursor = cursor.parentNode;
-    }
-
-    return false;
-  }
-
-  function mousewheelHandler(e) {
-    var ref = getDeltaFromEvent(e);
-    var deltaX = ref[0];
-    var deltaY = ref[1];
-
-    if (shouldBeConsumedByChild(e.target, deltaX, deltaY)) {
-      return;
-    }
-
-    var shouldPrevent = false;
-    if (!i.settings.useBothWheelAxes) {
-      // deltaX will only be used for horizontal scrolling and deltaY will
-      // only be used for vertical scrolling - this is the default
-      element.scrollTop -= deltaY * i.settings.wheelSpeed;
-      element.scrollLeft += deltaX * i.settings.wheelSpeed;
-    } else if (i.scrollbarYActive && !i.scrollbarXActive) {
-      // only vertical scrollbar is active and useBothWheelAxes option is
-      // active, so let's scroll vertical bar using both mouse wheel axes
-      if (deltaY) {
-        element.scrollTop -= deltaY * i.settings.wheelSpeed;
-      } else {
-        element.scrollTop += deltaX * i.settings.wheelSpeed;
-      }
-      shouldPrevent = true;
-    } else if (i.scrollbarXActive && !i.scrollbarYActive) {
-      // useBothWheelAxes and only horizontal bar is active, so use both
-      // wheel axes for horizontal bar
-      if (deltaX) {
-        element.scrollLeft += deltaX * i.settings.wheelSpeed;
-      } else {
-        element.scrollLeft -= deltaY * i.settings.wheelSpeed;
-      }
-      shouldPrevent = true;
-    }
-
-    updateGeometry(i);
-
-    shouldPrevent = shouldPrevent || shouldPreventDefault(deltaX, deltaY);
-    if (shouldPrevent && !e.ctrlKey) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  }
-
-  if (typeof window.onwheel !== 'undefined') {
-    i.event.bind(element, 'wheel', mousewheelHandler);
-  } else if (typeof window.onmousewheel !== 'undefined') {
-    i.event.bind(element, 'mousewheel', mousewheelHandler);
-  }
-};
-
-var touch = function(i) {
-  if (!env.supportsTouch && !env.supportsIePointer) {
-    return;
-  }
-
-  var element = i.element;
-
-  function shouldPrevent(deltaX, deltaY) {
-    var scrollTop = Math.floor(element.scrollTop);
-    var scrollLeft = element.scrollLeft;
-    var magnitudeX = Math.abs(deltaX);
-    var magnitudeY = Math.abs(deltaY);
-
-    if (magnitudeY > magnitudeX) {
-      // user is perhaps trying to swipe up/down the page
-
-      if (
-        (deltaY < 0 && scrollTop === i.contentHeight - i.containerHeight) ||
-        (deltaY > 0 && scrollTop === 0)
-      ) {
-        // set prevent for mobile Chrome refresh
-        return window.scrollY === 0 && deltaY > 0 && env.isChrome;
-      }
-    } else if (magnitudeX > magnitudeY) {
-      // user is perhaps trying to swipe left/right across the page
-
-      if (
-        (deltaX < 0 && scrollLeft === i.contentWidth - i.containerWidth) ||
-        (deltaX > 0 && scrollLeft === 0)
-      ) {
-        return true;
-      }
-    }
-
-    return true;
-  }
-
-  function applyTouchMove(differenceX, differenceY) {
-    element.scrollTop -= differenceY;
-    element.scrollLeft -= differenceX;
-
-    updateGeometry(i);
-  }
-
-  var startOffset = {};
-  var startTime = 0;
-  var speed = {};
-  var easingLoop = null;
-
-  function getTouch(e) {
-    if (e.targetTouches) {
-      return e.targetTouches[0];
-    } else {
-      // Maybe IE pointer
-      return e;
-    }
-  }
-
-  function shouldHandle(e) {
-    if (e.pointerType && e.pointerType === 'pen' && e.buttons === 0) {
-      return false;
-    }
-    if (e.targetTouches && e.targetTouches.length === 1) {
-      return true;
-    }
-    if (
-      e.pointerType &&
-      e.pointerType !== 'mouse' &&
-      e.pointerType !== e.MSPOINTER_TYPE_MOUSE
-    ) {
-      return true;
-    }
-    return false;
-  }
-
-  function touchStart(e) {
-    if (!shouldHandle(e)) {
-      return;
-    }
-
-    var touch = getTouch(e);
-
-    startOffset.pageX = touch.pageX;
-    startOffset.pageY = touch.pageY;
-
-    startTime = new Date().getTime();
-
-    if (easingLoop !== null) {
-      clearInterval(easingLoop);
-    }
-  }
-
-  function shouldBeConsumedByChild(target, deltaX, deltaY) {
-    if (!element.contains(target)) {
-      return false;
-    }
-
-    var cursor = target;
-
-    while (cursor && cursor !== element) {
-      if (cursor.classList.contains(cls.element.consuming)) {
-        return true;
-      }
-
-      var style = get(cursor);
-      var overflow = [style.overflow, style.overflowX, style.overflowY].join(
-        ''
-      );
-
-      // if scrollable
-      if (overflow.match(/(scroll|auto)/)) {
-        var maxScrollTop = cursor.scrollHeight - cursor.clientHeight;
-        if (maxScrollTop > 0) {
-          if (
-            !(cursor.scrollTop === 0 && deltaY > 0) &&
-            !(cursor.scrollTop === maxScrollTop && deltaY < 0)
-          ) {
-            return true;
-          }
-        }
-        var maxScrollLeft = cursor.scrollLeft - cursor.clientWidth;
-        if (maxScrollLeft > 0) {
-          if (
-            !(cursor.scrollLeft === 0 && deltaX < 0) &&
-            !(cursor.scrollLeft === maxScrollLeft && deltaX > 0)
-          ) {
-            return true;
-          }
-        }
-      }
-
-      cursor = cursor.parentNode;
-    }
-
-    return false;
-  }
-
-  function touchMove(e) {
-    if (shouldHandle(e)) {
-      var touch = getTouch(e);
-
-      var currentOffset = { pageX: touch.pageX, pageY: touch.pageY };
-
-      var differenceX = currentOffset.pageX - startOffset.pageX;
-      var differenceY = currentOffset.pageY - startOffset.pageY;
-
-      if (shouldBeConsumedByChild(e.target, differenceX, differenceY)) {
-        return;
-      }
-
-      applyTouchMove(differenceX, differenceY);
-      startOffset = currentOffset;
-
-      var currentTime = new Date().getTime();
-
-      var timeGap = currentTime - startTime;
-      if (timeGap > 0) {
-        speed.x = differenceX / timeGap;
-        speed.y = differenceY / timeGap;
-        startTime = currentTime;
-      }
-
-      if (shouldPrevent(differenceX, differenceY)) {
-        e.preventDefault();
-      }
-    }
-  }
-  function touchEnd() {
-    if (i.settings.swipeEasing) {
-      clearInterval(easingLoop);
-      easingLoop = setInterval(function() {
-        if (i.isInitialized) {
-          clearInterval(easingLoop);
-          return;
-        }
-
-        if (!speed.x && !speed.y) {
-          clearInterval(easingLoop);
-          return;
-        }
-
-        if (Math.abs(speed.x) < 0.01 && Math.abs(speed.y) < 0.01) {
-          clearInterval(easingLoop);
-          return;
-        }
-
-        applyTouchMove(speed.x * 30, speed.y * 30);
-
-        speed.x *= 0.8;
-        speed.y *= 0.8;
-      }, 10);
-    }
-  }
-
-  if (env.supportsTouch) {
-    i.event.bind(element, 'touchstart', touchStart);
-    i.event.bind(element, 'touchmove', touchMove);
-    i.event.bind(element, 'touchend', touchEnd);
-  } else if (env.supportsIePointer) {
-    if (window.PointerEvent) {
-      i.event.bind(element, 'pointerdown', touchStart);
-      i.event.bind(element, 'pointermove', touchMove);
-      i.event.bind(element, 'pointerup', touchEnd);
-    } else if (window.MSPointerEvent) {
-      i.event.bind(element, 'MSPointerDown', touchStart);
-      i.event.bind(element, 'MSPointerMove', touchMove);
-      i.event.bind(element, 'MSPointerUp', touchEnd);
-    }
-  }
-};
-
-var defaultSettings = function () { return ({
-  handlers: ['click-rail', 'drag-thumb', 'keyboard', 'wheel', 'touch'],
-  maxScrollbarLength: null,
-  minScrollbarLength: null,
-  scrollingThreshold: 1000,
-  scrollXMarginOffset: 0,
-  scrollYMarginOffset: 0,
-  suppressScrollX: false,
-  suppressScrollY: false,
-  swipeEasing: true,
-  useBothWheelAxes: false,
-  wheelPropagation: true,
-  wheelSpeed: 1,
-}); };
-
-var handlers = {
-  'click-rail': clickRail,
-  'drag-thumb': dragThumb,
-  keyboard: keyboard,
-  wheel: wheel,
-  touch: touch,
-};
-
-var PerfectScrollbar = function PerfectScrollbar(element, userSettings) {
-  var this$1 = this;
-  if ( userSettings === void 0 ) userSettings = {};
-
-  if (typeof element === 'string') {
-    element = document.querySelector(element);
-  }
-
-  if (!element || !element.nodeName) {
-    throw new Error('no element is specified to initialize PerfectScrollbar');
-  }
-
-  this.element = element;
-
-  element.classList.add(cls.main);
-
-  this.settings = defaultSettings();
-  for (var key in userSettings) {
-    this$1.settings[key] = userSettings[key];
-  }
-
-  this.containerWidth = null;
-  this.containerHeight = null;
-  this.contentWidth = null;
-  this.contentHeight = null;
-
-  var focus = function () { return element.classList.add(cls.state.focus); };
-  var blur = function () { return element.classList.remove(cls.state.focus); };
-
-  this.isRtl = get(element).direction === 'rtl';
-  this.isNegativeScroll = (function () {
-    var originalScrollLeft = element.scrollLeft;
-    var result = null;
-    element.scrollLeft = -1;
-    result = element.scrollLeft < 0;
-    element.scrollLeft = originalScrollLeft;
-    return result;
-  })();
-  this.negativeScrollAdjustment = this.isNegativeScroll
-    ? element.scrollWidth - element.clientWidth
-    : 0;
-  this.event = new EventManager();
-  this.ownerDocument = element.ownerDocument || document;
-
-  this.scrollbarXRail = div(cls.element.rail('x'));
-  element.appendChild(this.scrollbarXRail);
-  this.scrollbarX = div(cls.element.thumb('x'));
-  this.scrollbarXRail.appendChild(this.scrollbarX);
-  this.scrollbarX.setAttribute('tabindex', 0);
-  this.event.bind(this.scrollbarX, 'focus', focus);
-  this.event.bind(this.scrollbarX, 'blur', blur);
-  this.scrollbarXActive = null;
-  this.scrollbarXWidth = null;
-  this.scrollbarXLeft = null;
-  var railXStyle = get(this.scrollbarXRail);
-  this.scrollbarXBottom = parseInt(railXStyle.bottom, 10);
-  if (isNaN(this.scrollbarXBottom)) {
-    this.isScrollbarXUsingBottom = false;
-    this.scrollbarXTop = toInt(railXStyle.top);
-  } else {
-    this.isScrollbarXUsingBottom = true;
-  }
-  this.railBorderXWidth =
-    toInt(railXStyle.borderLeftWidth) + toInt(railXStyle.borderRightWidth);
-  // Set rail to display:block to calculate margins
-  set(this.scrollbarXRail, { display: 'block' });
-  this.railXMarginWidth =
-    toInt(railXStyle.marginLeft) + toInt(railXStyle.marginRight);
-  set(this.scrollbarXRail, { display: '' });
-  this.railXWidth = null;
-  this.railXRatio = null;
-
-  this.scrollbarYRail = div(cls.element.rail('y'));
-  element.appendChild(this.scrollbarYRail);
-  this.scrollbarY = div(cls.element.thumb('y'));
-  this.scrollbarYRail.appendChild(this.scrollbarY);
-  this.scrollbarY.setAttribute('tabindex', 0);
-  this.event.bind(this.scrollbarY, 'focus', focus);
-  this.event.bind(this.scrollbarY, 'blur', blur);
-  this.scrollbarYActive = null;
-  this.scrollbarYHeight = null;
-  this.scrollbarYTop = null;
-  var railYStyle = get(this.scrollbarYRail);
-  this.scrollbarYRight = parseInt(railYStyle.right, 10);
-  if (isNaN(this.scrollbarYRight)) {
-    this.isScrollbarYUsingRight = false;
-    this.scrollbarYLeft = toInt(railYStyle.left);
-  } else {
-    this.isScrollbarYUsingRight = true;
-  }
-  this.scrollbarYOuterWidth = this.isRtl ? outerWidth(this.scrollbarY) : null;
-  this.railBorderYWidth =
-    toInt(railYStyle.borderTopWidth) + toInt(railYStyle.borderBottomWidth);
-  set(this.scrollbarYRail, { display: 'block' });
-  this.railYMarginHeight =
-    toInt(railYStyle.marginTop) + toInt(railYStyle.marginBottom);
-  set(this.scrollbarYRail, { display: '' });
-  this.railYHeight = null;
-  this.railYRatio = null;
-
-  this.reach = {
-    x:
-      element.scrollLeft <= 0
-        ? 'start'
-        : element.scrollLeft >= this.contentWidth - this.containerWidth
-          ? 'end'
-          : null,
-    y:
-      element.scrollTop <= 0
-        ? 'start'
-        : element.scrollTop >= this.contentHeight - this.containerHeight
-          ? 'end'
-          : null,
-  };
-
-  this.isAlive = true;
-
-  this.settings.handlers.forEach(function (handlerName) { return handlers[handlerName](this$1); });
-
-  this.lastScrollTop = Math.floor(element.scrollTop); // for onScroll only
-  this.lastScrollLeft = element.scrollLeft; // for onScroll only
-  this.event.bind(this.element, 'scroll', function (e) { return this$1.onScroll(e); });
-  updateGeometry(this);
-};
-
-PerfectScrollbar.prototype.update = function update () {
-  if (!this.isAlive) {
-    return;
-  }
-
-  // Recalcuate negative scrollLeft adjustment
-  this.negativeScrollAdjustment = this.isNegativeScroll
-    ? this.element.scrollWidth - this.element.clientWidth
-    : 0;
-
-  // Recalculate rail margins
-  set(this.scrollbarXRail, { display: 'block' });
-  set(this.scrollbarYRail, { display: 'block' });
-  this.railXMarginWidth =
-    toInt(get(this.scrollbarXRail).marginLeft) +
-    toInt(get(this.scrollbarXRail).marginRight);
-  this.railYMarginHeight =
-    toInt(get(this.scrollbarYRail).marginTop) +
-    toInt(get(this.scrollbarYRail).marginBottom);
-
-  // Hide scrollbars not to affect scrollWidth and scrollHeight
-  set(this.scrollbarXRail, { display: 'none' });
-  set(this.scrollbarYRail, { display: 'none' });
-
-  updateGeometry(this);
-
-  processScrollDiff(this, 'top', 0, false, true);
-  processScrollDiff(this, 'left', 0, false, true);
-
-  set(this.scrollbarXRail, { display: '' });
-  set(this.scrollbarYRail, { display: '' });
-};
-
-PerfectScrollbar.prototype.onScroll = function onScroll (e) {
-  if (!this.isAlive) {
-    return;
-  }
-
-  updateGeometry(this);
-  processScrollDiff(this, 'top', this.element.scrollTop - this.lastScrollTop);
-  processScrollDiff(
-    this,
-    'left',
-    this.element.scrollLeft - this.lastScrollLeft
-  );
-
-  this.lastScrollTop = Math.floor(this.element.scrollTop);
-  this.lastScrollLeft = this.element.scrollLeft;
-};
-
-PerfectScrollbar.prototype.destroy = function destroy () {
-  if (!this.isAlive) {
-    return;
-  }
-
-  this.event.unbindAll();
-  remove(this.scrollbarX);
-  remove(this.scrollbarY);
-  remove(this.scrollbarXRail);
-  remove(this.scrollbarYRail);
-  this.removePsClasses();
-
-  // unset elements
-  this.element = null;
-  this.scrollbarX = null;
-  this.scrollbarY = null;
-  this.scrollbarXRail = null;
-  this.scrollbarYRail = null;
-
-  this.isAlive = false;
-};
-
-PerfectScrollbar.prototype.removePsClasses = function removePsClasses () {
-  this.element.className = this.element.className
-    .split(' ')
-    .filter(function (name) { return !name.match(/^ps([-_].+|)$/); })
-    .join(' ');
-};
-
-return PerfectScrollbar;
-
-})));
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-jQuery(function ($) {
+(function ($) {
   $(document).on('click', '.chip .close', function () {
     var $this = $(this);
 
@@ -26755,683 +24383,511 @@ jQuery(function ($) {
     $this.closest('.chip').remove();
   });
 
-  var MaterialChips =
+  var MaterialChip =
   /*#__PURE__*/
   function () {
-    function MaterialChips($chipsWrapper, options) {
-      if (options === void 0) {
-        options = {};
-      }
+    function MaterialChip(chips, options) {
+      _classCallCheck(this, MaterialChip);
 
-      this.$chipsWrapper = $chipsWrapper;
-      this.options = typeof options === 'string' ? options : {
-        data: this.fallback().or(options.data).or([]).value(),
-        // @type { tag: string, image?: string, id?: number }[]
-        dataChip: this.fallback().or(options.dataChip).or([]).value(),
-        // autocomplete data; @type string[]
-        placeholder: this.fallback().or($chipsWrapper.attr('data-placeholder')).or(options.placeholder).or('').value(),
-        secondaryPlaceholder: this.fallback().or($chipsWrapper.attr('data-secondary-placeholder')).or(options.secondaryPlaceholder).or('').value(),
-        sortAutocompleteData: this.fallback().or($chipsWrapper.attr('data-sort-autocomplete-data')).or(options.sortAutocompleteData).or(true).value(),
-        autocompleteDataCompareFn: this.fallback().or(options.autocompleteDataCompareFn).or(undefined).value()
+      this.chips = chips;
+      this.$document = $(document);
+      this.options = options;
+      this.eventsHandled = false;
+      this.ulWrapper = $('<ul class="chip-ul z-depth-1" tabindex="0"></ul>');
+      this.defaultOptions = {
+        data: [],
+        dataChip: [],
+        placeholder: '',
+        secondaryPlaceholder: ''
       };
-      this.$autocompleteList = $('<ul class="chip-ul z-depth-1" tabindex="0"></ul>');
+      this.selectors = {
+        chips: '.chips',
+        chip: '.chip',
+        input: 'input',
+        delete: '.fas',
+        selectedChip: '.selected'
+      };
       this.keyCodes = {
-        backspace: 8,
         enter: 13,
+        backspace: 8,
+        delete: 46,
         arrowLeft: 37,
         arrowRight: 39,
-        delete: 46,
         comma: 188
       };
+      this.init();
     }
 
-    var _proto = MaterialChips.prototype;
+    _createClass(MaterialChip, [{
+      key: "init",
+      value: function init() {
+        var _this = this;
 
-    _proto.getSelectedChip = function getSelectedChip() {
-      return this.$chipsWrapper.find('.chip.selected');
-    };
+        this.optionsDataStatement();
+        this.assignOptions();
+        this.chips.each(function (index, element) {
+          var $this = $(element);
 
-    _proto.returnPublicInterface = function returnPublicInterface() {
-      if (this.options === 'data') {
-        return this.$chipsWrapper.data('chips');
-      }
+          if ($this.data('initialized')) {
+            return;
+          }
 
-      if (this.options === 'options') {
-        return this.$chipsWrapper.data('options');
-      }
+          var options = $this.data('options');
 
-      return this.$chipsWrapper;
-    };
+          if (!options.data || !Array.isArray(options.data)) {
+            options.data = [];
+          }
 
-    _proto.init = function init() {
-      if (this.isPublicInterfaceCall) {
-        return;
-      }
+          $this.data('chips', options.data);
+          $this.data('index', index);
+          $this.data('initialized', true);
+          $this.attr('tabindex', 0);
 
-      this.assignOptions();
+          if (!$this.hasClass(_this.selectors.chips)) {
+            $this.addClass('chips');
+          }
 
-      if (this.isInitialized) {
-        return;
-      }
+          _this.renderChips($this);
+        });
 
-      this.$chipsWrapper.data({
-        chips: this.options.data.slice(),
-        index: this.$chipsWrapper.index(),
-        initialized: true
-      });
-      this.$chipsWrapper.attr('tabindex', 0);
-
-      if (!this.$chipsWrapper.hasClass('.chips')) {
-        this.$chipsWrapper.addClass('chips');
-      }
-
-      this.renderChips();
-      this.bindEvents();
-    };
-
-    _proto.assignOptions = function assignOptions() {
-      if (!Array.isArray(this.options.data)) {
-        this.options.data = [];
-      }
-
-      this.$chipsWrapper.data('options', Object.assign({}, this.options));
-    };
-
-    _proto.bindEvents = function bindEvents() {
-      this.bindChipsWrapperClick();
-      this.bindChipsWrapperBlur();
-      this.bindSingleChipClick();
-      this.bindChipsWrapperKeydown();
-      this.bindChipsInputClick();
-      this.bindChipsInputFocusout();
-      this.bindChipsInputKeydown();
-      this.bindDeleteButtonClick();
-      this.bindAutocompleteInputKeyup();
-      this.bindAutocompleteOptionClick();
-    };
-
-    _proto.bindChipsWrapperClick = function bindChipsWrapperClick() {
-      this.$chipsWrapper.on('click', function (e) {
-        return $(e.target).find('input').focus().addClass('active');
-      });
-    };
-
-    _proto.bindChipsWrapperBlur = function bindChipsWrapperBlur() {
-      var _this = this;
-
-      this.$chipsWrapper.on('blur', function (e) {
-        setTimeout(function () {
-          return _this.$autocompleteList.removeClass('active').hide();
-        }, 100);
-        $(e.target).removeClass('active');
-
-        _this.getSelectedChip().removeClass('selected');
-      });
-    };
-
-    _proto.bindSingleChipClick = function bindSingleChipClick() {
-      var _this2 = this;
-
-      this.$chipsWrapper.on('click', '.chip', function (e) {
-        var $this = $(e.target);
-
-        _this2.$chipsWrapper.find('.chip.selected').not($this).removeClass('selected');
-
-        $this.toggleClass('selected');
-      });
-    };
-
-    _proto.bindChipsWrapperKeydown = function bindChipsWrapperKeydown() {
-      var _this3 = this;
-
-      this.$chipsWrapper.on('keydown', function (e) {
-        var backspacePressed = e.which === _this3.keyCodes.backspace;
-        var deletePressed = e.which === _this3.keyCodes.delete;
-        var leftArrowPressed = e.which === _this3.keyCodes.arrowLeft;
-        var rightArrowPressed = e.which === _this3.keyCodes.arrowRight;
-
-        if ((backspacePressed || deletePressed) && _this3.getSelectedChip().length) {
-          e.preventDefault();
-
-          var nextIndex = _this3.deleteSelectedChip();
-
-          _this3.selectChip(nextIndex);
-        } else if (leftArrowPressed) {
-          _this3.selectLeftChip();
-        } else if (rightArrowPressed) {
-          _this3.selectRightChip();
+        if (!this.eventsHandled) {
+          this.handleEvents();
+          this.eventsHandled = true;
         }
-      });
-    };
 
-    _proto.bindChipsInputClick = function bindChipsInputClick() {
-      var _this4 = this;
+        return this;
+      }
+    }, {
+      key: "optionsDataStatement",
+      value: function optionsDataStatement() {
+        if (this.options === 'data') {
+          return this.chips.data('chips');
+        }
 
-      var $chipsInput = this.$chipsWrapper.find('input');
-      $chipsInput.on('click', function (e) {
-        var $target = $(e.target);
-        $target.addClass('active');
+        if (this.options === 'options') {
+          return this.chips.data('options');
+        }
 
-        _this4.$chipsWrapper.addClass('focus');
+        return true;
+      }
+    }, {
+      key: "assignOptions",
+      value: function assignOptions() {
+        this.chips.data('options', $.extend({}, this.defaultOptions, this.options));
+      }
+    }, {
+      key: "handleEvents",
+      value: function handleEvents() {
+        this.handleSelecorChips();
+        this.handleBlurInput();
+        this.handleSelectorChip();
+        this.handleDocumentKeyDown();
+        this.handleDocumentFocusIn();
+        this.handleDocumentFocusOut();
+        this.handleDocumentKeyDownChipsInput();
+        this.handleDocumentClickChipsDelete();
+        this.inputKeyDown();
+        this.renderedLiClick();
+        this.dynamicInputChanges();
+      }
+    }, {
+      key: "handleSelecorChips",
+      value: function handleSelecorChips() {
+        var _this2 = this;
 
-        _this4.$chipsWrapper.find('.chip').removeClass('selected');
-      });
-    };
+        this.$document.on('click', this.selectors.chips, function (e) {
+          return $(e.target).find(_this2.selectors.input).focus().addClass('active');
+        });
+      }
+    }, {
+      key: "handleBlurInput",
+      value: function handleBlurInput() {
+        var _this3 = this;
 
-    _proto.bindChipsInputFocusout = function bindChipsInputFocusout() {
-      var _this5 = this;
+        this.$document.on('blur', this.selectors.chips, function (e) {
+          setTimeout(function () {
+            return _this3.ulWrapper.removeClass('active').hide();
+          }, 100);
+          $(e.target).removeClass('active');
+          $('.chip.selected').removeClass('selected');
+        });
+      }
+    }, {
+      key: "handleSelectorChip",
+      value: function handleSelectorChip() {
+        this.chips.on('click', '.chip', function () {
+          $('.chip.selected').not(this).removeClass('selected');
+          $(this).toggleClass('selected');
+        });
+      }
+    }, {
+      key: "handleDocumentKeyDown",
+      value: function handleDocumentKeyDown() {
+        var _this4 = this;
 
-      this.$chipsWrapper.on('focusout', 'input', function () {
-        return _this5.$chipsWrapper.removeClass('focus');
-      });
-    };
+        this.chips.on('keydown', function (e) {
+          var $selectedChip = _this4.$document.find(_this4.selectors.chip + _this4.selectors.selectedChip);
 
-    _proto.bindChipsInputKeydown = function bindChipsInputKeydown() {
-      var _this6 = this;
+          var $chipsWrapper = $selectedChip.closest(_this4.selectors.chips);
+          var siblingsLength = $selectedChip.siblings(_this4.selectors.chip).length;
 
-      this.$chipsWrapper.on('keydown', 'input', function (e) {
-        var $chipsInput = $(e.target);
-        var enterPressed = e.which === _this6.keyCodes.enter;
-        var commaPressed = e.which === _this6.keyCodes.comma;
-        var backspacePressed = e.which === _this6.keyCodes.backspace;
+          if (!$selectedChip.length) {
+            return;
+          }
 
-        if ((enterPressed || commaPressed) && !_this6.$autocompleteList.find('li').hasClass('selected')) {
-          e.preventDefault();
+          var backspacePressed = e.which === _this4.keyCodes.backspace;
+          var deletePressed = e.which === _this4.keyCodes.delete;
+          var leftArrowPressed = e.which === _this4.keyCodes.arrowLeft;
+          var rightArrowPressed = e.which === _this4.keyCodes.arrowRight;
 
-          _this6.addChip({
-            tag: $chipsInput.val()
+          if (backspacePressed || deletePressed) {
+            e.preventDefault();
+
+            _this4.deleteSelectedChip($chipsWrapper, $selectedChip, siblingsLength);
+          } else if (leftArrowPressed) {
+            _this4.selectLeftChip($chipsWrapper, $selectedChip);
+          } else if (rightArrowPressed) {
+            _this4.selectRightChip($chipsWrapper, $selectedChip, siblingsLength);
+          }
+        });
+      }
+    }, {
+      key: "handleDocumentFocusIn",
+      value: function handleDocumentFocusIn() {
+        var _this5 = this;
+
+        var $chipsInput;
+        var $chips = this.chips;
+
+        if ($chips.hasClass('chips-autocomplete')) {
+          $chipsInput = $chips.children().children('input');
+        } else {
+          $chipsInput = $chips.children('input');
+        }
+
+        $chipsInput.on('click', function (e) {
+          var $target = $(e.target);
+          $target.closest(_this5.selectors.chips).addClass('focus');
+          $(_this5.selectors.chip).removeClass('selected');
+          $target.addClass('active');
+        });
+      }
+    }, {
+      key: "handleDocumentFocusOut",
+      value: function handleDocumentFocusOut() {
+        var _this6 = this;
+
+        this.chips.on('focusout', 'input', function (e) {
+          return $(e.target).closest(_this6.selectors.chips).removeClass('focus');
+        });
+      }
+    }, {
+      key: "handleDocumentKeyDownChipsInput",
+      value: function handleDocumentKeyDownChipsInput() {
+        var _this7 = this;
+
+        this.chips.on('keydown', 'input', function (e) {
+          var $target = $(e.target);
+          var $chips = _this7.chips;
+          var $chipsWrapper = $target.closest(_this7.selectors.chips);
+          var chipsIndex = $chipsWrapper.data('index');
+          var chipsLength = $chipsWrapper.children(_this7.selectors.chip).length;
+          var enterPressed = e.which === _this7.keyCodes.enter;
+          var commaPressed = e.which === _this7.keyCodes.comma;
+          var leftArrowPressed = e.which === _this7.keyCodes.arrowLeft;
+          var backspacePressed = e.which === _this7.keyCodes.backspace;
+
+          if ((enterPressed || commaPressed) && !_this7.ulWrapper.find('li').hasClass('selected')) {
+            e.preventDefault();
+
+            _this7.addChip(chipsIndex, {
+              tag: $target.val()
+            }, $chipsWrapper);
+
+            $target.val('');
+            return;
+          }
+
+          var leftArrowOrDeletePressed = e.keyCode === _this7.keyCodes.arrowLeft || e.keyCode === _this7.keyCodes.delete;
+          var isValueEmpty = $target.val() === '';
+
+          if (leftArrowOrDeletePressed && isValueEmpty && chipsLength) {
+            _this7.selectChip(chipsIndex, chipsLength - 1, $chipsWrapper);
+          }
+
+          if (isValueEmpty && $(_this7.selectors.input).hasClass('active')) {
+            if (leftArrowPressed) {
+              _this7.selectChip(chipsIndex, chipsLength - 1, $chipsWrapper);
+            }
+          } else {
+            $chips.find('.chip').removeClass('selected');
+          }
+
+          var $thisChips = $chips.find('.chip-position-wrapper').children('.chip');
+          var $thisChipsLast = $chips.find('.chip-position-wrapper .chip').last().index();
+
+          if (isValueEmpty && backspacePressed && (!$thisChips.hasClass('selected') || !$chips.find('.chip').hasClass('selected')) && $chips.hasClass('chips') && !$chips.hasClass('chips-initial') && !$chips.hasClass('chips-placeholder')) {
+            _this7.deleteChip($chipsWrapper.data('index'), $thisChipsLast, $chipsWrapper);
+          }
+
+          if (isValueEmpty && backspacePressed && !$chips.find('.chip').hasClass('selected') && $chips.hasClass('chips') && ($chips.hasClass('chips-initial') || $chips.hasClass('chips-placeholder'))) {
+            _this7.deleteChip($chipsWrapper.data('index'), $thisChipsLast, $chipsWrapper);
+          }
+        });
+      }
+    }, {
+      key: "handleDocumentClickChipsDelete",
+      value: function handleDocumentClickChipsDelete() {
+        var _this8 = this;
+
+        this.chips.on('click', '.chip .fas', function (e) {
+          var $target = $(e.target);
+          var $chip = $target.parent($(_this8.chips));
+          var $chipsWrapper;
+
+          if ($chip.parents().eq(1).hasClass('chips-autocomplete')) {
+            $chipsWrapper = $chip.parents().eq(1);
+          } else if (!$chip.parent().hasClass('chips-autocomplete') && !$chip.parents().eq(1).hasClass('chips-autocomplete')) {
+            $chipsWrapper = $chip.parents().eq(0);
+          } else if ($chip.parent().hasClass('chips-initial') && $chip.parent().hasClass('chips-autocomplete')) {
+            $chipsWrapper = $chip.parents().eq(0);
+          }
+
+          _this8.deleteChip($chipsWrapper.data('index'), $chip.index(), $chipsWrapper);
+
+          $chipsWrapper.find('input').focus();
+        });
+      }
+    }, {
+      key: "inputKeyDown",
+      value: function inputKeyDown() {
+        var _this9 = this;
+
+        var $ulWrapper = this.ulWrapper;
+        var dataChip = this.options.dataChip;
+        var $thisChips = this.chips;
+        var $input = $thisChips.children('.chip-position-wrapper').children('input');
+        $input.on('keyup', function (e) {
+          var $inputValue = $input.val();
+          $ulWrapper.empty();
+
+          if ($inputValue.length) {
+            for (var item in dataChip) {
+              if (dataChip[item].toLowerCase().includes($inputValue.toLowerCase())) {
+                $thisChips.children('.chip-position-wrapper').append($ulWrapper.append($("<li>".concat(dataChip[item], "</li>"))));
+              }
+            }
+          }
+
+          if (e.which === _this9.keyCodes.enter) {
+            $ulWrapper.empty();
+            $ulWrapper.remove();
+          }
+
+          $inputValue.length === 0 ? $ulWrapper.removeClass('active').hide() : $ulWrapper.addClass('active').show();
+        });
+      }
+    }, {
+      key: "dynamicInputChanges",
+      value: function dynamicInputChanges() {
+        var dataChip = this.options.dataChip;
+
+        if (dataChip !== undefined) {
+          this.chips.children('.chip-position-wrapper').children('input').on('change', function (e) {
+            var $targetVal = $(e.target).val();
+
+            if (!dataChip.includes($targetVal)) {
+              dataChip.push($targetVal);
+              dataChip.sort();
+            }
           });
+        }
+      }
+    }, {
+      key: "renderedLiClick",
+      value: function renderedLiClick() {
+        var _this10 = this;
 
-          $chipsInput.val('');
+        this.chips.on('click', 'li', function (e) {
+          e.preventDefault();
+          var $target = $(e.target);
+          var $chipsWrapper = $target.closest($(_this10.selectors.chips));
+          var chipsIndex = $chipsWrapper.data('index');
+
+          _this10.addChip(chipsIndex, {
+            tag: $target.text()
+          }, $chipsWrapper);
+
+          _this10.chips.children('.chip-position-wrapper').children('input').val('');
+
+          _this10.ulWrapper.remove();
+        });
+      }
+    }, {
+      key: "deleteSelectedChip",
+      value: function deleteSelectedChip($chipsWrapper, $selectedChip, siblingsLength) {
+        var chipsIndex = $chipsWrapper.data('index');
+        var chipIndex = $selectedChip.index();
+        this.deleteChip(chipsIndex, chipIndex, $chipsWrapper);
+        var selectIndex = null;
+
+        if (chipIndex < siblingsLength - 1) {
+          selectIndex = chipIndex;
+        } else if (chipIndex === siblingsLength || chipIndex === siblingsLength - 1) {
+          selectIndex = siblingsLength - 1;
+        }
+
+        if (selectIndex < 0) {
+          selectIndex = null;
+        }
+
+        if (selectIndex !== null) {
+          this.selectChip(chipsIndex, selectIndex, $chipsWrapper);
+        }
+
+        if (!siblingsLength) {
+          $chipsWrapper.find('input').focus();
+        }
+      }
+    }, {
+      key: "selectLeftChip",
+      value: function selectLeftChip($chipsWrapper, $selectedChip) {
+        var chipIndex = $selectedChip.index() - 1;
+
+        if (chipIndex < 0) {
           return;
         }
 
-        var isInputEmpty = $chipsInput.val() === '';
-
-        if (isInputEmpty && backspacePressed && !_this6.$chipsWrapper.find('.chip').hasClass('selected')) {
-          var lastChipIndex = _this6.$chipsWrapper.find('.chip-position-wrapper .chip').last().index();
-
-          _this6.deleteChip(lastChipIndex);
-        }
-      });
-    };
-
-    _proto.bindDeleteButtonClick = function bindDeleteButtonClick() {
-      var _this7 = this;
-
-      this.$chipsWrapper.on('click', '.chip i.close', function (e) {
-        var $deleteButton = $(e.target);
-        var chipIndex = $deleteButton.closest('.chip').index();
-
-        _this7.deleteChip(chipIndex);
-
-        _this7.$chipsWrapper.find('input').focus();
-      });
-    };
-
-    _proto.bindAutocompleteInputKeyup = function bindAutocompleteInputKeyup() {
-      var _this8 = this;
-
-      var $input = this.$chipsWrapper.find('.chip-position-wrapper').find('input');
-      $input.on('keyup', function (e) {
-        var $inputValue = $input.val();
-
-        _this8.$autocompleteList.empty();
-
-        if ($inputValue.length) {
-          _this8.options.dataChip.forEach(function (item) {
-            if (item.toLowerCase().includes($inputValue.toLowerCase())) {
-              _this8.$chipsWrapper.find('.chip-position-wrapper').append(_this8.$autocompleteList.append($("<li>" + item + "</li>")));
-            }
-          });
-
-          _this8.$autocompleteList.addClass('active').show();
-        } else {
-          _this8.$autocompleteList.removeClass('active').hide();
-        }
-
-        var enterPressed = e.which === _this8.keyCodes.enter;
-        var commaPressed = e.which === _this8.keyCodes.comma;
-
-        var lastChipText = _this8.$chipsWrapper.find('.chip-position-wrapper .chip').last().text();
-
-        if ((enterPressed || commaPressed) && !_this8.options.dataChip.includes(lastChipText)) {
-          _this8.options.dataChip.push(lastChipText);
-
-          if (_this8.options.sortAutocompleteData) {
-            _this8.options.dataChip.sort(_this8.options.autocompleteDataCompareFn);
-          }
-        } else if (enterPressed || commaPressed) {
-          _this8.$autocompleteList.remove();
-        }
-      });
-    };
-
-    _proto.bindAutocompleteOptionClick = function bindAutocompleteOptionClick() {
-      var _this9 = this;
-
-      this.$chipsWrapper.on('click', 'li', function (e) {
-        e.preventDefault();
-        var $li = $(e.target);
-
-        _this9.addChip({
-          tag: $li.text()
-        });
-
-        _this9.$chipsWrapper.find('.chip-position-wrapper').find('input').val('');
-
-        _this9.$autocompleteList.remove();
-      });
-    };
-
-    _proto.deleteSelectedChip = function deleteSelectedChip() {
-      var $selectedChip = this.getSelectedChip();
-      var siblingsLength = $selectedChip.siblings('.chip').length;
-      var chipIndex = $selectedChip.index();
-      this.deleteChip(chipIndex);
-      var selectIndex = -1;
-
-      if (chipIndex < siblingsLength - 1) {
-        selectIndex = chipIndex;
-      } else if (chipIndex === siblingsLength || chipIndex === siblingsLength - 1) {
-        selectIndex = siblingsLength - 1;
-      }
-
-      if (!siblingsLength) {
-        this.$chipsWrapper.find('input').focus();
-      }
-
-      return selectIndex;
-    };
-
-    _proto.selectLeftChip = function selectLeftChip() {
-      this.selectLeftRightChip(true);
-    };
-
-    _proto.selectRightChip = function selectRightChip() {
-      this.selectLeftRightChip(false);
-    };
-
-    _proto.selectLeftRightChip = function selectLeftRightChip(left) {
-      var $selectedChip = this.getSelectedChip();
-      var currentIndex = $selectedChip.index();
-      var siblingsLength = $selectedChip.siblings('.chip').length;
-      var chipIndex = left ? currentIndex - 1 : currentIndex + 1;
-
-      if (left && chipIndex < 0) {
-        chipIndex = this.$chipsWrapper.find('.chip').length - 1;
-      } else if (!left && chipIndex > siblingsLength) {
-        this.$chipsWrapper.find('input').focus();
-        return;
-      }
-
-      this.$chipsWrapper.find('.chip').removeClass('selected');
-      this.selectChip(chipIndex);
-    };
-
-    _proto.renderChips = function renderChips() {
-      var _this10 = this;
-
-      var html = '';
-      this.$chipsWrapper.data('chips').forEach(function (elem) {
-        html += _this10.getSingleChipTemplate(elem);
-      });
-
-      if (this.$chipsWrapper.hasClass('chips-autocomplete')) {
-        html += '<span class="chip-position-wrapper position-relative"><input class="input" placeholder=""></span>';
-      } else {
-        html += '<input class="input" placeholder="">';
-      }
-
-      this.$chipsWrapper.html(html);
-      this.setPlaceholder();
-    };
-
-    _proto.getSingleChipTemplate = function getSingleChipTemplate(chip) {
-      if (!chip.tag) {
-        return '';
-      }
-
-      var html = "<div class=\"chip\">" + chip.tag;
-
-      if (chip.image) {
-        html += " <img src=\"" + chip.image + "\" /> ";
-      }
-
-      html += '<i class="close fas fa-times"></i>';
-      html += '</div>';
-      return html;
-    };
-
-    _proto.setPlaceholder = function setPlaceholder() {
-      this.$chipsWrapper.find('input').prop('placeholder', this.options.data.length ? this.options.placeholder : this.options.secondaryPlaceholder);
-    };
-
-    _proto.addChip = function addChip(chip) {
-      if (!this.isValid(chip)) {
-        return;
-      }
-
-      var $newChip = $(this.getSingleChipTemplate(chip));
-      this.$chipsWrapper.data('chips').push(chip);
-      this.options.data.push(chip);
-
-      if (this.$chipsWrapper.hasClass('chips-autocomplete') && this.$chipsWrapper.find('.chip').length > 0) {
-        $newChip.insertAfter(this.$chipsWrapper.find('.chip').last());
-      } else {
-        $newChip.insertBefore(this.$chipsWrapper.find('input'));
-      }
-
-      this.$chipsWrapper.trigger('chip.add', chip);
-      this.setPlaceholder();
-    };
-
-    _proto.isValid = function isValid(chip) {
-      return chip.tag !== '' && !this.options.data.some(function (c) {
-        return c.tag === chip.tag;
-      });
-    };
-
-    _proto.deleteChip = function deleteChip(chipIndex) {
-      var chip = this.$chipsWrapper.data('chips')[chipIndex];
-      this.$chipsWrapper.find('.chip').eq(chipIndex).remove();
-      this.$chipsWrapper.data('chips').splice(chipIndex, 1);
-      this.options.data.splice(chipIndex, 1);
-      this.$chipsWrapper.trigger('chip.delete', chip);
-      this.setPlaceholder();
-    };
-
-    _proto.selectChip = function selectChip(chipIndex) {
-      var $chip = this.$chipsWrapper.find('.chip').eq(chipIndex);
-
-      if ($chip && !$chip.hasClass('selected')) {
-        $chip.addClass('selected');
-        this.$chipsWrapper.trigger('chip.select', this.$chipsWrapper.data('chips')[chipIndex]);
-      }
-    };
-
-    _proto.fallback = function fallback() {
-      return {
-        _value: undefined,
-        or: function or(value) {
-          if (typeof value !== 'undefined' && typeof this._value === 'undefined') {
-            this._value = value;
-          }
-
-          return this;
-        },
-        value: function value() {
-          return this._value;
-        }
-      };
-    };
-
-    _createClass(MaterialChips, [{
-      key: "isPublicInterfaceCall",
-      get: function get() {
-        return typeof this.options === 'string';
+        $(this.selectors.chip).removeClass('selected');
+        this.selectChip($chipsWrapper.data('index'), chipIndex, $chipsWrapper);
       }
     }, {
-      key: "isInitialized",
-      get: function get() {
-        return this.$chipsWrapper.data('initialized');
+      key: "selectRightChip",
+      value: function selectRightChip($chipsWrapper, $selectedChip, siblingsLength) {
+        var chipIndex = $selectedChip.index() + 1;
+        $(this.selectors.chip).removeClass('selected');
+
+        if (chipIndex > siblingsLength) {
+          $chipsWrapper.find('input').focus();
+          return;
+        }
+
+        this.selectChip($chipsWrapper.data('index'), chipIndex, $chipsWrapper);
+      }
+    }, {
+      key: "renderChips",
+      value: function renderChips($chipsWrapper) {
+        var _this11 = this;
+
+        var html = '';
+        $chipsWrapper.data('chips').forEach(function (elem) {
+          html += _this11.getSingleChipHtml(elem);
+        });
+
+        if ($chipsWrapper.hasClass('chips-autocomplete')) {
+          html += '<span class="chip-position-wrapper position-relative"><input class="input" placeholder=""></span>';
+        } else {
+          html += '<input class="input" placeholder="">';
+        }
+
+        $chipsWrapper.html(html);
+        this.setPlaceholder($chipsWrapper);
+      }
+    }, {
+      key: "getSingleChipHtml",
+      value: function getSingleChipHtml(elem) {
+        if (!elem.tag) {
+          return '';
+        }
+
+        var html = "<div class=\"chip\">".concat(elem.tag);
+
+        if (elem.image) {
+          html += " <img src=\"".concat(elem.image, "\"> ");
+        }
+
+        html += '<i class="close fas fa-times"></i>';
+        html += '</div>';
+        return html;
+      }
+    }, {
+      key: "setPlaceholder",
+      value: function setPlaceholder($chips) {
+        var options = $chips.data('options');
+
+        if ($chips.data('chips').length && options.placeholder) {
+          $chips.find('input').prop('placeholder', options.placeholder);
+        } else if (!$chips.data('chips').length && options.secondaryPlaceholder) {
+          $chips.find('input').prop('placeholder', options.secondaryPlaceholder);
+        }
+      }
+    }, {
+      key: "isValid",
+      value: function isValid($chipsWrapper, elem) {
+        var chips = $chipsWrapper.data('chips');
+
+        for (var i = 0; i < chips.length; i++) {
+          if (chips[i].tag === elem.tag) {
+            return false;
+          }
+        }
+
+        return elem.tag !== '';
+      }
+    }, {
+      key: "addChip",
+      value: function addChip(chipsIndex, elem, $chipsWrapper) {
+        if (!this.isValid($chipsWrapper, elem)) {
+          return;
+        }
+
+        var $chipHtml = $(this.getSingleChipHtml(elem));
+        $chipsWrapper.data('chips').push(elem);
+
+        if ($chipsWrapper.hasClass('chips-autocomplete') && $chipsWrapper.hasClass('chips-initial') && $chipsWrapper.find('.chip').length > 0) {
+          $chipHtml.insertAfter($chipsWrapper.find('.chip').last());
+        } else {
+          $chipHtml.insertBefore($chipsWrapper.find('input'));
+        }
+
+        $chipsWrapper.trigger('chip.add', elem);
+        this.setPlaceholder($chipsWrapper);
+      }
+    }, {
+      key: "deleteChip",
+      value: function deleteChip(chipsIndex, chipIndex, $chipsWrapper) {
+        var chip = $chipsWrapper.data('chips')[chipIndex];
+        $chipsWrapper.find('.chip').eq(chipIndex).remove();
+        $chipsWrapper.data('chips').splice(chipIndex, 1);
+        $chipsWrapper.trigger('chip.delete', chip);
+        this.setPlaceholder($chipsWrapper);
+      }
+    }, {
+      key: "selectChip",
+      value: function selectChip(chipsIndex, chipIndex, $chipsWrapper) {
+        var $chip = $chipsWrapper.find('.chip').eq(chipIndex);
+
+        if ($chip && $chip.hasClass('selected') === false) {
+          $chip.addClass('selected');
+          $chipsWrapper.trigger('chip.select', $chipsWrapper.data('chips')[chipIndex]);
+        }
+      }
+    }, {
+      key: "getChipsElement",
+      value: function getChipsElement(index, $chipsWrapper) {
+        return $chipsWrapper.eq(index);
       }
     }]);
 
-    return MaterialChips;
+    return MaterialChip;
   }();
 
   $.fn.materialChip = function (options) {
-    if (this.length > 1) {
-      var instances = [];
-      this.each(function () {
-        var materialChips = new MaterialChips($(this), options);
-        materialChips.init();
-        instances.push(materialChips.returnPublicInterface());
-      });
-      return instances;
-    }
-
-    var materialChips = new MaterialChips($(this), options);
-    materialChips.init();
-    return materialChips.returnPublicInterface();
+    return this.each(function () {
+      new MaterialChip($(this), options);
+    });
   };
-});
-/*! npm.im/object-fit-images 3.2.4 */
-var objectFitImages = (function () {
-'use strict';
-
-var OFI = 'bfred-it:object-fit-images';
-var propRegex = /(object-fit|object-position)\s*:\s*([-.\w\s%]+)/g;
-var testImg = typeof Image === 'undefined' ? {style: {'object-position': 1}} : new Image();
-var supportsObjectFit = 'object-fit' in testImg.style;
-var supportsObjectPosition = 'object-position' in testImg.style;
-var supportsOFI = 'background-size' in testImg.style;
-var supportsCurrentSrc = typeof testImg.currentSrc === 'string';
-var nativeGetAttribute = testImg.getAttribute;
-var nativeSetAttribute = testImg.setAttribute;
-var autoModeEnabled = false;
-
-function createPlaceholder(w, h) {
-	return ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='" + w + "' height='" + h + "'%3E%3C/svg%3E");
-}
-
-function polyfillCurrentSrc(el) {
-	if (el.srcset && !supportsCurrentSrc && window.picturefill) {
-		var pf = window.picturefill._;
-		// parse srcset with picturefill where currentSrc isn't available
-		if (!el[pf.ns] || !el[pf.ns].evaled) {
-			// force synchronous srcset parsing
-			pf.fillImg(el, {reselect: true});
-		}
-
-		if (!el[pf.ns].curSrc) {
-			// force picturefill to parse srcset
-			el[pf.ns].supported = false;
-			pf.fillImg(el, {reselect: true});
-		}
-
-		// retrieve parsed currentSrc, if any
-		el.currentSrc = el[pf.ns].curSrc || el.src;
-	}
-}
-
-function getStyle(el) {
-	var style = getComputedStyle(el).fontFamily;
-	var parsed;
-	var props = {};
-	while ((parsed = propRegex.exec(style)) !== null) {
-		props[parsed[1]] = parsed[2];
-	}
-	return props;
-}
-
-function setPlaceholder(img, width, height) {
-	// Default: fill width, no height
-	var placeholder = createPlaceholder(width || 1, height || 0);
-
-	// Only set placeholder if it's different
-	if (nativeGetAttribute.call(img, 'src') !== placeholder) {
-		nativeSetAttribute.call(img, 'src', placeholder);
-	}
-}
-
-function onImageReady(img, callback) {
-	// naturalWidth is only available when the image headers are loaded,
-	// this loop will poll it every 100ms.
-	if (img.naturalWidth) {
-		callback(img);
-	} else {
-		setTimeout(onImageReady, 100, img, callback);
-	}
-}
-
-function fixOne(el) {
-	var style = getStyle(el);
-	var ofi = el[OFI];
-	style['object-fit'] = style['object-fit'] || 'fill'; // default value
-
-	// Avoid running where unnecessary, unless OFI had already done its deed
-	if (!ofi.img) {
-		// fill is the default behavior so no action is necessary
-		if (style['object-fit'] === 'fill') {
-			return;
-		}
-
-		// Where object-fit is supported and object-position isn't (Safari < 10)
-		if (
-			!ofi.skipTest && // unless user wants to apply regardless of browser support
-			supportsObjectFit && // if browser already supports object-fit
-			!style['object-position'] // unless object-position is used
-		) {
-			return;
-		}
-	}
-
-	// keep a clone in memory while resetting the original to a blank
-	if (!ofi.img) {
-		ofi.img = new Image(el.width, el.height);
-		ofi.img.srcset = nativeGetAttribute.call(el, "data-ofi-srcset") || el.srcset;
-		ofi.img.src = nativeGetAttribute.call(el, "data-ofi-src") || el.src;
-
-		// preserve for any future cloneNode calls
-		// https://github.com/bfred-it/object-fit-images/issues/53
-		nativeSetAttribute.call(el, "data-ofi-src", el.src);
-		if (el.srcset) {
-			nativeSetAttribute.call(el, "data-ofi-srcset", el.srcset);
-		}
-
-		setPlaceholder(el, el.naturalWidth || el.width, el.naturalHeight || el.height);
-
-		// remove srcset because it overrides src
-		if (el.srcset) {
-			el.srcset = '';
-		}
-		try {
-			keepSrcUsable(el);
-		} catch (err) {
-			if (window.console) {
-				console.warn('https://bit.ly/ofi-old-browser');
-			}
-		}
-	}
-
-	polyfillCurrentSrc(ofi.img);
-
-	el.style.backgroundImage = "url(\"" + ((ofi.img.currentSrc || ofi.img.src).replace(/"/g, '\\"')) + "\")";
-	el.style.backgroundPosition = style['object-position'] || 'center';
-	el.style.backgroundRepeat = 'no-repeat';
-	el.style.backgroundOrigin = 'content-box';
-
-	if (/scale-down/.test(style['object-fit'])) {
-		onImageReady(ofi.img, function () {
-			if (ofi.img.naturalWidth > el.width || ofi.img.naturalHeight > el.height) {
-				el.style.backgroundSize = 'contain';
-			} else {
-				el.style.backgroundSize = 'auto';
-			}
-		});
-	} else {
-		el.style.backgroundSize = style['object-fit'].replace('none', 'auto').replace('fill', '100% 100%');
-	}
-
-	onImageReady(ofi.img, function (img) {
-		setPlaceholder(el, img.naturalWidth, img.naturalHeight);
-	});
-}
-
-function keepSrcUsable(el) {
-	var descriptors = {
-		get: function get(prop) {
-			return el[OFI].img[prop ? prop : 'src'];
-		},
-		set: function set(value, prop) {
-			el[OFI].img[prop ? prop : 'src'] = value;
-			nativeSetAttribute.call(el, ("data-ofi-" + prop), value); // preserve for any future cloneNode
-			fixOne(el);
-			return value;
-		}
-	};
-	Object.defineProperty(el, 'src', descriptors);
-	Object.defineProperty(el, 'currentSrc', {
-		get: function () { return descriptors.get('currentSrc'); }
-	});
-	Object.defineProperty(el, 'srcset', {
-		get: function () { return descriptors.get('srcset'); },
-		set: function (ss) { return descriptors.set(ss, 'srcset'); }
-	});
-}
-
-function hijackAttributes() {
-	function getOfiImageMaybe(el, name) {
-		return el[OFI] && el[OFI].img && (name === 'src' || name === 'srcset') ? el[OFI].img : el;
-	}
-	if (!supportsObjectPosition) {
-		HTMLImageElement.prototype.getAttribute = function (name) {
-			return nativeGetAttribute.call(getOfiImageMaybe(this, name), name);
-		};
-
-		HTMLImageElement.prototype.setAttribute = function (name, value) {
-			return nativeSetAttribute.call(getOfiImageMaybe(this, name), name, String(value));
-		};
-	}
-}
-
-function fix(imgs, opts) {
-	var startAutoMode = !autoModeEnabled && !imgs;
-	opts = opts || {};
-	imgs = imgs || 'img';
-
-	if ((supportsObjectPosition && !opts.skipTest) || !supportsOFI) {
-		return false;
-	}
-
-	// use imgs as a selector or just select all images
-	if (imgs === 'img') {
-		imgs = document.getElementsByTagName('img');
-	} else if (typeof imgs === 'string') {
-		imgs = document.querySelectorAll(imgs);
-	} else if (!('length' in imgs)) {
-		imgs = [imgs];
-	}
-
-	// apply fix to all
-	for (var i = 0; i < imgs.length; i++) {
-		imgs[i][OFI] = imgs[i][OFI] || {
-			skipTest: opts.skipTest
-		};
-		fixOne(imgs[i]);
-	}
-
-	if (startAutoMode) {
-		document.body.addEventListener('load', function (e) {
-			if (e.target.tagName === 'IMG') {
-				fix(e.target, {
-					skipTest: opts.skipTest
-				});
-			}
-		}, true);
-		autoModeEnabled = true;
-		imgs = 'img'; // reset to a generic selector for watchMQ
-	}
-
-	// if requested, watch media queries for object-fit change
-	if (opts.watchMQ) {
-		window.addEventListener('resize', fix.bind(null, imgs, {
-			skipTest: opts.skipTest
-		}));
-	}
-}
-
-fix.supportsObjectFit = supportsObjectFit;
-fix.supportsObjectPosition = supportsObjectPosition;
-
-hijackAttributes();
-
-return fix;
-
-}());
-
+})(jQuery);
 /*!
  * Name    : Just Another Parallax [Jarallax]
  * Version : 1.10.4
@@ -29845,6 +27301,14 @@ function jarallaxVideo() {
 
 /***/ })
 /******/ ]);
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 (function ($) {
   var inputData = {};
   var dataColor = '';
@@ -29864,6 +27328,8 @@ function jarallaxVideo() {
   /*#__PURE__*/
   function () {
     function mdbAutocomplete(input, options) {
+      _classCallCheck(this, mdbAutocomplete);
+
       this.defaults = {
         data: inputData,
         dataColor: dataColor,
@@ -29881,170 +27347,179 @@ function jarallaxVideo() {
       this.init();
     }
 
-    var _proto = mdbAutocomplete.prototype;
-
-    _proto.init = function init() {
-      this.setData();
-      this.inputFocus();
-      this.inputBlur();
-      this.inputKeyupData();
-      this.inputLiClick();
-      this.clearAutocomplete();
-    };
-
-    _proto.assignOptions = function assignOptions(options) {
-      return $.extend({}, this.defaults, options);
-    };
-
-    _proto.setData = function setData() {
-      if (Object.keys(this.options.data).length) {
-        this.$autocompleteWrap.insertAfter(this.$input);
+    _createClass(mdbAutocomplete, [{
+      key: "init",
+      value: function init() {
+        this.setData();
+        this.inputFocus();
+        this.inputBlur();
+        this.inputKeyupData();
+        this.inputLiClick();
+        this.clearAutocomplete();
       }
-    };
+    }, {
+      key: "assignOptions",
+      value: function assignOptions(options) {
+        return $.extend({}, this.defaults, options);
+      }
+    }, {
+      key: "setData",
+      value: function setData() {
+        if (Object.keys(this.options.data).length) {
+          this.$autocompleteWrap.insertAfter(this.$input);
+        }
+      }
+    }, {
+      key: "inputFocus",
+      value: function inputFocus() {
+        var _this = this;
 
-    _proto.inputFocus = function inputFocus() {
-      var _this = this;
+        this.$input.on('focus', function () {
+          _this.$input.css('border-bottom', _this.options.inputFocus);
 
-      this.$input.on('focus', function () {
-        _this.$input.css('border-bottom', _this.options.inputFocus);
+          _this.$input.css('box-shadow', _this.options.inputFocusShadow);
+        });
+      }
+    }, {
+      key: "inputBlur",
+      value: function inputBlur() {
+        var _this2 = this;
 
-        _this.$input.css('box-shadow', _this.options.inputFocusShadow);
-      });
-    };
+        this.$input.on('blur', function () {
+          _this2.$input.css('border-bottom', _this2.options.inputBlur);
 
-    _proto.inputBlur = function inputBlur() {
-      var _this2 = this;
+          _this2.$input.css('box-shadow', _this2.options.inputBlurShadow);
+        });
+      }
+    }, {
+      key: "inputKeyupData",
+      value: function inputKeyupData() {
+        var _this3 = this;
 
-      this.$input.on('blur', function () {
-        _this2.$input.css('border-bottom', _this2.options.inputBlur);
+        this.$input.on('keyup', function (e) {
+          if (e.which === enterCharCode) {
+            if (!_this3.options.data.includes(_this3.$input.val())) {
+              _this3.options.data.push(_this3.$input.val());
+            }
 
-        _this2.$input.css('box-shadow', _this2.options.inputBlurShadow);
-      });
-    };
+            _this3.$autocompleteWrap.find('.selected').trigger('click');
 
-    _proto.inputKeyupData = function inputKeyupData() {
-      var _this3 = this;
+            _this3.$autocompleteWrap.empty();
 
-      this.$input.on('keyup', function (e) {
-        if (e.which === enterCharCode) {
-          if (!_this3.options.data.includes(_this3.$input.val())) {
-            _this3.options.data.push(_this3.$input.val());
+            _this3.inputBlur();
+
+            count = -1;
+            nextScrollHeight = -45;
+            return count;
           }
 
-          _this3.$autocompleteWrap.find('.selected').trigger('click');
+          var $inputValue = _this3.$input.val();
 
           _this3.$autocompleteWrap.empty();
 
-          _this3.inputBlur();
+          if ($inputValue.length) {
+            for (var item in _this3.options.data) {
+              if (_this3.options.data[item].toLowerCase().indexOf($inputValue.toLowerCase()) !== -1) {
+                var option = $("<li>".concat(_this3.options.data[item], "</li>"));
 
-          count = -1;
-          nextScrollHeight = -45;
-          return count;
-        }
-
-        var $inputValue = _this3.$input.val();
-
-        _this3.$autocompleteWrap.empty();
-
-        if ($inputValue.length) {
-          for (var item in _this3.options.data) {
-            if (_this3.options.data[item].toLowerCase().indexOf($inputValue.toLowerCase()) !== -1) {
-              var option = $("<li>" + _this3.options.data[item] + "</li>");
-
-              _this3.$autocompleteWrap.append(option);
+                _this3.$autocompleteWrap.append(option);
+              }
             }
-          }
 
-          var $ulList = _this3.$autocompleteWrap;
+            var $ulList = _this3.$autocompleteWrap;
 
-          var $ulItems = _this3.$autocompleteWrap.find('li');
+            var $ulItems = _this3.$autocompleteWrap.find('li');
 
-          var nextItemHeight = $ulItems.eq(count).outerHeight();
-          var previousItemHeight = $ulItems.eq(count - 1).outerHeight();
+            var nextItemHeight = $ulItems.eq(count).outerHeight();
+            var previousItemHeight = $ulItems.eq(count - 1).outerHeight();
 
-          if (e.which === arrowDownCharCode) {
-            if (count > $ulItems.length - 2) {
-              count = -1;
-              $ulItems.scrollTop(0);
-              nextScrollHeight = -45;
-              return;
+            if (e.which === arrowDownCharCode) {
+              if (count > $ulItems.length - 2) {
+                count = -1;
+                $ulItems.scrollTop(0);
+                nextScrollHeight = -45;
+                return;
+              } else {
+                count++;
+              }
+
+              nextScrollHeight += nextItemHeight;
+              $ulList.scrollTop(nextScrollHeight);
+              $ulItems.eq(count).addClass('selected');
+            } else if (e.which === arrowUpCharCode) {
+              if (count < 1) {
+                count = $ulItems.length;
+                $ulList.scrollTop($ulList.prop('scrollHeight'));
+                nextScrollHeight = $ulList.prop('scrollHeight') - nextItemHeight;
+              } else {
+                count--;
+              }
+
+              nextScrollHeight -= previousItemHeight;
+              $ulList.scrollTop(nextScrollHeight);
+              $ulItems.eq(count).addClass('selected');
+            }
+
+            if ($inputValue.length === 0) {
+              _this3.$clearButton.css('visibility', 'hidden');
             } else {
-              count++;
+              _this3.$clearButton.css('visibility', 'visible');
             }
 
-            nextScrollHeight += nextItemHeight;
-            $ulList.scrollTop(nextScrollHeight);
-            $ulItems.eq(count).addClass('selected');
-          } else if (e.which === arrowUpCharCode) {
-            if (count < 1) {
-              count = $ulItems.length;
-              $ulList.scrollTop($ulList.prop('scrollHeight'));
-              nextScrollHeight = $ulList.prop('scrollHeight') - nextItemHeight;
-            } else {
-              count--;
-            }
-
-            nextScrollHeight -= previousItemHeight;
-            $ulList.scrollTop(nextScrollHeight);
-            $ulItems.eq(count).addClass('selected');
-          }
-
-          if ($inputValue.length === 0) {
-            _this3.$clearButton.css('visibility', 'hidden');
+            _this3.$autocompleteWrap.children().css('color', _this3.options.dataColor);
           } else {
-            _this3.$clearButton.css('visibility', 'visible');
+            _this3.$clearButton.css('visibility', 'hidden');
           }
-
-          _this3.$autocompleteWrap.children().css('color', _this3.options.dataColor);
-        } else {
-          _this3.$clearButton.css('visibility', 'hidden');
-        }
-      });
-    };
-
-    _proto.inputLiClick = function inputLiClick() {
-      var _this4 = this;
-
-      this.$autocompleteWrap.on('click', 'li', function (e) {
-        e.preventDefault();
-
-        _this4.$input.val($(e.target).text());
-
-        _this4.$autocompleteWrap.empty();
-      });
-    };
-
-    _proto.clearAutocomplete = function clearAutocomplete() {
-      var _this5 = this;
-
-      this.$clearButton.on('click', function (e) {
-        count = -1;
-        nextScrollHeight = -45;
-        e.preventDefault();
-        var $this = $(e.currentTarget);
-        $this.parent().find('.mdb-autocomplete').val('');
-        $this.css('visibility', 'hidden');
-
-        _this5.$autocompleteWrap.empty();
-
-        $this.parent().find('label').removeClass('active');
-      });
-    };
-
-    _proto.changeSVGcolors = function changeSVGcolors() {
-      var _this6 = this;
-
-      if (this.$input.hasClass('mdb-autocomplete')) {
-        this.$input.on('click keyup', function (e) {
-          e.preventDefault();
-          $(e.target).parent().find('.mdb-autocomplete-clear').find('svg').css('fill', _this6.options.closeColor);
-        });
-        this.$input.on('blur', function (e) {
-          e.preventDefault();
-          $(e.target).parent().find('.mdb-autocomplete-clear').find('svg').css('fill', _this6.options.closeBlurColor);
         });
       }
-    };
+    }, {
+      key: "inputLiClick",
+      value: function inputLiClick() {
+        var _this4 = this;
+
+        this.$autocompleteWrap.on('click', 'li', function (e) {
+          e.preventDefault();
+
+          _this4.$input.val($(e.target).text());
+
+          _this4.$autocompleteWrap.empty();
+        });
+      }
+    }, {
+      key: "clearAutocomplete",
+      value: function clearAutocomplete() {
+        var _this5 = this;
+
+        this.$clearButton.on('click', function (e) {
+          count = -1;
+          nextScrollHeight = -45;
+          e.preventDefault();
+          var $this = $(e.currentTarget);
+          $this.parent().find('.mdb-autocomplete').val('');
+          $this.css('visibility', 'hidden');
+
+          _this5.$autocompleteWrap.empty();
+
+          $this.parent().find('label').removeClass('active');
+        });
+      }
+    }, {
+      key: "changeSVGcolors",
+      value: function changeSVGcolors() {
+        var _this6 = this;
+
+        if (this.$input.hasClass('mdb-autocomplete')) {
+          this.$input.on('click keyup', function (e) {
+            e.preventDefault();
+            $(e.target).parent().find('.mdb-autocomplete-clear').find('svg').css('fill', _this6.options.closeColor);
+          });
+          this.$input.on('blur', function (e) {
+            e.preventDefault();
+            $(e.target).parent().find('.mdb-autocomplete-clear').find('svg').css('fill', _this6.options.closeBlurColor);
+          });
+        }
+      }
+    }]);
 
     return mdbAutocomplete;
   }();
@@ -30083,71 +27558,6 @@ function jarallaxVideo() {
   });
 })(jQuery);
 
-(function ($) {
-  $.fn.mdbTreeview = function () {
-    var $this = $(this);
-
-    if ($this.hasClass('treeview')) {
-      var $toggler = $this.find('.rotate');
-      $.each($toggler, function (e) {
-        $($toggler[e]).off('click');
-        $($toggler[e]).on('click', function () {
-          var $this = $(this);
-          $this.siblings('.nested').toggleClass('active');
-          $this.toggleClass('down');
-        });
-      });
-    }
-
-    if ($this.hasClass('treeview-animated')) {
-      var $elements = $this.find('.treeview-animated-element');
-      var $closed = $this.find('.closed');
-      $this.find('.nested').hide();
-      $closed.off('click');
-      $closed.on('click', function () {
-        var $this = $(this);
-        var $target = $this.siblings('.nested');
-        var $pointer = $this.children('.fa-angle-right');
-        $this.toggleClass('open');
-        $pointer.toggleClass('down');
-        !$target.hasClass('active') ? $target.addClass('active').slideDown() : $target.removeClass('active').slideUp();
-        return false;
-      });
-      $elements.off('click');
-      $elements.on('click', function () {
-        var $this = $(this);
-        $this.hasClass('opened') ? $this.removeClass('opened') : ($elements.removeClass('opened'), $this.addClass('opened'));
-      });
-    }
-
-    if ($this.hasClass('treeview-colorful')) {
-      var _$elements = $this.find('.treeview-colorful-element');
-
-      var $header = $this.find('.treeview-colorful-items-header');
-      $this.find('.nested').hide();
-      $header.off('click');
-      $header.on('click', function () {
-        var $this = $(this);
-        var $target = $this.siblings('.nested');
-        var $pointerPlus = $this.children('.fa-plus-circle');
-        var $pointerMinus = $this.children('.fa-minus-circle');
-        $this.toggleClass('open');
-        $pointerPlus.removeClass('fa-plus-circle');
-        $pointerPlus.addClass('fa-minus-circle');
-        $pointerMinus.removeClass('fa-minus-circle');
-        $pointerMinus.addClass('fa-plus-circle');
-        !$target.hasClass('active') ? $target.addClass('active').slideDown() : $target.removeClass('active').slideUp();
-      });
-
-      _$elements.off('click');
-
-      _$elements.on('click', function () {
-        var $this = $(this);
-        $this.hasClass('opened') ? _$elements.removeClass('opened') : (_$elements.removeClass('opened'), $this.addClass('opened'));
-      });
-    }
-  };
-})(jQuery);
 /*!
  * bsCustomFileInput v1.3.2 (https://github.com/Johann-S/bs-custom-file-input)
  * Copyright 2018 - 2019 Johann-S <johann.servoire@gmail.com>
@@ -30322,179 +27732,70 @@ document.addEventListener("DOMContentLoaded", function () {
   bsCustomFileInput.init()
 });
 
-jQuery(function ($) {
-  var Sticky =
-  /*#__PURE__*/
-  function () {
-    function Sticky(element, options) {
-      this.defaults = {
-        topSpacing: 0,
-        zIndex: false,
-        stopper: '#footer',
-        stickyClass: false,
-        startScrolling: 'top',
-        minWidth: false
-      };
-      this.$element = element;
-      this.options = this.assignOptions(options);
-      this.$window = $(window);
-      this.stopper = this.options.stopper;
-      this.elementWidth = this.$element.outerWidth();
-      this.elementHeight = this.$element.outerHeight(true);
-      this.initialScrollTop = this.$element.offset().top;
-      this.$placeholder = $('<div class="sticky-placeholder"></div>');
-      this.scrollTop = 0;
-      this.setPushPoint();
-      this.setStopperPosition();
-      this.bindEvents();
+"use strict";
+
+(function ($) {
+  $.fn.mdbTreeview = function () {
+    var $this = $(this);
+
+    if ($this.hasClass('treeview')) {
+      var $toggler = $this.find('.rotate');
+      $.each($toggler, function (e) {
+        $($toggler[e]).off('click');
+        $($toggler[e]).on('click', function () {
+          var $this = $(this);
+          $this.siblings('.nested').toggleClass('active');
+          $this.toggleClass('down');
+        });
+      });
     }
 
-    var _proto = Sticky.prototype;
-
-    _proto.hasZIndex = function hasZIndex() {
-      return typeof this.options.zIndex === 'number';
-    };
-
-    _proto.hasStopper = function hasStopper() {
-      return $(this.options.stopper).length || typeof this.options.stopper === 'number';
-    };
-
-    _proto.isScreenHeightEnough = function isScreenHeightEnough() {
-      return this.$element.outerHeight() + this.options.topSpacing < this.$window.height();
-    };
-
-    _proto.assignOptions = function assignOptions(options) {
-      return $.extend({}, this.defaults, options);
-    };
-
-    _proto.setPushPoint = function setPushPoint() {
-      if (this.options.startScrolling === 'bottom' && !this.isScreenHeightEnough()) {
-        this.$pushPoint = this.initialScrollTop + this.$element.outerHeight(true) - this.$window.height();
-      } else {
-        this.$pushPoint = this.initialScrollTop - this.options.topSpacing;
-      }
-    };
-
-    _proto.setStopperPosition = function setStopperPosition() {
-      if (typeof this.options.stopper === 'string') {
-        this.stopPoint = $(this.stopper).offset().top - this.options.topSpacing;
-      } else if (typeof this.options.stopper === 'number') {
-        this.stopPoint = this.options.stopper;
-      }
-    };
-
-    _proto.bindEvents = function bindEvents() {
-      this.$window.on('resize', this.handleResize.bind(this));
-      this.$window.on('scroll', this.init.bind(this));
-    };
-
-    _proto.handleResize = function handleResize() {
-      var $parent = this.$element.parent();
-      this.elementWidth = $parent.width();
-      this.elementHeight = this.$element.outerHeight(true);
-      this.setPushPoint();
-      this.setStopperPosition();
-      this.init();
-    } // eslint-disable-next-line consistent-return
-    ;
-
-    _proto.init = function init() {
-      if (this.options.minWidth && this.options.minWidth > this.$window.innerWidth()) {
+    if ($this.hasClass('treeview-animated')) {
+      var $elements = $this.find('.treeview-animated-element');
+      var $closed = $this.find('.closed');
+      $this.find('.nested').hide();
+      $closed.off('click');
+      $closed.on('click', function () {
+        var $this = $(this);
+        var $target = $this.siblings('.nested');
+        var $pointer = $this.children('.fa-angle-right');
+        $this.toggleClass('open');
+        $pointer.toggleClass('down');
+        !$target.hasClass('active') ? $target.addClass('active').slideDown() : $target.removeClass('active').slideUp();
         return false;
-      }
-
-      if (this.options.startScrolling === 'bottom' && !this.isScreenHeightEnough()) {
-        this.scrollTop = this.$window.scrollTop() + this.$window.height();
-      } else {
-        this.scrollTop = this.$window.scrollTop();
-      }
-
-      if (this.$pushPoint < this.scrollTop) {
-        this.appendPlaceholder();
-        this.stickyStart();
-      } else {
-        this.stickyEnd();
-      }
-
-      if (this.$window.scrollTop() > this.$pushPoint) {
-        this.stop();
-      } else {
-        this.stickyEnd();
-      }
-    };
-
-    _proto.appendPlaceholder = function appendPlaceholder() {
-      this.$element.after(this.$placeholder);
-      this.$placeholder.css({
-        width: this.elementWidth,
-        height: this.elementHeight
       });
-    };
+      $elements.off('click');
+      $elements.on('click', function () {
+        var $this = $(this);
+        $this.hasClass('opened') ? $this.removeClass('opened') : ($elements.removeClass('opened'), $this.addClass('opened'));
+      });
+    }
 
-    _proto.stickyStart = function stickyStart() {
-      if (this.options.stickyClass) {
-        this.$element.addClass(this.options.stickyClass);
-      } // @see: https://stackoverflow.com/a/4370047
+    if ($this.hasClass('treeview-colorful')) {
+      var _$elements = $this.find('.treeview-colorful-element');
 
-
-      this.$element.get(0).style.overflow = 'scroll';
-      var scrollHeight = this.$element.get(0).scrollHeight;
-      this.$element.get(0).style.overflow = '';
-      this.$element.css({
-        position: 'fixed',
-        width: this.elementWidth,
-        height: scrollHeight
+      var $header = $this.find('.treeview-colorful-items-header');
+      $this.find('.nested').hide();
+      $header.off('click');
+      $header.on('click', function () {
+        var $this = $(this);
+        var $target = $this.siblings('.nested');
+        var $pointerPlus = $this.children('.fa-plus-circle');
+        var $pointerMinus = $this.children('.fa-minus-circle');
+        $this.toggleClass('open');
+        $pointerPlus.removeClass('fa-plus-circle');
+        $pointerPlus.addClass('fa-minus-circle');
+        $pointerMinus.removeClass('fa-minus-circle');
+        $pointerMinus.addClass('fa-plus-circle');
+        !$target.hasClass('active') ? $target.addClass('active').slideDown() : $target.removeClass('active').slideUp();
       });
 
-      if (this.options.startScrolling === 'bottom' && !this.isScreenHeightEnough()) {
-        this.$element.css({
-          bottom: 0,
-          top: ''
-        });
-      } else {
-        this.$element.css({
-          top: this.options.topSpacing
-        });
-      }
+      _$elements.off('click');
 
-      if (this.hasZIndex()) {
-        this.$element.css({
-          zIndex: this.options.zIndex
-        });
-      }
-    };
-
-    _proto.stickyEnd = function stickyEnd() {
-      if (this.options.stickyClass) {
-        this.$element.removeClass(this.options.stickyClass);
-      }
-
-      this.$placeholder.remove();
-      this.$element.css({
-        position: 'static',
-        top: this.options.topSpacing,
-        width: '',
-        height: ''
+      _$elements.on('click', function () {
+        var $this = $(this);
+        $this.hasClass('opened') ? _$elements.removeClass('opened') : (_$elements.removeClass('opened'), $this.addClass('opened'));
       });
-    };
-
-    _proto.stop = function stop() {
-      if (this.stopPoint < $(this.$element).offset().top + this.$element.outerHeight(true)) {
-        this.$element.css({
-          position: 'absolute',
-          bottom: 0,
-          top: ''
-        });
-      }
-    };
-
-    return Sticky;
-  }();
-
-  $.fn.sticky = function (options) {
-    $(this).each(function () {
-      var sticky = new Sticky($(this), options);
-      sticky.init();
-    });
+    }
   };
-});
+})(jQuery);
