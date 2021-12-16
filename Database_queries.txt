@@ -1,2 +1,9 @@
 CREATE DATABASE soft_travel;
 USE soft_travel;
+
+CREATE TABLE divisions(
+    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name varchar(10) NOT NULL UNIQUE
+);
+
+INSERT INTO divisions (name) VALUES ('Barisal'), ('Chittagong'), ('Dhaka'), ('Khulna'), ('Mymensingh'), ('Rajshahi'), ('Rangpur'), ('Sylhet');
