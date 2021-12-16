@@ -1,2 +1,2 @@
-CREATE DATABASE networkerbahire;
-USE networkerbahire;
+CREATE DATABASE soft_travel;
+USE soft_travel;
