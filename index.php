@@ -1008,7 +1008,7 @@ try{
         <!--First column-->
         <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
           <h6 class="text-uppercase mb-4 font-weight-bold">Network Er Bahire</h6>
-          <p><b>Network Er Bahire</b> is a simple travel system that is created for <b>Software Engineering Laboratory</b> project</p>
+          <p>An easy tour and travel management system for foreigners & natives.<br/><b>Network Er Bahire</b> is a simple travel system that is created for <b>Software Engineering Laboratory</b> project</p>
         </div>
         <!--/.First column-->
 
