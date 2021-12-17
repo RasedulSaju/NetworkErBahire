@@ -1,0 +1,19 @@
+<!-- Date Picker -->
+					<!--Grid column-->
+					<!-- <div class="col-lg-3 col-md-6">
+						<div class="md-form">
+							<input placeholder="Selected date" type="text" id="from" class="form-control datepicker">
+							<label for="date-picker-example">From</label>
+						</div>
+					</div> -->
+					<!--Grid column-->
+
+					<!--Grid column-->
+					<!-- <div class="col-lg-3 col-md-6">
+						<div class="md-form">
+							<input placeholder="Selected date" type="text" id="to" class="form-control datepicker">
+							<label for="date-picker-example">To</label>
+						</div>
+					</div> -->
+					<!--Grid column-->
+					<!-- /. Date Picker -->

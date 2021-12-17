@@ -7,39 +7,39 @@ try{
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Network Er Bahire</title>
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
-  <!-- Bootstrap core CSS -->
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-  <!-- Material Design Bootstrap -->
-  <link href="css/mdb.min.css" rel="stylesheet">
-  <style>
-    html,
-        body,
-        header,
-        .jarallax {
-          height: 100%;
-        }
+ 	<meta charset="utf-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  	<meta http-equiv="x-ua-compatible" content="ie=edge">
+  	<title>Network Er Bahire</title>
+  	<!-- Font Awesome -->
+ 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+  	<!-- Bootstrap core CSS -->
+  	<link href="css/bootstrap.min.css" rel="stylesheet">
+  	<!-- Material Design Bootstrap -->
+  	<link href="css/mdb.min.css" rel="stylesheet">
+  	<style>
+    	html,
+        	body,
+        	header,
+        	.jarallax {
+          		height: 100%;
+        	}
 
         @media (min-width: 560px) and (max-width: 740px) {
-          html,
-          body,
-          header,
-          .jarallax {
-            height: 500px;
-          }
+          	html,
+          	body,
+          	header,
+          	.jarallax {
+            	height: 500px;
+          	}
         }
 
         @media (min-width: 800px) and (max-width: 850px) {
             .navbar:not(.top-nav-collapse) {
-                background: #3E4551!important;
+              	background: #3E4551!important;
             }
             .navbar {
-              box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12) !important;
+              	box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12) !important;
             }
         }
     </style>
@@ -47,164 +47,233 @@ try{
 
 <body class="intro-page travel-lp">
 
-  <!--Navigation & Intro-->
-  <header>
+  	<!--Navigation & Intro-->
+  	<header>
+    	<!--Navbar-->
+    	<nav class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar danger-color">
+      		<div class="container">
+        		<a class="navbar-brand" href="#">
+          			<strong>Network Er Bahire</strong>
+        		</a>
+        		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          			<span class="navbar-toggler-icon"></span>
+        		</button>
+        		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<!--Links-->
+					<ul class="navbar-nav mr-auto smooth-scroll">
+						<li class="nav-item">
+							<a class="nav-link" href="#home">Home
+								<span class="sr-only">(current)</span>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#destination" data-offset="100">Destination</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#contact" data-offset="100">Contact</a>
+						</li>
+					</ul>
+        		</div>
+      		</div>
+    	</nav>
+    	<!-- /. Navbar-->
 
-    <!--Navbar-->
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar danger-color">
-      <div class="container">
-        <a class="navbar-brand" href="#">
-          <strong>Network Er Bahire</strong>
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <!--Links-->
-          <ul class="navbar-nav mr-auto smooth-scroll">
-            <li class="nav-item">
-              <a class="nav-link" href="#home">Home
-                <span class="sr-only">(current)</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#destination" data-offset="100">Destination</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#contact" data-offset="100">Contact</a>
-            </li>
-          </ul>
+    	<!-- Intro Section -->
+    	<div id="home" class="view jarallax" data-jarallax='{"speed": 0.2}' style="background-image: url(img/SlideBackground.jpg); background-repeat: no-repeat; background-size: cover; background-position: center center;">
+      		<div class="mask rgba-black-strong">
+        		<div class="container h-100 d-flex justify-content-center align-items-center">
+          			<div class="row smooth-scroll">
+            			<div class="col-md-12 white-text text-center">
+              				<div class="wow fadeInDown" data-wow-delay="0.2s">
+                				<h2 class="display-3 font-weight-bold text-uppercase mb-2 spacing rgba-white-slight px-4 py-3">
+                  					<strong>Let's go</strong>
+                				</h2>
 
-          <!--Social Icons-->
-          <ul class="navbar-nav nav-flex-icons">
-            <li class="nav-item">
-              <a class="nav-link">
-                <i class="fab fa-facebook-f"></i>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link">
-                <i class="fab fa-twitter"></i>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link">
-                <i class="fab fa-instagram"></i>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <!--/Navbar-->
+                				<h4 class="subtext-header mt-4 mb-5">Network Er Bahire</h4>
+              				</div>
+              				<a href="#destination" data-offset="100" class="btn btn-white btn-rounded font-weight-bold dark-grey-text wow fadeInUp" data-wow-delay="0.2s">Read more</a>
+            			</div>
+          			</div>
+        		</div>
+      		</div>
+    	</div>
 
-    <!-- Intro Section -->
-    <div id="home" class="view jarallax" data-jarallax='{"speed": 0.2}' style="background-image: url(img/SlideBackground.jpg); background-repeat: no-repeat; background-size: cover; background-position: center center;">
-      <div class="mask rgba-black-strong">
-        <div class="container h-100 d-flex justify-content-center align-items-center">
-          <div class="row smooth-scroll">
-            <div class="col-md-12 white-text text-center">
-              <div class="wow fadeInDown" data-wow-delay="0.2s">
-                <h2 class="display-3 font-weight-bold text-uppercase mb-2 spacing rgba-white-slight px-4 py-3">
-                  <strong>Let's go</strong>
-                </h2>
+  	</header>
+  	<!-- /. Navigation & Intro -->
 
-                <h4 class="subtext-header mt-4 mb-5">Network Er Bahire
+  	<!--Main content-->
+  	<main>
+
+    	<div class="container">
+
+      		<!-- Section: Features v.1 -->
+      		<section id="destination" class="mt-4">
+
+				<!--Section heading-->
+				<h4 class="text-center my-5 font-weight-bold wow fadeIn" data-wow-delay="0.2s">
+					<strong>Where do you want to go?</strong>
 				</h4>
-              </div>
-              <a href="#destination" data-offset="100" class="btn btn-white btn-rounded font-weight-bold dark-grey-text wow fadeInUp"
-                data-wow-delay="0.2s">Read more</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+				<!--Section description-->
+				<p class="text-center w-responsive mx-auto mb-5 wow fadeIn" data-wow-delay="0.2s">Let's visit somewhere & be <b>Network Er Bahire</b> for a while. Search for destination below.</p>
+				<!-- Grid row . Division Search -->
+				<div class="row flex-center">
 
-  </header>
-  <!--/Navigation & Intro-->
+					<!-- Grid column-->
+					<div class="col-lg-6 col-md-6">
+				
+						<div class="md-form form-lg">
+							<?php
+								$sqlquery="SELECT * FROM divisions";
 
-  <!--Main content-->
-  <main>
+								try{
+									$returnval=$dbcon->query($sqlquery); ///PDO Statement
 
-    <div class="container">
-
-      <!--Section: Features v.1-->
-      <section id="destination" class="mt-4">
-
-        <!--Section heading-->
-        <h4 class="text-center my-5 font-weight-bold wow fadeIn" data-wow-delay="0.2s">
-          <strong>Where do you want to go?</strong>
-        </h4>
-        <!--Section description-->
-        <p class="text-center w-responsive mx-auto mb-5 wow fadeIn" data-wow-delay="0.2s">Let's visit somewhere & be <b>Network Er Bahire</b>. Search for destination below.</p>
-        <!--Grid row-->
-        <div class="row flex-center">
-
-          <!--Grid column-->
-          <div class="col-lg-3 col-md-6">
-
-            <div class="md-form">
-			<?php
-										$sqlquery="SELECT * FROM divisions";
-
-										try{
-											$returnval=$dbcon->query($sqlquery); ///PDO Statement
-
-											$divisionstable=$returnval->fetchAll();
-										?>
-										<select name="division" id="form-autocomplete-1" class="mdb-select form-control mdb-autocomplete md-form colorful-select dropdown-primary" title="Select Division" searchable="Search Division..">
-											<option value="" selected="" disabled="">Division</option>
-											<?php foreach($divisionstable as $dvsdata){ ?>
-											<option value="<?php echo $dvsdata['name'] ?>"><?php echo $dvsdata['name'] ?></option>
-											<?php
-												}
-											?>
-										</select>
-
-              	<!-- <input type="search" id="form-autocomplete-1" class="form-control mdb-autocomplete"> -->
-              	<label for="form-autocomplete" class="active">Desitination, country</label>
-				  <?php
+									$divisionstable=$returnval->fetchAll();
+							?>
+							<select name="division" id="DiviSrch" class="mdb-select mdb-autocomplete md-form colorful-select dropdown-primary custom-select-lg" title="Select Division" searchable="Search Division...">
+								<option value="" selected="" disabled="">Find Division</option>
+								<?php foreach($divisionstable as $dvsdata){ ?>
+								<option value="<?php echo $dvsdata['name'] ?>"><?php echo $dvsdata['name'] ?></option>
+								<?php
 									}
-									catch(PDOException $ex){
-										echo $ex;
+								?>
+							</select>
+
+							<?php
+								}
+								catch(PDOException $ex){
+									echo $ex;
+								}
+							?>
+           		 		</div>
+          			</div>
+		  
+		  			<!-- Grid column . Search btn -->
+          			<div class="col-lg-6 col-md-6">
+            			<a id="diviSrchBtn" class="btn btn-blue btn-rounded">Search Division</a>
+          			</div>
+         			<!-- /. Grid column . Search Btn -->
+			
+			 		<script>
+						var srcbtn=document.getElementById('diviSrchBtn');
+						srcbtn.addEventListener('click', searchprocess);
+
+						function searchprocess(){
+							var searchvalue=document.getElementById('DiviSrch').value;
+							window.location.assign("search?t=d&v="+searchvalue);
+						}
+            		</script>
+          			<!--Grid column-->
+        		</div>
+        		<!-- /. Grid row . Division Search -->
+
+				<!-- Grid row . Prominent Spots Search -->
+				<div class="row flex-center">
+
+					<!--Grid column-->
+					<div class="col-lg-6 col-md-6">
+				
+						<div class="md-form">
+							<?php
+								$sqlquery="SELECT * FROM spots";
+
+								try{
+									$returnval=$dbcon->query($sqlquery); ///PDO Statement
+
+									$spotstable=$returnval->fetchAll();
+							?>
+							<select name="division" id="promSpotSrch" class="mdb-select mdb-autocomplete md-form colorful-select custom-select-lg dropdown-default" title="Select Spot" searchable="Search Spot...">
+								<option value="" selected="" disabled="">Find Prominent Spot</option>
+								<?php foreach($spotstable as $sptsdata){ ?>
+								<option value="<?php echo $sptsdata['name'] ?>"><?php echo $sptsdata['name'] ?></option>
+								<?php
 									}
-					?>
-            </div>
+								?>
+							</select>
 
-          </div>
-          <!--Grid column-->
+							<?php
+								}
+								catch(PDOException $ex){
+									echo $ex;
+								}
+							?>
+           		 		</div>
+          			</div>
+		  
+		  			<!-- Grid column . Search btn -->
+          			<div class="col-lg-6 col-md-6">
+            			<a id="promSpotSrchBtn" class="btn btn-default btn-rounded">Search Spot</a>
+          			</div>
+         			<!-- /. Grid column . Search Btn -->
+			
+			 		<script>
+						var srcbtn=document.getElementById('promSpotSrchBtn');
+						srcbtn.addEventListener('click', searchprocess);
 
-          <!--Grid column-->
-          <div class="col-lg-3 col-md-6">
-            <div class="md-form">
-              <input placeholder="Selected date" type="text" id="from" class="form-control datepicker">
-              <label for="date-picker-example">From</label>
-            </div>
-          </div>
-          <!--Grid column-->
+						function searchprocess(){
+							var searchvalue=document.getElementById('promSpotSrch').value;
+							window.location.assign("search?t=s&v="+searchvalue);
+						}
+            		</script>
+          			<!-- Grid column -->
+        		</div>
+				<!-- /. Grid row . Prominent Spots Search -->
 
-          <!--Grid column-->
-          <div class="col-lg-3 col-md-6">
-            <div class="md-form">
-              <input placeholder="Selected date" type="text" id="to" class="form-control datepicker">
-              <label for="date-picker-example">To</label>
-            </div>
-          </div>
-          <!--Grid column-->
+				<!-- Grid row . Hotels or Resorts Search -->
+				<div class="row flex-center">
 
-          <!--Grid column-->
-          <div class="col-lg-3 col-md-6">
-            <a class="btn btn-blue btn-rounded">Search</a>
-          </div>
-          <!--Grid column-->
+					<!--Grid column-->
+					<div class="col-lg-6 col-md-6">
+				
+						<div class="md-form">
+							<?php
+								$sqlquery="SELECT * FROM divisions";
 
-        </div>
-        <!--Grid row-->
+								try{
+									$returnval=$dbcon->query($sqlquery); ///PDO Statement
 
-      </section>
-      <!--/Section: Features v.1-->
-    </div>
+									$htlrsttable=$returnval->fetchAll();
+							?>
+							<select name="division" id="htlrsrtSrch" class="mdb-select mdb-autocomplete md-form colorful-select custom-select-lg dropdown-secondary" title="Select Spot" searchable="Search Hotel or Resort...">
+								<option value="" selected="" disabled="">Find Hotels or Resorts</option>
+								<?php foreach($htlrsttable as $hrsdata){ ?>
+								<option value="<?php echo $hrsdata['name'] ?>"><?php echo $hrsdata['name'] ?></option>
+								<?php
+									}
+								?>
+							</select>
+
+							<?php
+								}
+								catch(PDOException $ex){
+									echo $ex;
+								}
+							?>
+           		 		</div>
+          			</div>
+		  
+		  			<!-- Grid column . Search btn -->
+          			<div class="col-lg-6 col-md-6">
+            			<a id="htlrsrtSrchBtn" class="btn btn-secondary btn-rounded">Search Hotel or Resort</a>
+          			</div>
+         			<!-- /. Grid column . Search Btn -->
+			
+			 		<script>
+						var srcbtn=document.getElementById('htlrsrtSrchBtn');
+						srcbtn.addEventListener('click', searchprocess);
+
+						function searchprocess(){
+							var searchvalue=document.getElementById('htlrsrtSrch').value;
+							window.location.assign("search?t=hr&v="+searchvalue);
+						}
+            		</script>
+          			<!-- Grid column -->
+        		</div>
+				<!-- /. Grid row . Hotels or Resorts Search -->
+
+      		</section>
+      		<!--/ Section: Features v.1-->
+    	</div>
 
     <div class="container">
 
@@ -465,7 +534,7 @@ try{
     </div>
 
     <!--Streak-->
-    <div class="streak streak-photo streak-long-2 mt-5" style="background-image: url('https://mdbootstrap.com/img/Photos/Others/images/47.jpg');">
+    <div class="streak streak-photo streak-long-2 mt-5" style="background-image: url('img/SlideBackground.jpg');">
       <div class="flex-center mask rgba-black-light">
         <div class="container">
 
@@ -777,7 +846,7 @@ try{
     <div class="container">
 
       <!-- Section: Contact v.3 -->
-      <section class="contact-section my-5">
+      <section id="contact" class="contact-section my-5">
 
         <!-- Section heading -->
         <h4 class="font-weight-bold text-center my-5">Contact us</h4>
@@ -938,9 +1007,8 @@ try{
 
         <!--First column-->
         <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-          <h6 class="text-uppercase mb-4 font-weight-bold">Company name</h6>
-          <p>Here you can use rows and columns here to organize your footer content. Lorem ipsum dolor sit amet,
-            consectetur adipisicing elit.</p>
+          <h6 class="text-uppercase mb-4 font-weight-bold">Network Er Bahire</h6>
+          <p><b>Network Er Bahire</b> is a simple travel system that is created for <b>Software Engineering Laboratory</b> project</p>
         </div>
         <!--/.First column-->
 
@@ -948,18 +1016,27 @@ try{
 
         <!--Second column-->
         <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
-          <h6 class="text-uppercase mb-4 font-weight-bold">Products</h6>
+          <h6 class="text-uppercase mb-4 font-weight-bold">Coded With</h6>
           <p>
-            <a href="#!">MDBootstrap</a>
+            <a href="#">HTML</a>
           </p>
           <p>
-            <a href="#!">MDWordPress</a>
+            <a href="#">CSS</a>
           </p>
           <p>
-            <a href="#!">BrandFlow</a>
+            <a href="#">JavaScript</a>
           </p>
           <p>
-            <a href="#!">Bootstrap Angular</a>
+            <a href="#">PHP</a>
+          </p>
+          <p>
+            <a href="#">MySQL</a>
+          </p>
+          <p>
+            <a href="#">Bootstrap</a>
+          </p>
+          <p>
+            <a href="#">Material Design Bootstrap</a>
           </p>
         </div>
         <!--/.Second column-->
@@ -968,18 +1045,21 @@ try{
 
         <!--Third column-->
         <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
-          <h6 class="text-uppercase mb-4 font-weight-bold">Useful links</h6>
+          <h6 class="text-uppercase mb-4 font-weight-bold">Team Mates</h6>
           <p>
-            <a href="#!">Collaboriation</a>
+            <a href="#" title="011 172 096">Shifeata Kaderi (Borshon)</a>
           </p>
           <p>
-            <a href="#!">Media about me</a>
+            <a href="#" title="011 173 047">Sayed Md. Nur Hossain</a>
           </p>
           <p>
-            <a href="#!">Newsletter</a>
+            <a href="#" title="011 173 069">Intekhab Alam</a>
           </p>
           <p>
-            <a href="#!">Help</a>
+            <a href="#" title="011 181 002">Rakibul Islam</a>
+          </p>
+          <p>
+            <a href="#" title="011 181 007">Rasedul Islam</a>
           </p>
         </div>
         <!--/.Third column-->
@@ -988,15 +1068,15 @@ try{
 
         <!--Fourth column-->
         <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
-          <h6 class="text-uppercase mb-4 font-weight-bold">Contact</h6>
+          <h6 class="text-uppercase mb-4 font-weight-bold">Details</h6>
           <p>
-            <i class="fas fa-home mr-3"></i> New York, NY 10012, US</p>
+            <i class="fas fa-home mr-3"></i> United International University</p>
           <p>
-            <i class="fas fa-envelope mr-3"></i> info@example.com</p>
+            <i class="fas fa-envelope mr-3"></i> CSI 322</p>
           <p>
-            <i class="fas fa-phone mr-3"></i> + 01 234 567 88</p>
+            <i class="fas fa-phone mr-3"></i> A</p>
           <p>
-            <i class="fas fa-print mr-3"></i> + 01 234 567 89</p>
+            <i class="fas fa-print mr-3"></i> 2</p>
         </div>
         <!--/.Fourth column-->
 
@@ -1104,12 +1184,12 @@ try{
 
     // Material Select Initialization
     $(document).ready(function () {
-      $('.mdb-select').material_select();
+      $('.mdb-select').materialSelect();
     });
 
     // MDB Lightbox Init
     $(function () {
-      $("#mdb-lightbox-ui").load("../mdb-addons/mdb-lightbox-ui.html");
+      $("#mdb-lightbox-ui").load("mdb-addons/mdb-lightbox-ui.html");
     });
 
   </script>
@@ -1117,210 +1197,6 @@ try{
   <script>
     // Data Picker Initialization
     $('.datepicker').pickadate();
-
-  </script>
-  <script>
-    var countries = [
-      "Afghanistan",
-      "Albania",
-      "Algeria",
-      "Andorra",
-      "Angola",
-      "Antigua and Barbuda",
-      "Argentina",
-      "Armenia",
-      "Australia",
-      "Austria",
-      "Azerbaijan",
-      "Bahamas",
-      "Bahrain",
-      "Bangladesh",
-      "Barbados",
-      "Belarus",
-      "Belgium",
-      "Belize",
-      "Benin",
-      "Bhutan",
-      "Bolivia",
-      "Bosnia and Herzegovina",
-      "Botswana",
-      "Brazil",
-      "Brunei",
-      "Bulgaria",
-      "Burkina Faso",
-      "Burundi",
-      "Cabo Verde",
-      "Cambodia",
-      "Cameroon",
-      "Canada",
-      "Central African Republic (CAR)",
-      "Chad",
-      "Chile",
-      "China",
-      "Colombia",
-      "Comoros",
-      "Costa Rica",
-      "Cote d'Ivoire",
-      "Croatia",
-      "Cuba",
-      "Cyprus",
-      "Czech Republic",
-      "Denmark",
-      "Djibouti",
-      "Dominica",
-      "Dominican Republic",
-      "Ecuador",
-      "Egypt",
-      "El Salvador",
-      "Equatorial Guinea",
-      "Eritrea",
-      "Estonia",
-      "Ethiopia",
-      "Fiji",
-      "Finland",
-      "France",
-      "Gabon",
-      "Gambia",
-      "Georgia",
-      "Germany",
-      "Ghana",
-      "Greece",
-      "Grenada",
-      "Guatemala",
-      "Guinea",
-      "Guinea-Bissau",
-      "Guyana",
-      "Haiti",
-      "Honduras",
-      "Hungary",
-      "Iceland",
-      "India",
-      "Indonesia",
-      "Iran",
-      "Iraq",
-      "Ireland",
-      "Israel",
-      "Italy",
-      "Jamaica",
-      "Japan",
-      "Jordan",
-      "Kazakhstan",
-      "Kenya",
-      "Kiribati",
-      "Kosovo",
-      "Kuwait",
-      "Kyrgyzstan",
-      "Laos",
-      "Latvia",
-      "Lebanon",
-      "Lesotho",
-      "Liberia",
-      "Libya",
-      "Liechtenstein",
-      "Lithuania",
-      "Luxembourg",
-      "Macedonia (FYROM)",
-      "Madagascar",
-      "Malawi",
-      "Malaysia",
-      "Maldives",
-      "Mali",
-      "Malta",
-      "Marshall Islands",
-      "Mauritania",
-      "Mauritius",
-      "Mexico",
-      "Micronesia",
-      "Moldova",
-      "Monaco",
-      "Mongolia",
-      "Montenegro",
-      "Morocco",
-      "Mozambique",
-      "Myanmar (Burma)",
-      "Namibia",
-      "Nauru",
-      "Nepal",
-      "Netherlands",
-      "New Zealand",
-      "Nicaragua",
-      "Niger",
-      "Nigeria",
-      "North Korea",
-      "Norway",
-      "Oman",
-      "Pakistan",
-      "Palau",
-      "Palestine",
-      "Panama",
-      "Papua New Guinea",
-      "Paraguay",
-      "Peru",
-      "Philippines",
-      "Poland",
-      "Portugal",
-      "Qatar",
-      "Romania",
-      "Russia",
-      "Rwanda",
-      "Saint Kitts and Nevis",
-      "Saint Lucia",
-      "Saint Vincent and the Grenadines",
-      "Samoa",
-      "San Marino",
-      "Sao Tome and Principe",
-      "Saudi Arabia",
-      "Senegal",
-      "Serbia",
-      "Seychelles",
-      "Sierra Leone",
-      "Singapore",
-      "Slovakia",
-      "Slovenia",
-      "Solomon Islands",
-      "Somalia",
-      "South Africa",
-      "South Korea",
-      "South Sudan",
-      "Spain",
-      "Sri Lanka",
-      "Sudan",
-      "Suriname",
-      "Swaziland",
-      "Sweden",
-      "Switzerland",
-      "Syria",
-      "Taiwan",
-      "Tajikistan",
-      "Tanzania",
-      "Thailand",
-      "Timor-Leste",
-      "Togo",
-      "Tonga",
-      "Trinidad and Tobago",
-      "Tunisia",
-      "Turkey",
-      "Turkmenistan",
-      "Tuvalu",
-      "Uganda",
-      "Ukraine",
-      "United Arab Emirates (UAE)",
-      "United Kingdom (UK)",
-      "United States of America (USA)",
-      "Uruguay",
-      "Uzbekistan",
-      "Vanuatu",
-      "Vatican City (Holy See)",
-      "Venezuela",
-      "Vietnam",
-      "Yemen",
-      "Zambia",
-      "Zimbabwe"
-    ];
-
-    $('#form-autocomplete-1').mdb_autocomplete({
-      data: countries
-    });
 
   </script>
 </body>

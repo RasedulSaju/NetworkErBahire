@@ -6,4 +6,11 @@ CREATE TABLE divisions(
     name varchar(10) NOT NULL UNIQUE
 );
 
+CREATE TABLE spots(
+    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name varchar(20) NOT NULL UNIQUE
+);
+
 INSERT INTO divisions (name) VALUES ('Barisal'), ('Chittagong'), ('Dhaka'), ('Khulna'), ('Mymensingh'), ('Rajshahi'), ('Rangpur'), ('Sylhet');
+
+INSERT INTO spots (name) VALUES ('Sajek'), ('Cox\'s Bazar'), ('Kuakata');
