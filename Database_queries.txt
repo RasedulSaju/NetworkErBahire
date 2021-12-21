@@ -11,6 +11,14 @@ CREATE TABLE spots(
     name varchar(20) NOT NULL UNIQUE
 );
 
+CREATE TABLE hotels(
+    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name varchar(50) NOT NULL,
+    area varchar(10)
+);
+
 INSERT INTO divisions (name) VALUES ('Barisal'), ('Chittagong'), ('Dhaka'), ('Khulna'), ('Mymensingh'), ('Rajshahi'), ('Rangpur'), ('Sylhet');
 
-INSERT INTO spots (name) VALUES ('Sajek'), ('Cox\'s Bazar'), ('Kuakata');
+INSERT INTO spots (name) VALUES ('Sajek'), ('Coxs Bazar'), ('Kuakata');
+
+INSERT INTO hotels(name, area) VALUES ('Hotel Sea Cox', 'Coxs Bazar'), ('Hotel Prime Park Hotel', 'Coxs Bazar'), ('Hotel Agrabad', 'Chittagong'), ('The Avenue Hotel & Suites', 'Chittagong'), ('Foys Lake Resort', 'Chittagong'), ('Sikder Resort & Resort', 'Kuakata'), ('Padma Resort', 'Dhaka');

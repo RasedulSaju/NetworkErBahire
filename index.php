@@ -10,7 +10,7 @@ try{
  	<meta charset="utf-8">
   	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   	<meta http-equiv="x-ua-compatible" content="ie=edge">
-  	<title>Network Er Bahire</title>
+  	<title>Welcome | Network Er Bahire</title>
   	<!-- Font Awesome -->
  	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
   	<!-- Bootstrap core CSS -->
@@ -71,6 +71,9 @@ try{
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="#contact" data-offset="100">Contact</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="blog" data-offset="100">Blog</a>
 						</li>
 					</ul>
         		</div>
@@ -227,7 +230,7 @@ try{
 				
 						<div class="md-form">
 							<?php
-								$sqlquery="SELECT * FROM divisions";
+								$sqlquery="SELECT * FROM hotels";
 
 								try{
 									$returnval=$dbcon->query($sqlquery); ///PDO Statement

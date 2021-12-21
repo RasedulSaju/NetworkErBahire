@@ -19,7 +19,7 @@ include 'config.php';
                 $tableName='spots';
             }
             elseif ($_GET['t'] == 'hr'){
-                $tableName='divisions';
+                $tableName='hotels';
             }
         ?> 
             <table>
