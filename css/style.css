@@ -1,1 +1,50 @@
-/* Your custom styles */
+/* Home Page */
+html,
+body,
+header,
+.jarallax {
+  height: 100%;
+}
+
+@media (min-width: 560px) and (max-width: 740px) {
+  html,
+  body,
+  header,
+  .jarallax {
+    height: 500px;
+  }
+}
+@media (min-width: 800px) and (max-width: 850px) {
+  .navbar:not(.top-nav-collapse) {
+    background: #3e4551 !important;
+  }
+  .navbar {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16),
+      0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+  }
+}
+/* /. Home Page */
+/* Login & Sign Up Page */
+html,
+body,
+header,
+.lview {
+  height: 100vh;
+}
+@media (max-width: 740px) {
+  html,
+  body,
+  header,
+  .lview {
+    height: 700px;
+  }
+}
+@media (min-width: 800px) and (max-width: 850px) {
+  html,
+  body,
+  header,
+  .lview {
+    height: 650px;
+  }
+}
+/* /. Login & Sign Up Page */

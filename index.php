@@ -1,282 +1,203 @@
-<?php include 'config.php';
-try{
-	$dbcon = new PDO("mysql:host=$dbserver:$dbport;dbname=$db;","$dbuser","$dbpass");
-	$dbcon->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+<?php
+$pageTitle = 'Welcome';
+include 'header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
- 	<meta charset="utf-8">
-  	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  	<meta http-equiv="x-ua-compatible" content="ie=edge">
-  	<title>Welcome | Network Er Bahire</title>
-  	<!-- Font Awesome -->
- 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
-  	<!-- Bootstrap core CSS -->
-  	<link href="css/bootstrap.min.css" rel="stylesheet">
-  	<!-- Material Design Bootstrap -->
-  	<link href="css/mdb.min.css" rel="stylesheet">
-  	<style>
-    	html,
-        	body,
-        	header,
-        	.jarallax {
-          		height: 100%;
-        	}
-
-        @media (min-width: 560px) and (max-width: 740px) {
-          	html,
-          	body,
-          	header,
-          	.jarallax {
-            	height: 500px;
-          	}
-        }
-
-        @media (min-width: 800px) and (max-width: 850px) {
-            .navbar:not(.top-nav-collapse) {
-              	background: #3E4551!important;
-            }
-            .navbar {
-              	box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12) !important;
-            }
-        }
-    </style>
 </head>
 
-<body class="intro-page travel-lp">
+<body>
+  <!-- Intro Section -->
+  <div id="home" class="view jarallax" data-jarallax='{"speed": 0.2}' style="background-image: url(img/SlideBackground.jpg); background-repeat: no-repeat; background-size: cover; background-position: center center;">
+    <div class="mask rgba-black-strong">
+      <div class="container h-100 d-flex justify-content-center align-items-center">
+        <div class="row smooth-scroll">
+          <div class="col-md-12 white-text text-center">
+            <div class="wow fadeInDown" data-wow-delay="0.2s">
+              <h2 class="display-3 font-weight-bold text-uppercase mb-2 spacing rgba-white-slight px-4 py-3">
+                <strong>Let's go</strong>
+              </h2>
 
-  	<!--Navigation & Intro-->
-  	<header>
-    	<!--Navbar-->
-    	<nav class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar danger-color">
-      		<div class="container">
-        		<a class="navbar-brand" href="#">
-          			<strong>Network Er Bahire</strong>
-        		</a>
-        		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          			<span class="navbar-toggler-icon"></span>
-        		</button>
-        		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-					<!--Links-->
-					<ul class="navbar-nav mr-auto smooth-scroll">
-						<li class="nav-item">
-							<a class="nav-link" href="#home">Home
-								<span class="sr-only">(current)</span>
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="#destination" data-offset="100">Destination</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="#contact" data-offset="100">Contact</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="blog" data-offset="100">Blog</a>
-						</li>
-					</ul>
-        		</div>
-      		</div>
-    	</nav>
-    	<!-- /. Navbar-->
+              <h4 class="subtext-header mt-4 mb-5">Network Er Bahire</h4>
+            </div>
+            <a href="#destination" data-offset="100" class="btn btn-white btn-rounded font-weight-bold dark-grey-text wow fadeInUp" data-wow-delay="0.2s">Read more</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    	<!-- Intro Section -->
-    	<div id="home" class="view jarallax" data-jarallax='{"speed": 0.2}' style="background-image: url(img/SlideBackground.jpg); background-repeat: no-repeat; background-size: cover; background-position: center center;">
-      		<div class="mask rgba-black-strong">
-        		<div class="container h-100 d-flex justify-content-center align-items-center">
-          			<div class="row smooth-scroll">
-            			<div class="col-md-12 white-text text-center">
-              				<div class="wow fadeInDown" data-wow-delay="0.2s">
-                				<h2 class="display-3 font-weight-bold text-uppercase mb-2 spacing rgba-white-slight px-4 py-3">
-                  					<strong>Let's go</strong>
-                				</h2>
+  </header>
+  <!-- /. Navigation & Intro -->
 
-                				<h4 class="subtext-header mt-4 mb-5">Network Er Bahire</h4>
-              				</div>
-              				<a href="#destination" data-offset="100" class="btn btn-white btn-rounded font-weight-bold dark-grey-text wow fadeInUp" data-wow-delay="0.2s">Read more</a>
-            			</div>
-          			</div>
-        		</div>
-      		</div>
-    	</div>
+  <!--Main content-->
+  <main>
 
-  	</header>
-  	<!-- /. Navigation & Intro -->
+    <div class="container">
 
-  	<!--Main content-->
-  	<main>
+      <!-- Section: Features v.1 -->
+      <section id="destination" class="mt-4">
 
-    	<div class="container">
+        <!--Section heading-->
+        <h4 class="text-center my-5 font-weight-bold wow fadeIn" data-wow-delay="0.2s">
+          <strong>Where do you want to go?</strong>
+        </h4>
+        <!--Section description-->
+        <p class="text-center w-responsive mx-auto mb-5 wow fadeIn" data-wow-delay="0.2s">Let's visit somewhere & be <b>Network Er Bahire</b> for a while. Search for destination below.</p>
+        <!-- Grid row . Division Search -->
+        <div class="row flex-center">
 
-      		<!-- Section: Features v.1 -->
-      		<section id="destination" class="mt-4">
+          <!-- Grid column-->
+          <div class="col-lg-6 col-md-6">
 
-				<!--Section heading-->
-				<h4 class="text-center my-5 font-weight-bold wow fadeIn" data-wow-delay="0.2s">
-					<strong>Where do you want to go?</strong>
-				</h4>
-				<!--Section description-->
-				<p class="text-center w-responsive mx-auto mb-5 wow fadeIn" data-wow-delay="0.2s">Let's visit somewhere & be <b>Network Er Bahire</b> for a while. Search for destination below.</p>
-				<!-- Grid row . Division Search -->
-				<div class="row flex-center">
+            <div class="md-form form-lg">
+              <?php
+              $sqlquery = "SELECT * FROM divisions";
 
-					<!-- Grid column-->
-					<div class="col-lg-6 col-md-6">
-				
-						<div class="md-form form-lg">
-							<?php
-								$sqlquery="SELECT * FROM divisions";
+              try {
+                $returnval = $dbcon->query($sqlquery); ///PDO Statement
 
-								try{
-									$returnval=$dbcon->query($sqlquery); ///PDO Statement
+                $divisionstable = $returnval->fetchAll();
+              ?>
+                <select name="division" id="DiviSrch" class="mdb-select mdb-autocomplete md-form colorful-select dropdown-primary custom-select-lg" title="Select Division" searchable="Search Division...">
+                  <option value="" selected="" disabled="">Find Division</option>
+                  <?php foreach ($divisionstable as $dvsdata) { ?>
+                    <option value="<?php echo $dvsdata['name'] ?>"><?php echo $dvsdata['name'] ?></option>
+                  <?php
+                  }
+                  ?>
+                </select>
 
-									$divisionstable=$returnval->fetchAll();
-							?>
-							<select name="division" id="DiviSrch" class="mdb-select mdb-autocomplete md-form colorful-select dropdown-primary custom-select-lg" title="Select Division" searchable="Search Division...">
-								<option value="" selected="" disabled="">Find Division</option>
-								<?php foreach($divisionstable as $dvsdata){ ?>
-								<option value="<?php echo $dvsdata['name'] ?>"><?php echo $dvsdata['name'] ?></option>
-								<?php
-									}
-								?>
-							</select>
+              <?php
+              } catch (PDOException $ex) {
+                echo $ex;
+              }
+              ?>
+            </div>
+          </div>
 
-							<?php
-								}
-								catch(PDOException $ex){
-									echo $ex;
-								}
-							?>
-           		 		</div>
-          			</div>
-		  
-		  			<!-- Grid column . Search btn -->
-          			<div class="col-lg-6 col-md-6">
-            			<a id="diviSrchBtn" class="btn btn-blue btn-rounded">Search Division</a>
-          			</div>
-         			<!-- /. Grid column . Search Btn -->
-			
-			 		<script>
-						var srcbtn=document.getElementById('diviSrchBtn');
-						srcbtn.addEventListener('click', searchprocess);
+          <!-- Grid column . Search btn -->
+          <div class="col-lg-6 col-md-6">
+            <a id="diviSrchBtn" class="btn btn-blue btn-rounded">Search Division</a>
+          </div>
+          <!-- /. Grid column . Search Btn -->
 
-						function searchprocess(){
-							var searchvalue=document.getElementById('DiviSrch').value;
-							window.location.assign("search?t=d&v="+searchvalue);
-						}
-            		</script>
-          			<!--Grid column-->
-        		</div>
-        		<!-- /. Grid row . Division Search -->
+          <script>
+            var srcbtn = document.getElementById('diviSrchBtn');
+            srcbtn.addEventListener('click', searchprocess);
 
-				<!-- Grid row . Prominent Spots Search -->
-				<div class="row flex-center">
+            function searchprocess() {
+              var searchvalue = document.getElementById('DiviSrch').value;
+              window.location.assign("search?t=d&v=" + searchvalue);
+            }
+          </script>
+          <!--Grid column-->
+        </div>
+        <!-- /. Grid row . Division Search -->
 
-					<!--Grid column-->
-					<div class="col-lg-6 col-md-6">
-				
-						<div class="md-form">
-							<?php
-								$sqlquery="SELECT * FROM spots";
+        <!-- Grid row . Prominent Spots Search -->
+        <div class="row flex-center">
 
-								try{
-									$returnval=$dbcon->query($sqlquery); ///PDO Statement
+          <!--Grid column-->
+          <div class="col-lg-6 col-md-6">
 
-									$spotstable=$returnval->fetchAll();
-							?>
-							<select name="division" id="promSpotSrch" class="mdb-select mdb-autocomplete md-form colorful-select custom-select-lg dropdown-default" title="Select Spot" searchable="Search Spot...">
-								<option value="" selected="" disabled="">Find Prominent Spot</option>
-								<?php foreach($spotstable as $sptsdata){ ?>
-								<option value="<?php echo $sptsdata['name'] ?>"><?php echo $sptsdata['name'] ?></option>
-								<?php
-									}
-								?>
-							</select>
+            <div class="md-form">
+              <?php
+              $sqlquery = "SELECT * FROM spots";
 
-							<?php
-								}
-								catch(PDOException $ex){
-									echo $ex;
-								}
-							?>
-           		 		</div>
-          			</div>
-		  
-		  			<!-- Grid column . Search btn -->
-          			<div class="col-lg-6 col-md-6">
-            			<a id="promSpotSrchBtn" class="btn btn-default btn-rounded">Search Spot</a>
-          			</div>
-         			<!-- /. Grid column . Search Btn -->
-			
-			 		<script>
-						var srcbtn=document.getElementById('promSpotSrchBtn');
-						srcbtn.addEventListener('click', searchprocess);
+              try {
+                $returnval = $dbcon->query($sqlquery); ///PDO Statement
 
-						function searchprocess(){
-							var searchvalue=document.getElementById('promSpotSrch').value;
-							window.location.assign("search?t=s&v="+searchvalue);
-						}
-            		</script>
-          			<!-- Grid column -->
-        		</div>
-				<!-- /. Grid row . Prominent Spots Search -->
+                $spotstable = $returnval->fetchAll();
+              ?>
+                <select name="division" id="promSpotSrch" class="mdb-select mdb-autocomplete md-form colorful-select custom-select-lg dropdown-default" title="Select Spot" searchable="Search Spot...">
+                  <option value="" selected="" disabled="">Find Prominent Spot</option>
+                  <?php foreach ($spotstable as $sptsdata) { ?>
+                    <option value="<?php echo $sptsdata['name'] ?>"><?php echo $sptsdata['name'] ?></option>
+                  <?php
+                  }
+                  ?>
+                </select>
 
-				<!-- Grid row . Hotels or Resorts Search -->
-				<div class="row flex-center">
+              <?php
+              } catch (PDOException $ex) {
+                echo $ex;
+              }
+              ?>
+            </div>
+          </div>
 
-					<!--Grid column-->
-					<div class="col-lg-6 col-md-6">
-				
-						<div class="md-form">
-							<?php
-								$sqlquery="SELECT * FROM hotels";
+          <!-- Grid column . Search btn -->
+          <div class="col-lg-6 col-md-6">
+            <a id="promSpotSrchBtn" class="btn btn-default btn-rounded">Search Spot</a>
+          </div>
+          <!-- /. Grid column . Search Btn -->
 
-								try{
-									$returnval=$dbcon->query($sqlquery); ///PDO Statement
+          <script>
+            var srcbtn = document.getElementById('promSpotSrchBtn');
+            srcbtn.addEventListener('click', searchprocess);
 
-									$htlrsttable=$returnval->fetchAll();
-							?>
-							<select name="division" id="htlrsrtSrch" class="mdb-select mdb-autocomplete md-form colorful-select custom-select-lg dropdown-secondary" title="Select Spot" searchable="Search Hotel or Resort...">
-								<option value="" selected="" disabled="">Find Hotels or Resorts</option>
-								<?php foreach($htlrsttable as $hrsdata){ ?>
-								<option value="<?php echo $hrsdata['name'] ?>"><?php echo $hrsdata['name'] ?></option>
-								<?php
-									}
-								?>
-							</select>
+            function searchprocess() {
+              var searchvalue = document.getElementById('promSpotSrch').value;
+              window.location.assign("search?t=s&v=" + searchvalue);
+            }
+          </script>
+          <!-- Grid column -->
+        </div>
+        <!-- /. Grid row . Prominent Spots Search -->
 
-							<?php
-								}
-								catch(PDOException $ex){
-									echo $ex;
-								}
-							?>
-           		 		</div>
-          			</div>
-		  
-		  			<!-- Grid column . Search btn -->
-          			<div class="col-lg-6 col-md-6">
-            			<a id="htlrsrtSrchBtn" class="btn btn-secondary btn-rounded">Search Hotel or Resort</a>
-          			</div>
-         			<!-- /. Grid column . Search Btn -->
-			
-			 		<script>
-						var srcbtn=document.getElementById('htlrsrtSrchBtn');
-						srcbtn.addEventListener('click', searchprocess);
+        <!-- Grid row . Hotels or Resorts Search -->
+        <div class="row flex-center">
 
-						function searchprocess(){
-							var searchvalue=document.getElementById('htlrsrtSrch').value;
-							window.location.assign("search?t=hr&v="+searchvalue);
-						}
-            		</script>
-          			<!-- Grid column -->
-        		</div>
-				<!-- /. Grid row . Hotels or Resorts Search -->
+          <!--Grid column-->
+          <div class="col-lg-6 col-md-6">
 
-      		</section>
-      		<!--/ Section: Features v.1-->
-    	</div>
+            <div class="md-form">
+              <?php
+              $sqlquery = "SELECT * FROM hotels";
+
+              try {
+                $returnval = $dbcon->query($sqlquery); ///PDO Statement
+
+                $htlrsttable = $returnval->fetchAll();
+              ?>
+                <select name="division" id="htlrsrtSrch" class="mdb-select mdb-autocomplete md-form colorful-select custom-select-lg dropdown-secondary" title="Select Spot" searchable="Search Hotel or Resort...">
+                  <option value="" selected="" disabled="">Find Hotels or Resorts</option>
+                  <?php foreach ($htlrsttable as $hrsdata) { ?>
+                    <option value="<?php echo $hrsdata['name'] ?>"><?php echo $hrsdata['name'] ?></option>
+                  <?php
+                  }
+                  ?>
+                </select>
+
+              <?php
+              } catch (PDOException $ex) {
+                echo $ex;
+              }
+              ?>
+            </div>
+          </div>
+
+          <!-- Grid column . Search btn -->
+          <div class="col-lg-6 col-md-6">
+            <a id="htlrsrtSrchBtn" class="btn btn-secondary btn-rounded">Search Hotel or Resort</a>
+          </div>
+          <!-- /. Grid column . Search Btn -->
+
+          <script>
+            var srcbtn = document.getElementById('htlrsrtSrchBtn');
+            srcbtn.addEventListener('click', searchprocess);
+
+            function searchprocess() {
+              var searchvalue = document.getElementById('htlrsrtSrch').value;
+              window.location.assign("search?t=hr&v=" + searchvalue);
+            }
+          </script>
+          <!-- Grid column -->
+        </div>
+        <!-- /. Grid row . Hotels or Resorts Search -->
+
+      </section>
+      <!--/ Section: Features v.1-->
+    </div>
 
     <div class="container">
 
@@ -998,210 +919,4 @@ try{
 
   </main>
   <!--/Main content-->
-
-  <!--Footer-->
-  <footer class="page-footer stylish-color-dark text-center text-md-left mt-4 pt-4">
-
-    <!--Footer Links-->
-    <div class="container">
-
-      <!-- Footer links -->
-      <div class="row text-center text-md-left mt-3 pb-3">
-
-        <!--First column-->
-        <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-          <h6 class="text-uppercase mb-4 font-weight-bold">Network Er Bahire</h6>
-          <p>An easy tour and travel management system for foreigners & natives.<br/><b>Network Er Bahire</b> is a simple travel system that is created for <b>Software Engineering Laboratory</b> project</p>
-        </div>
-        <!--/.First column-->
-
-        <hr class="w-100 clearfix d-md-none">
-
-        <!--Second column-->
-        <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
-          <h6 class="text-uppercase mb-4 font-weight-bold">Coded With</h6>
-          <p>
-            <a href="#">HTML</a>
-          </p>
-          <p>
-            <a href="#">CSS</a>
-          </p>
-          <p>
-            <a href="#">JavaScript</a>
-          </p>
-          <p>
-            <a href="#">PHP</a>
-          </p>
-          <p>
-            <a href="#">MySQL</a>
-          </p>
-          <p>
-            <a href="#">Bootstrap</a>
-          </p>
-          <p>
-            <a href="#">Material Design Bootstrap</a>
-          </p>
-        </div>
-        <!--/.Second column-->
-
-        <hr class="w-100 clearfix d-md-none">
-
-        <!--Third column-->
-        <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
-          <h6 class="text-uppercase mb-4 font-weight-bold">Team Mates</h6>
-          <p>
-            <a href="#" title="011 172 096">Shifeata Kaderi (Borshon)</a>
-          </p>
-          <p>
-            <a href="#" title="011 173 047">Sayed Md. Nur Hossain</a>
-          </p>
-          <p>
-            <a href="#" title="011 173 069">Intekhab Alam</a>
-          </p>
-          <p>
-            <a href="#" title="011 181 002">Rakibul Islam</a>
-          </p>
-          <p>
-            <a href="#" title="011 181 007">Rasedul Islam</a>
-          </p>
-        </div>
-        <!--/.Third column-->
-
-        <hr class="w-100 clearfix d-md-none">
-
-        <!--Fourth column-->
-        <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
-          <h6 class="text-uppercase mb-4 font-weight-bold">Details</h6>
-          <p>
-            <i class="fas fa-home mr-3"></i> United International University</p>
-          <p>
-            <i class="fas fa-envelope mr-3"></i> CSI 322</p>
-          <p>
-            <i class="fas fa-phone mr-3"></i> A</p>
-          <p>
-            <i class="fas fa-print mr-3"></i> 2</p>
-        </div>
-        <!--/.Fourth column-->
-
-      </div>
-      <!-- Footer links -->
-
-      <hr>
-
-      <div class="row py-3 d-flex align-items-center">
-
-        <!--Grid column-->
-        <div class="col-md-7 col-lg-8">
-
-          <!--Copyright-->
-          <p class="text-center text-md-left grey-text">
-            © 2019 Copyright: <a href="https://mdbootstrap.com/education/bootstrap/" target="_blank"> MDBootstrap.com
-            </a>
-          </p>
-          <!--/.Copyright-->
-
-        </div>
-        <!--Grid column-->
-
-        <!--Grid column-->
-        <div class="col-md-5 col-lg-4 ml-lg-0">
-
-          <!--Social buttons-->
-          <div class="social-section text-center text-md-left">
-            <ul class="list-unstyled list-inline">
-              <li class="list-inline-item mx-0">
-                <a class="btn-floating btn-sm rgba-white-slight mr-xl-4">
-                  <i class="fab fa-facebook-f"></i>
-                </a>
-              </li>
-              <li class="list-inline-item mx-0">
-                <a class="btn-floating btn-sm rgba-white-slight mr-xl-4">
-                  <i class="fab fa-twitter"></i>
-                </a>
-              </li>
-              <li class="list-inline-item mx-0">
-                <a class="btn-floating btn-sm rgba-white-slight mr-xl-4">
-                  <i class="fab fa-google-plus-g"></i>
-                </a>
-              </li>
-              <li class="list-inline-item mx-0">
-                <a class="btn-floating btn-sm rgba-white-slight mr-xl-4">
-                  <i class="fab fa-linkedin-in"></i>
-                </a>
-              </li>
-            </ul>
-          </div>
-          <!--/.Social buttons-->
-
-        </div>
-        <!--Grid column-->
-
-      </div>
-
-    </div>
-
-  </footer>
-  <!--/.Footer-->
-  <!-- SCRIPTS -->
-  <?php
-	}
-	catch(PDOException $ex){
-			echo $ex;
-	}
-?>
-  <!-- JQuery -->
-  <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
-
-  <!-- Bootstrap tooltips -->
-  <script type="text/javascript" src="js/popper.min.js"></script>
-
-  <!-- Bootstrap core JavaScript -->
-  <script type="text/javascript" src="js/bootstrap.min.js"></script>
-
-  <!-- MDB core JavaScript -->
-  <script type="text/javascript" src="js/mdb.min.js"></script>
-  <script>
-    $(function () {
-      var selectedClass = "";
-      $(".filter").click(function () {
-        selectedClass = $(this).attr("data-rel");
-        $("#gallery").fadeTo(100, 0.1);
-        $("#gallery div").not("." + selectedClass).fadeOut().removeClass('animation');
-        setTimeout(function () {
-          $("." + selectedClass).fadeIn().addClass('animation');
-          $("#gallery").fadeTo(300, 1);
-        }, 300);
-      });
-    });
-
-  </script>
-
-  <script>
-    //Animation init
-    new WOW().init();
-
-    //Modal
-    $('#myModal').on('shown.bs.modal', function () {
-      $('#myInput').focus()
-    })
-
-    // Material Select Initialization
-    $(document).ready(function () {
-      $('.mdb-select').materialSelect();
-    });
-
-    // MDB Lightbox Init
-    $(function () {
-      $("#mdb-lightbox-ui").load("mdb-addons/mdb-lightbox-ui.html");
-    });
-
-  </script>
-
-  <script>
-    // Data Picker Initialization
-    $('.datepicker').pickadate();
-
-  </script>
-</body>
-
-</html>
+  <?php include 'footer.php'; ?>

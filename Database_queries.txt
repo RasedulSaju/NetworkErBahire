@@ -1,15 +1,21 @@
-CREATE DATABASE soft_travel;
+/*Create Database , you may remove next two lines if you want to insert into another database or already created a database for this project*/
+CREATE DATABASE IF NOT EXISTS soft_travel;
 USE soft_travel;
+/* Database creation code ends, you may remove above two lines, if you do not want to create a new database */
 
 CREATE TABLE divisions(
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
     name varchar(10) NOT NULL UNIQUE
 );
 
+INSERT INTO divisions (name) VALUES ('Barisal'), ('Chittagong'), ('Dhaka'), ('Khulna'), ('Mymensingh'), ('Rajshahi'), ('Rangpur'), ('Sylhet');
+
 CREATE TABLE spots(
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
     name varchar(20) NOT NULL UNIQUE
 );
+
+INSERT INTO spots (name) VALUES ('Sajek'), ('Coxs Bazar'), ('Kuakata');
 
 CREATE TABLE hotels(
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -17,8 +23,28 @@ CREATE TABLE hotels(
     area varchar(10)
 );
 
-INSERT INTO divisions (name) VALUES ('Barisal'), ('Chittagong'), ('Dhaka'), ('Khulna'), ('Mymensingh'), ('Rajshahi'), ('Rangpur'), ('Sylhet');
-
-INSERT INTO spots (name) VALUES ('Sajek'), ('Coxs Bazar'), ('Kuakata');
-
 INSERT INTO hotels(name, area) VALUES ('Hotel Sea Cox', 'Coxs Bazar'), ('Hotel Prime Park Hotel', 'Coxs Bazar'), ('Hotel Agrabad', 'Chittagong'), ('The Avenue Hotel & Suites', 'Chittagong'), ('Foys Lake Resort', 'Chittagong'), ('Sikder Resort & Resort', 'Kuakata'), ('Padma Resort', 'Dhaka');
+
+CREATE TABLE admin_menus(
+    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name varchar(10) NOT NULL,
+    link varchar(10) NOT NULL
+);
+
+INSERT INTO admin_menus(name, link) VALUES ('settings', 'settings');
+
+CREATE TABLE roles(
+    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    role varchar(10) NOT NULL UNIQUE,
+    permissions varchar(100) 
+);
+
+INSERT INTO roles(role, permissions) VALUES ('admin',''), ('manager', ''), ('user');
+
+CREATE TABLE users(
+    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name varchar(10) NOT NULL
+    role
+
+    Const....
+);
