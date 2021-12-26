@@ -1,4 +1,8 @@
-<?php include 'config.php'; ?>
+<?php
+include 'config.php';
+session_start();
+?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -56,16 +60,62 @@
                             <a class="nav-link" href="blog" data-offset="100">Blog</a>
                         </li>
                     </ul>
-                    <ul class="navbar-nav ml-auto smooth-scroll">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" id="navright-profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-user"></i> Profile </a>
-                            <div class="dropdown-menu dropdown-menu-right dropdown-danger" aria-labelledby="navright-profile">
-                                <a class="dropdown-item" href="login"><i class="fas fa-sign-in-alt"></i> Login</a>
-                                <a class="dropdown-item" href="register"><i class="fas fa-user-plus"></i> Register</a>
-                            </div>
-                        </li>
-                    </ul>
+                    <?php
+                    if (isset($_SESSION['role']) == 'admin') {
+                    ?>
+                        <ul class="navbar-nav ml-auto nav-flex-icons">
+                            <li class="nav-item">
+                                <a class="nav-link waves-effect waves-light">1
+                                    <i class="fas fa-envelope"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item avatar dropdown">
+                                <a class="nav-link dropdown-toggle" id="admin-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img src="img/admin.jpg" class="rounded-circle z-depth-0" alt="avatar image">
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-lg-right dropdown-secondary" aria-labelledby="admin-dropdown">
+                                    <a class="dropdown-item" href="admin/">Admin</a>
+                                    <a class="dropdown-item" href="profile">Profile</a>
+                                    <a class="dropdown-item" href="logout">Logout</a>
+                                </div>
+                            </li>
+                        </ul>
+                    <?php
+                    } else if (isset($_SESSION['role']) == 'manager') {
+                    ?>
+                        <ul class="navbar-nav ml-auto nav-flex-icons">
+                            <li class="nav-item">
+                                <a class="nav-link waves-effect waves-light">1
+                                    <i class="fas fa-envelope"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item avatar dropdown">
+                                <a class="nav-link dropdown-toggle" id="manager-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img src="img/manager.png" class="rounded-circle z-depth-0" alt="avatar image">
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-lg-right dropdown-secondary" aria-labelledby="manager-dropdown">
+                                    <a class="dropdown-item" href="admin/">Admin</a>
+                                    <a class="dropdown-item" href="profile">Profile</a>
+                                    <a class="dropdown-item" href="logout">Logout</a>
+                                </div>
+                            </li>
+                        </ul>
+                    <?php
+                    } else {
+                    ?>
+                        <ul class="navbar-nav ml-auto smooth-scroll">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="navright-profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-user"></i> Profile </a>
+                                <div class="dropdown-menu dropdown-menu-right dropdown-danger" aria-labelledby="navright-profile">
+                                    <a class="dropdown-item" href="login"><i class="fas fa-sign-in-alt"></i> Login</a>
+                                    <a class="dropdown-item" href="register"><i class="fas fa-user-plus"></i> Register</a>
+                                </div>
+                            </li>
+                        </ul>
+                    <?php
+                    }
+                    ?>
                 </div>
 
             </div>

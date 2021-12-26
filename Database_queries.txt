@@ -25,14 +25,6 @@ CREATE TABLE hotels(
 
 INSERT INTO hotels(name, area) VALUES ('Hotel Sea Cox', 'Coxs Bazar'), ('Hotel Prime Park Hotel', 'Coxs Bazar'), ('Hotel Agrabad', 'Chittagong'), ('The Avenue Hotel & Suites', 'Chittagong'), ('Foys Lake Resort', 'Chittagong'), ('Sikder Resort & Resort', 'Kuakata'), ('Padma Resort', 'Dhaka');
 
-CREATE TABLE admin_menus(
-    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    name varchar(10) NOT NULL,
-    link varchar(10) NOT NULL
-);
-
-INSERT INTO admin_menus(name, link) VALUES ('settings', 'settings');
-
 CREATE TABLE roles(
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
     role varchar(10) NOT NULL UNIQUE,
@@ -48,3 +40,11 @@ CREATE TABLE users(
 
     Const....
 );
+
+CREATE TABLE admin_menus(
+    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    name varchar(10) NOT NULL,
+    link varchar(10) NOT NULL
+);
+
+INSERT INTO admin_menus(name, link) VALUES ('settings', 'settings');
