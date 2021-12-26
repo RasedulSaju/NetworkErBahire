@@ -31,20 +31,23 @@ CREATE TABLE roles(
     permissions varchar(100) 
 );
 
-INSERT INTO roles(role, permissions) VALUES ('admin',''), ('manager', ''), ('user');
+INSERT INTO roles(role, permissions) VALUES ('admin',''), ('manager', ''), ('user', '');
 
 CREATE TABLE users(
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    name varchar(10) NOT NULL
-    role
+    email varchar(100) NOT NULL UNIQUE,
+    password varchar(32) NOT NULL,
+    role varchar(10) DEFAULT 'user',
 
-    Const....
+    CONSTRAINT FOREIGN KEY ufk (role) REFERENCES roles(role)
 );
 
-CREATE TABLE admin_menus(
+INSERT INTO users(email, password, role) VALUES ('admin@example.com', '12345', 'admin'), ('manager@example.com', '1234', 'manager'), ('user@example.com', '123', 'user');
+
+/* CREATE TABLE admin_menus(
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
     name varchar(10) NOT NULL,
     link varchar(10) NOT NULL
 );
 
-INSERT INTO admin_menus(name, link) VALUES ('settings', 'settings');
+INSERT INTO admin_menus(name, link) VALUES ('settings', 'settings');*/

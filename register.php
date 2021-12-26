@@ -21,7 +21,7 @@ include 'header.php';
               <!-- Body -->
               <div class="md-form mb-0">
                 <i class="fas fa-envelope prefix white-text"></i>
-                <input type="text" id="orangeForm-email" class="form-control">
+                <input type="email" id="orangeForm-email" class="form-control" required>
                 <label for="orangeForm-email">Your email</label>
               </div>
 
