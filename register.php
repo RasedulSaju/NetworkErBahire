@@ -19,23 +19,24 @@ include 'header.php';
               </div>
 
               <!-- Body -->
-              <div class="md-form mb-0">
-                <i class="fas fa-envelope prefix white-text"></i>
-                <input type="email" id="orangeForm-email" class="form-control" required>
-                <label for="orangeForm-email">Your email</label>
-              </div>
+              <form method="POST" action="reg-entry.php">
+                <div class="md-form mb-0">
+                  <i class="fas fa-envelope prefix white-text"></i>
+                  <input type="email" id="orangeForm-email" name="email" class="form-control" required>
+                  <label for="orangeForm-email">Your email</label>
+                </div>
 
-              <div class="md-form mb-0">
-                <i class="fas fa-lock prefix white-text"></i>
-                <input type="password" id="orangeForm-pass" class="form-control">
-                <label for="orangeForm-pass">Your password</label>
-              </div>
+                <div class="md-form mb-0">
+                  <i class="fas fa-lock prefix white-text"></i>
+                  <input type="password" id="orangeForm-pass" name="pass" class="form-control">
+                  <label for="orangeForm-pass">Your password</label>
+                </div>
 
-              <div class="text-center">
-                <button class="btn rare-wind-gradient btn-lg">Sign up</button>
-                <hr>
-              </div>
-
+                <div class="text-center">
+                  <button class="btn rare-wind-gradient btn-lg">Sign up</button>
+                  <hr>
+                </div>
+              </form>
             </div>
           </div>
           <!-- Form with header -->
