@@ -21,6 +21,7 @@ if (isset($_GET['t']) && isset($_GET['v']) && !empty($_GET['t']) && !empty($_GET
 
             </tr>
         </thead>
+        <br><br>
         <tbody>
             <?php
             try {
@@ -40,29 +41,60 @@ if (isset($_GET['t']) && isset($_GET['v']) && !empty($_GET['t']) && !empty($_GET
 
                     foreach ($productstable as $row) {
             ?>
-                        <tr>
-                            <td><?php echo $row['id'] ?></td>
-                            <td><?php echo $row['name'] ?></td>
-                        </tr>
-                    <?php
-                    }
-                } catch (PDOException $ex) {
-                    ?>
-                    <tr>
-                        <td colspan="2">Data read error ... ...</td>
-                    </tr>
-                <?php
-                }
-            } catch (PDOException $ex) {
-                ?>
-                <tr>
-                    <td colspan="2">Data read error...</td>
-                </tr>
-            <?php
-            }
-            ?>
+                        <div class="container">
+
+
+                            <tr>
+                                <td><?php echo $row['id'] ?></td>
+                                <td><?php echo $row['name'] ?></td>
+                            </tr>
         </tbody>
     </table>
+
+    <form method="POST" action="bookingConfirmed.html">
+        <div class="col-lg-3 col-md-6">
+            <div class="md-form">
+                <input placeholder="Selected date" type="text" id="from" class="form-control datepicker">
+                <label for="date-picker-example">From</label>
+            </div>
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-3 col-md-6">
+            <div class="md-form">
+                <input placeholder="Selected date" type="text" id="to" class="form-control datepicker">
+                <label for="date-picker-example">To</label>
+            </div>
+        </div>
+
+    </form>
+
+
+
+    <!-- Date Picker -->
+    <!--Grid column-->
+
+    <!--Grid column-->
+    <!-- /. Date Picker -->
+<?php
+                    }
+                } catch (PDOException $ex) {
+?>
+<tr>
+    <td colspan="2">Data read error ... ...</td>
+</tr>
+<?php
+                }
+            } catch (PDOException $ex) {
+?>
+<tr>
+    <td colspan="2">Data read error...</td>
+</tr>
+<?php
+            }
+?>
+
 
 <?php
 } else {
