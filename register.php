@@ -19,17 +19,21 @@ include 'header.php';
               </div>
 
               <!-- Body -->
-              <form method="POST" action="reg-entry.php">
+              <form method="POST" class="was-validated" action="reg-entry.php">
                 <div class="md-form mb-0">
                   <i class="fas fa-envelope prefix white-text"></i>
                   <input type="email" id="orangeForm-email" name="email" class="form-control" required>
                   <label for="orangeForm-email">Your email</label>
+                  <div class="invalid-feedback">Provide a valid email</div>
+                  <div class="valid-feedback">Looks good!</div>
                 </div>
 
                 <div class="md-form mb-0">
                   <i class="fas fa-lock prefix white-text"></i>
-                  <input type="password" id="orangeForm-pass" name="pass" class="form-control">
+                  <input type="password" id="orangeForm-pass" name="pass" class="form-control" required>
                   <label for="orangeForm-pass">Your password</label>
+                  <div class="invalid-feedback">Can't be empty</div>
+                  <div class="valid-feedback">Looks good! It's not empty</div>
                 </div>
 
                 <div class="text-center">

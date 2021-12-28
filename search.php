@@ -1,8 +1,8 @@
 <?php
 $pageTitle = 'Search';
 include 'header.php';
-?>
-<h3>Search - <q><b><?php echo $_GET['v'] ?></b></q></h3>
+?><br>
+
 <?php
 if (isset($_GET['t']) && isset($_GET['v']) && !empty($_GET['t']) && !empty($_GET['v'])) {
     if ($_GET['t'] == 'd') {
@@ -13,14 +13,8 @@ if (isset($_GET['t']) && isset($_GET['v']) && !empty($_GET['t']) && !empty($_GET
         $tableName = 'hotels';
     }
 ?>
+<h3>Search - <q><b><?php echo $_GET['v'] ?></b></q></h3>
     <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-
-            </tr>
-        </thead>
         <br><br>
         <tbody>
             <?php
@@ -44,10 +38,9 @@ if (isset($_GET['t']) && isset($_GET['v']) && !empty($_GET['t']) && !empty($_GET
                         <div class="container">
 
 
-                            <tr>
-                                <td><?php echo $row['id'] ?></td>
-                                <td><?php echo $row['name'] ?></td>
-                            </tr>
+                            
+                                <h3 class="text-warning"><?php echo $row['name'] ?></h3>
+                            
         </tbody>
     </table>
 
@@ -65,6 +58,13 @@ if (isset($_GET['t']) && isset($_GET['v']) && !empty($_GET['t']) && !empty($_GET
             <div class="md-form">
                 <input placeholder="Selected date" type="text" id="to" class="form-control datepicker">
                 <label for="date-picker-example">To</label>
+            </div>
+        </div>
+
+        <!--Grid column-->
+        <div class="col-lg-3 col-md-6">
+            <div class="md-form">
+                <input type="submit" class="btn btn-rounded blue-gradient" value="Book">
             </div>
         </div>
 
