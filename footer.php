@@ -1,5 +1,5 @@
 <!--Footer-->
-<footer class="page-footer stylish-color-dark text-center text-md-left mt-4 pt-4">
+<footer class="page-footer wow zoomIn stylish-color-dark text-center text-md-left mt-4 pt-4">
 
     <!--Footer Links-->
     <div class="container">

@@ -8,6 +8,7 @@ include 'header.php';
     <div class="container">
       <div class="row">
         <div class="col-xl-5 col-lg-6 col-md-10 col-sm-12 mx-auto mt-lg-5">
+          
           <!-- Form with header -->
           <div class="card wow fadeInLeft" data-wow-delay="0.3s" style="background-color: rgba(100, 100, 100, 0.2);">
             <div class="card-body">
@@ -18,17 +19,21 @@ include 'header.php';
               </div>
 
               <!-- Body -->
-              <form method="POST" action="loginverify.php">
+              <form method="POST" class="was-validated" action="loginverify.php">
                 <div class="md-form mb-0">
                   <i class="fas fa-envelope prefix white-text"></i>
                   <input name="email" type="email" id="orangeForm-email" class="form-control" required>
                   <label for="orangeForm-email">Your email</label>
+                  <div class="invalid-feedback">Provide a valid email</div>
+                  <div class="valid-feedback">Looks good!</div>
                 </div>
 
                 <div class="md-form mb-0">
                   <i class="fas fa-lock prefix white-text"></i>
                   <input name="pass" type="password" id="orangeForm-pass" class="form-control" required>
                   <label for="orangeForm-pass">Your password</label>
+                  <div class="invalid-feedback">Can't be empty</div>
+                  <div class="valid-feedback">Looks good! It's not empty</div>
                 </div>
 
                 <div class="text-center">

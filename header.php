@@ -64,7 +64,9 @@ session_start();
                     if (isset($_SESSION['role']) && $_SESSION['role'] == 'admin') {
                     ?>
                         <ul class="navbar-nav ml-auto nav-flex-icons">
-                            <li>admin</li>
+                            <li class="nav-item">
+								<a class="nav-link" href="profile"><?php echo $_SESSION['email'] ?></a>
+							</li>
                             <li class="nav-item avatar dropdown">
                                 <a class="nav-link dropdown-toggle" id="admin-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <img src="img/admin.jpg" class="rounded-circle z-depth-0" alt="avatar image">
@@ -80,7 +82,9 @@ session_start();
                     } else if (isset($_SESSION['role']) && $_SESSION['role'] == 'manager') {
                     ?>
                         <ul class="navbar-nav ml-auto nav-flex-icons">
-                            <li>Manager</li>
+                            <li class="nav-item">
+								<a class="nav-link" href="profile"><?php echo $_SESSION['email'] ?></a>
+							</li>
                             <li class="nav-item avatar dropdown">
                                 <a class="nav-link dropdown-toggle" id="manager-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <img src="img/manager.png" class="rounded-circle z-depth-0" alt="avatar image">
@@ -96,7 +100,9 @@ session_start();
                     } else if (isset($_SESSION['role']) && $_SESSION['role'] == 'user') {
                     ?>
                         <ul class="navbar-nav ml-auto nav-flex-icons">
-                            <li>User</li>
+                            <li class="nav-item">
+								<a class="nav-link" href="profile"><?php echo $_SESSION['email'] ?></a>
+							</li>
                             <li class="nav-item avatar dropdown">
                                 <a class="nav-link dropdown-toggle" id="user-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <img src="img/user.png" class="rounded-circle z-depth-0" alt="avatar image">
