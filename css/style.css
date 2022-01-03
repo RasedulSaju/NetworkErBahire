@@ -48,3 +48,6 @@ header,
   }
 }
 /* /. Login & Sign Up Page */
+
+.mask.rgba-gradient-1 {
+  background: linear-gradient(45deg, rgba(42, 27, 161, 0.7), rgba(255, 48, 48, 0.7)); }

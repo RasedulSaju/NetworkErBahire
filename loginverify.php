@@ -37,13 +37,13 @@ if (
                 if ($usertype == 'admin') {
 ?>
                     <script>
-                        window.location.assign('../NetworkErBahire');
+                        window.location.assign('admin');
                     </script>
                 <?php
                 } else if ($usertype == 'manager') {
                 ?>
                     <script>
-                        window.location.assign('../NetworkErBahire');
+                        window.location.assign('admin');
                     </script>
                 <?php
                 } else if ($usertype == 'user') {

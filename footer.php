@@ -112,22 +112,22 @@
                 <div class="social-section text-center text-md-left">
                     <ul class="list-unstyled list-inline">
                         <li class="list-inline-item mx-0">
-                            <a class="btn-floating btn-sm rgba-white-slight mr-xl-4">
+                            <a href="https://www.facebook.com" target="_blank" class="btn-floating btn-sm rgba-white-slight mr-xl-4">
                                 <i class="fab fa-facebook-f"></i>
                             </a>
                         </li>
                         <li class="list-inline-item mx-0">
-                            <a class="btn-floating btn-sm rgba-white-slight mr-xl-4">
+                            <a href="https://twitter.com" target="_blank" class="btn-floating btn-sm rgba-white-slight mr-xl-4">
                                 <i class="fab fa-twitter"></i>
                             </a>
                         </li>
                         <li class="list-inline-item mx-0">
-                            <a class="btn-floating btn-sm rgba-white-slight mr-xl-4">
-                                <i class="fab fa-google-plus-g"></i>
+                            <a href="https://www.youtube.com" target="_blank" class="btn-floating btn-sm rgba-white-slight mr-xl-4">
+                                <i class="fab fa-youtube"></i>
                             </a>
                         </li>
                         <li class="list-inline-item mx-0">
-                            <a class="btn-floating btn-sm rgba-white-slight mr-xl-4">
+                            <a href="https://www.linkedin.com" target="_blank" class="btn-floating btn-sm rgba-white-slight mr-xl-4">
                                 <i class="fab fa-linkedin-in"></i>
                             </a>
                         </li>

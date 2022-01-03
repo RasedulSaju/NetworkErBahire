@@ -21,6 +21,8 @@ session_start();
     <link href="css/mdb.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
     <?php
     try {
         $dbcon = new PDO("mysql:host=$dbserver:$dbport;dbname=$db;", "$dbuser", "$dbpass");
@@ -36,7 +38,7 @@ session_start();
         <!--Navbar-->
         <nav class="navbar navbar-expand-lg navbar-dark fixed-top scrolling-navbar danger-color">
             <div class="container">
-                <a class="navbar-brand" href="../NetworkErBahire/">
+                <a class="navbar-brand waves-effect" href="../NetworkErBahire/">
                     <strong>Network Er Bahire</strong>
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,7 +48,7 @@ session_start();
                     <!--Links-->
                     <ul class="navbar-nav mr-auto smooth-scroll">
                         <li class="nav-item">
-                            <a class="nav-link" href="../NetworkErBahire/#home">Home
+                            <a class="nav-link waves-effect" href="../NetworkErBahire/#home">Home
                                 <span class="sr-only">(current)</span>
                             </a>
                         </li>

@@ -1,67 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<html>
-
 <head>
-    <!-- meta tags -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- Google Site Verification --
-	<meta name="google-site-verification" content="" />-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>404 | Network Er Bahire</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+  <!-- Bootstrap core CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="css/mdb.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    html,
+    body,
+    header,
+    .view {
+      height: 100%;
+    }
 
-    <title>Requested file is Network Er Bahire</title>
-	
-	<!-- Favicon -->
-    <link href="https://lh3.googleusercontent.com/iFWXv9xOSeC3olDCVOFQKySe4lba2-XPgsux4EfbewgMQEU_Q3RuC_q6BqV5UXYBUAchE_3a_l46=w1202-h901-no" rel="icon"/>
-	
-    <!-- bootstrap CSS file link -->
-    <!-- <link rel="stylesheet" type="text/css" href="https://www.rasedulsaju.com/css/bootstrap.min.css">-->
-    <!-- Custom CSS file load -->
-    <!-- Custom CSS -->
-    <!-- <link rel="stylesheet" type="text/css" href="https://www.rasedulsaju.com/css/style.css">-->
-	<!-- 404 CSS -->
-	<link rel="stylesheet" type="text/css" href="https://www.rasedulsaju.com/css/404.css">
-    <!-- mdb footer -->
-    <!-- <link rel="stylesheet" type="text/css" href="https://www.rasedulsaju.com/css/mdb.css">-->
-    <!-- font-awesome CSS load -->
-    <!-- <link rel="stylesheet" type="text/css" href="https://www.rasedulsaju.com/font-awesome/css/font-awesome.min.css">-->
+    @media (max-width: 740px) {
+
+      html,
+      body,
+      header,
+      .view {
+        height: 815px;
+      }
+    }
+
+    @media (min-width: 800px) and (max-width: 850px) {
+
+      html,
+      body,
+      header,
+      .view {
+        height: 600px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-	
-	<!-- 404 Body -->
-	<div class="error-page">
-		<div>
-			<!--h1(data-h1='400') 400-->
-			<!--p(data-p='BAD REQUEST') BAD REQUEST-->
-			<!--h1(data-h1='401') 401-->
-			<!--p(data-p='UNAUTHORIZED') UNAUTHORIZED-->
-			<!--h1(data-h1='403') 403-->
-			<!--p(data-p='FORBIDDEN') FORBIDDEN-->
-			<h1 data-h1="File is">File is</h1>
-			<p data-p="Network Er Bahire">Network Er Bahire</p>
-			<!--h1(data-h1='500') 500-->
-			<!--p(data-p='SERVER ERROR') SERVER ERROR-->
-		</div>
-	</div>
-	<div id="particles-js"></div>
-	<!-- /. 404 Body -->
-	
-	
-    <!-- JavaScripts -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-	
-    <!--<script src="https://www.rasedulsaju.com/js/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://www.rasedulsaju.com/js/popper.min.js"></script>
-    <script src="https://www.rasedulsaju.com/js/bootstrap.min.js"></script>-->
-	
-	<!-- 404 Script -->
-	<script src="https://www.rasedulsaju.com/js/404.js"></script>
-	
-    <!-- MDB Footer JS -->
-    <!--<script type="text/javascript" src="https://www.rasedulsaju.com/js/mdb.min.js"></script>-->
+
+  <!-- Navigation & Intro -->
+  <header>
+
+    <!-- Intro Section -->
+    <section class="view intro-2" style="background-image: url(img/404back.jpg); background-repeat: no-repeat; background-size: cover; background-position: center center;">
+      <div class="mask rgba-gradient-1">
+        <div class="container h-100 d-flex justify-content-center align-items-center">
+          <div class="row">
+            <div class="col-md-12 wow fadeIn mb-3">
+              <div class="card card-body rgba-white-slight text-center white-text">
+                <ul class="list-unstyled py-5 mx-lg-5">
+                  <li>
+                    <h1 class="display-1 mt-5 mx-5 mt-lg-0 mb-5 font-weight-bold white-text wow flipInX" data-wow-delay="0.3s">
+                      <strong>404</strong>
+                    </h1>
+                  </li>
+                  <li>
+                    <h4 class="white-text description mb-4 wow fadeInDown" data-wow-delay="0.4s">Opps! Page is Network Er Bahire
+                    </h4>
+                    <p class="white-text description pb-5 wow fadeInUp" data-wow-delay="0.4s"> The page you're looking
+                      for is not present inside the Network, Please try later or back to
+                      <a href="../NetworkErBahire" class="font-weight-bold">Home</a>.
+                    </p>
+
+                    <!-- Facebook -->
+                    <a href="https://www.facebook.com" target="_blank" class="p-2 m-2 fa-lg fb-ic">
+                      <i class="fab fa-facebook-f white-text wow bounceInLeft"> </i>
+                    </a>
+                    <!-- Twitter -->
+                    <a href="https://twitter.com" target="_blank" class="p-2 m-2 fa-lg tw-ic">
+                      <i class="fab fa-twitter white-text wow bounceInLeft"> </i>
+                    </a>
+                    <!-- Google + -->
+                    <a href="https://www.youtube.com" target="_blank" class="p-2 m-2 fa-lg gplus-ic">
+                      <i class="fab fa-youtube white-text wow bounceInLeft"> </i>
+                    </a>
+                    <!-- Linkedin -->
+                    <a href="https://www.linkedin.com" target="_blank" class="p-2 m-2 fa-lg li-ic">
+                      <i class="fab fa-linkedin-in white-text wow bounceInLeft"> </i>
+                    </a>
+                  </li>
+                </ul>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </header>
+  <!-- Navigation & Intro -->
+
+  <!-- SCRIPTS -->
+  <!-- JQuery -->
+  <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="js/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="js/mdb.min.js"></script>
+  <script>
+    //Animation init
+    new WOW().init();
+  </script>
 </body>
 
 </html>
