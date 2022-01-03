@@ -24,9 +24,15 @@ if (
 
             $returnval = $dbcon->query($sqlquery);
             $table = $returnval->fetchAll();
+
+            session_start();
+
+            $_SESSION['email'] = $var1;
+            $_SESSION['role'] = 'user';
+
             ?>
             <script>
-                window.location.assign('login');
+                window.location.assign('../NetworkErBahire');
             </script>
         <?php
         }
