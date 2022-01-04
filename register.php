@@ -10,19 +10,19 @@ include 'header.php';
         <div class="col-xl-5 col-lg-6 col-md-10 col-sm-12 mx-auto mt-lg-5">
 
           <!-- Form with header -->
-          <div class="card wow fadeInDown" data-wow-delay="0.3s">
+          <div class="card wow fadeInDown" data-wow-delay="0.3s" style="background-color: rgba(200, 200, 200, 0.8);">
             <div class="card-body">
 
               <!-- Header -->
-              <div class="form-header ripe-malinka-gradient">
+              <div class="form-header aqua-gradient">
                 <h3>Sign Up:</h3>
               </div>
 
               <!-- Body -->
-              <form method="POST" class="was-validated" action="reg-entry.php">
+              <form method="POST" class="needs-validation was-validated" action="reg-entry.php">
                 <div class="md-form mb-0">
                   <i class="fas fa-envelope prefix white-text"></i>
-                  <input type="email" id="orangeForm-email" name="email" class="form-control" required>
+                  <input type="email" id="orangeForm-email" name="email" class="form-control validate" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required>
                   <label for="orangeForm-email">Your email</label>
                   <div class="invalid-feedback">Provide a valid email</div>
                   <div class="valid-feedback">Looks good!</div>
@@ -30,15 +30,16 @@ include 'header.php';
 
                 <div class="md-form mb-0">
                   <i class="fas fa-lock prefix white-text"></i>
-                  <input type="password" id="orangeForm-pass" name="pass" class="form-control" required>
+                  <input type="password" id="orangeForm-pass" name="pass" class="form-control validate" required>
                   <label for="orangeForm-pass">Your password</label>
                   <div class="invalid-feedback">Can't be empty</div>
                   <div class="valid-feedback">Looks good! It's not empty</div>
                 </div>
 
                 <div class="text-center">
-                  <button class="btn rare-wind-gradient btn-lg">Sign up</button>
+                  <button class="btn btn-rounded tempting-azure-gradient btn-lg">Sign up</button>
                   <hr>
+                  <p class="text-dark">Already have an account? <a href="login">Sign In</a></p>
                 </div>
               </form>
             </div>
