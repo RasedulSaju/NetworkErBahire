@@ -71,7 +71,7 @@ session_start();
 							</li>
                             <li class="nav-item avatar dropdown">
                                 <a class="nav-link dropdown-toggle" id="admin-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img src="user/<?php echo $_SESSION['role'] ?>.jpg" class="rounded-circle z-depth-0" alt="avatar image">
+                                    <img src="user/<?php echo $_SESSION['role']; ?>.jpg" class="rounded-circle z-depth-0" alt="avatar image">
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-lg-right dropdown-secondary" aria-labelledby="admin-dropdown">
                                     <a class="dropdown-item" href="admin/">Admin</a>
@@ -89,7 +89,7 @@ session_start();
 							</li>
                             <li class="nav-item avatar dropdown">
                                 <a class="nav-link dropdown-toggle" id="manager-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img src="user/<?php echo $_SESSION['role'] ?>.jpg" class="rounded-circle z-depth-0" alt="avatar image">
+                                    <img src="user/<?php echo $_SESSION['role']; ?>.jpg" class="rounded-circle z-depth-0" alt="avatar image">
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-lg-right dropdown-secondary" aria-labelledby="manager-dropdown">
                                     <a class="dropdown-item" href="admin/">Admin</a>
@@ -107,7 +107,7 @@ session_start();
 							</li>
                             <li class="nav-item avatar dropdown">
                                 <a class="nav-link dropdown-toggle" id="user-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img src="user/<?php echo $_SESSION['role'] ?>.jpg" class="rounded-circle z-depth-0" alt="avatar image">
+                                    <img src="user/<?php echo $_SESSION['role']; ?>.jpg" class="rounded-circle z-depth-0" alt="avatar image">
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-lg-right dropdown-secondary" aria-labelledby="user-dropdown">
                                     <a class="dropdown-item" href="profile">Profile</a>
