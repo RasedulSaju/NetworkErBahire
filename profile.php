@@ -9,7 +9,6 @@ if (isset($_SESSION['email'])) {
     $sqlquery = "SELECT * FROM users where email='$email'";
     try {
       $returnval = $dbcon->query($sqlquery); ///PDO Statement
-
       $userinfo = $returnval->fetchAll();
       foreach ($userinfo as $userdata);
 ?>
