@@ -3,20 +3,20 @@
         <ul class="custom-scrollbar">
 
             <!-- Logo -->
-            <li class="logo-sn waves-effect py-3">
+            <!-- <li class="logo-sn waves-effect py-3">
                 <div class="text-center">
                     <a href="#" class="pl-0"><img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png"></a>
                 </div>
-            </li>
+            </li> -->
 
             <!-- Search Form -->
-            <li>
+            <!-- <li>
                 <form class="search-form" role="search">
                     <div class="md-form mt-0 waves-light">
                         <input type="text" class="form-control py-2" placeholder="Search">
                     </div>
                 </form>
-            </li>
+            </li> -->
 
             <!-- Side navigation links -->
             <li>
@@ -25,7 +25,7 @@
                     <li>
                         <a href="../admin/" class="collapsible-header waves-effect"><i class="w-fa fas fa-tachometer-alt"></i>Dashboard</a>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a class="collapsible-header waves-effect arrow-r">
                             <i class="w-fa fas fa-image"></i>Pages<i class="fas fa-angle-down rotate-icon"></i>
                         </a>
@@ -69,7 +69,7 @@
                                 </li>
                             </ul>
                         </div>
-                    </li>
+                    </li> -->
                     <li>
                         <a class="collapsible-header waves-effect arrow-r">
                             <i class="w-fa fas fa-user"></i>User Section<i class="fas fa-angle-down rotate-icon"></i>
@@ -85,7 +85,7 @@
                             </ul>
                         </div>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a class="collapsible-header waves-effect arrow-r">
                             <i class="w-fa fab fa-css3"></i>CSS<i class="fas fa-angle-down rotate-icon"></i>
                         </a>
@@ -189,7 +189,7 @@
                                 </li>
                             </ul>
                         </div>
-                    </li>
+                    </li> -->
                     <li>
                         <a class="collapsible-header waves-effect arrow-r">
                             <i class="w-fa fas fa-map"></i>Locations<i class="fas fa-angle-down rotate-icon"></i>
@@ -209,8 +209,24 @@
                         </div>
                     </li>
 
-                    <!-- Simple link -->
                     <li>
+                        <a class="collapsible-header waves-effect arrow-r">
+                        <i class="fas fa-tools"></i>Settings<i class="fas fa-angle-down rotate-icon"></i>
+                        </a>
+                        <div class="collapsible-body">
+                            <ul>
+                                <li>
+                                    <a href="#" class="waves-effect">System Setting</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="waves-effect">Manage Admins</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <!-- Simple link -->
+                    <!-- <li>
                         <a href="#" class="collapsible-header waves-effect"><i class="w-fa far fa-bell"></i>Alerts</a>
                     </li>
                     <li>
@@ -224,7 +240,7 @@
                     </li>
                     <li>
                         <a href="#" class="collapsible-header waves-effect"><i class="w-fa fas fa-th-large"></i>Sections</a>
-                    </li>
+                    </li> -->
 
                 </ul>
             </li>

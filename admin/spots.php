@@ -10,6 +10,11 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] == 'admin' || $_SESSION['role
         <h4 class="text-left font-weight-bold dark-grey-text"><?php echo $pageTitle; ?></h4>
         <div class="card">
             <div class="card-body">
+                <span class="table-add float-right mb-3 mr-2">
+                    <a href="#" class="text-success">
+                        <i class="fas fa-plus fa-2x" aria-hidden="true"></i>
+                    </a>
+                </span>
                 <table id="dtMaterialDesignExample" class="table table-striped table-bordered table-hover table-sm" cellspacing="0" width="100%">
                 <caption>List of <?php echo $pageTitle; ?></caption>    
                 <thead>
