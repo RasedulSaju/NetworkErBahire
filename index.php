@@ -643,9 +643,9 @@ include 'header.php';
         <!--Grid column-->
         <div class="col-md-3 mb-4">
 
-          <h6 class="font-weight-bold">Italy</h6>
-          <p class="font-small grey-text mb-0">Lorem ipsum dolor sit amet enim. Etiam ullamcorper. Suspendisse a
-            pellentesque dui, non felis.
+          <h6 class="font-weight-bold">Bandarban</h6>
+          <p class="font-small grey-text mb-0">A nearly 52 km2 hill-town accommodates about 32,000 people, of whom the majority are Marma. 
+            There is a Tribal Cultural Institute here, which features a library and a museum.
           </p>
           <a href="" class="font-small font-weight-bold blue-text">read more
             <i class="fas fa-long-arrow-alt-right ml-2" aria-hidden="true"></i>
@@ -657,9 +657,9 @@ include 'header.php';
         <!--Grid column-->
         <div class="col-md-3 mb-4">
 
-          <h6 class="font-weight-bold">Greece</h6>
-          <p class="font-small grey-text mb-0">Etiam ullamcorper. Suspendisse a pellentesque dui, non felis. Maecenas
-            malesuada elit lectus.
+          <h6 class="font-weight-bold">Saintmartin</h6>
+          <p class="font-small grey-text mb-0">St. Martin's Island is a small island (area only 3 km2) in the northeastern part of the Bay of Bengal, about 9 km south of the tip of the Cox's Bazar-Teknaf peninsula, and forming the southernmost part of Bangladesh. There is a small adjoining island that is separated at high tide, called Chera Dwip. It is about 8 kilometres (5 miles)
+             west of the northwest coast of Myanmar, at the mouth of the Naf River.
           </p>
           <a href="" class="font-small font-weight-bold blue-text">read more
             <i class="fas fa-long-arrow-alt-right ml-2" aria-hidden="true"></i>
@@ -671,9 +671,9 @@ include 'header.php';
         <!--Grid column-->
         <div class="col-md-3 mb-4">
 
-          <h6 class="font-weight-bold">Iceland</h6>
-          <p class="font-small grey-text mb-0">Etiam ullamcorper. Suspendisse a pellentesque dui, non felis. Maecenas
-            malesuada elit lectus.
+          <h6 class="font-weight-bold">Sajek Valley</h6>
+          <p class="font-small grey-text mb-0">Sajek Valley is one of the most popular tourist spots in Bangladesh situated among the hills of the Kasalong range of mountains in Sajek union, Baghaichhari Upazila in Rangamati District.[3] The valley is 2,000 feet (610 m) 
+            above sea level.[4] Sajek valley is known as the Queen of Hills & Roof of Rangamati.
           </p>
           <a href="" class="font-small font-weight-bold blue-text">read more
             <i class="fas fa-long-arrow-alt-right ml-2" aria-hidden="true"></i>
@@ -685,10 +685,9 @@ include 'header.php';
         <!--Grid column-->
         <div class="col-md-3 mb-4">
 
-          <h6 class="font-weight-bold">USA</h6>
-          <p class="font-small grey-text mb-0">Etiam ullamcorper. Suspendisse a pellentesque dui, non felis. Maecenas
-            malesuada elit lectus felis,
-            malesuada.
+          <h6 class="font-weight-bold">Sylhet</h6>
+          <p class="font-small grey-text mb-0">Sylhet is a metropolitan city in northeastern Bangladesh. It is the administrative seat of Sylhet Division. Located on the north bank of the Surma River at the eastern tip of Bengal, Sylhet has a subtropical climate and lush highland terrain. The city has a population of more than half a million, and is one of the largest cities in Bangladesh after Khulna, Chittagong and Dhaka. [1] Sylhet is one of the most important spiritual and cultural centres in Bangladesh. Furthermore, it is one of the most economically important cities in the country after Dhaka and Chittagong.
+             The city produces the highest amount of tea and natural gas in the country.
           </p>
           <a href="" class="font-small font-weight-bold blue-text">read more
             <i class="fas fa-long-arrow-alt-right ml-2" aria-hidden="true"></i>
@@ -700,68 +699,6 @@ include 'header.php';
       </div>
       <!--Grid row-->
 
-      <!--Grid row-->
-      <div class="row mb-5">
-
-        <!--Grid column-->
-        <div class="col-md-3 mb-4">
-
-          <h6 class="font-weight-bold">Australia</h6>
-          <p class="font-small grey-text mb-0">Lorem ipsum dolor sit amet enim. Etiam ullamcorper. Suspendisse a
-            pellentesque dui, non felis.
-          </p>
-          <a href="" class="font-small font-weight-bold blue-text">read more
-            <i class="fas fa-long-arrow-alt-right ml-2" aria-hidden="true"></i>
-          </a>
-
-        </div>
-        <!--Grid column-->
-
-        <!--Grid column-->
-        <div class="col-md-3 mb-4">
-
-          <h6 class="font-weight-bold">Egypt</h6>
-          <p class="font-small grey-text mb-0">Etiam ullamcorper. Suspendisse a pellentesque dui, non felis. Maecenas
-            malesuada elit lectus.
-          </p>
-          <a href="" class="font-small font-weight-bold blue-text">read more
-            <i class="fas fa-long-arrow-alt-right ml-2" aria-hidden="true"></i>
-          </a>
-
-        </div>
-        <!--Grid column-->
-
-        <!--Grid column-->
-        <div class="col-md-3 mb-4">
-
-          <h6 class="font-weight-bold">Brasil</h6>
-          <p class="font-small grey-text mb-0">Etiam ullamcorper. Suspendisse a pellentesque dui, non felis. Maecenas
-            malesuada elit lectus.
-          </p>
-          <a href="" class="font-small font-weight-bold blue-text">read more
-            <i class="fas fa-long-arrow-alt-right ml-2" aria-hidden="true"></i>
-          </a>
-
-        </div>
-        <!--Grid column-->
-
-        <!--Grid column-->
-        <div class="col-md-3 mb-4">
-
-          <h6 class="font-weight-bold">France</h6>
-          <p class="font-small grey-text mb-0">Etiam ullamcorper. Suspendisse a pellentesque dui, non felis. Maecenas
-            malesuada elit lectus felis,
-            malesuada.
-          </p>
-          <a href="" class="font-small font-weight-bold blue-text">read more
-            <i class="fas fa-long-arrow-alt-right ml-2" aria-hidden="true"></i>
-          </a>
-
-        </div>
-        <!--Grid column-->
-
-      </div>
-      <!--Grid row-->
 
     </section>
     <!-- Section: About -->
