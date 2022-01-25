@@ -17,7 +17,6 @@ include 'header.php';
   
                 $divisionstable = $returnval->fetchAll();
               
-                  }
                   
               } catch (PDOException $ex) {
                 echo $ex;
@@ -36,7 +35,7 @@ include 'header.php';
   
                 $divisionstable = $returnval->fetchAll();
               
-                  }
+                  
                   
               } catch (PDOException $ex) {
                 echo $ex;
@@ -52,7 +51,7 @@ include 'header.php';
 
             $divisionstable = $returnval->fetchAll();
           
-              }
+              
               
           } catch (PDOException $ex) {
             echo $ex;
