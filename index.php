@@ -31,7 +31,7 @@ include 'header.php';
   <div class="container">
 
     <!-- Section: Features v.1 -->
-    <section id="destination" class="mt-4 wow fadeInDown">
+     <section id="destination" class="mt-4 wow fadeInDown">
 
       <!--Section heading-->
       <h4 class="text-center my-5 font-weight-bold wow fadeIn" data-wow-delay="0.2s">
