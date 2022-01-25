@@ -61,3 +61,14 @@ INSERT INTO settings(title, info) VALUES ('site_name', 'Network Er Bahire'), ('t
 );
 
 INSERT INTO admin_menus(name, link) VALUES ('settings', 'settings');*/
+
+CREATE TABLE `blog` (
+  `id` int(10) NOT NULL,
+  `user_name` varchar(255) NOT NULL,
+  `area` varchar(255) DEFAULT NULL,
+  `image` blob NOT NULL,
+  `tittle` varchar(255) DEFAULT NULL,
+  `description` mediumtext NOT NULL,
+  `datetime` datetime NOT NULL,
+  `userid` int(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
