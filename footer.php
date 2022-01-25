@@ -49,6 +49,9 @@
             <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
                 <h6 class="text-uppercase mb-4 font-weight-bold">Team Mates</h6>
                 <p>
+                    <a href="#" title="011 142 107">Alif Nomani Rahman</a>
+                </p>
+                <p>
                     <a href="#" title="011 172 096">Shifeata Kaderi (Borshon)</a>
                 </p>
                 <p>
