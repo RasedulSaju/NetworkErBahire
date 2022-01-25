@@ -61,6 +61,9 @@ session_start();
                         <li class="nav-item">
                             <a class="nav-link" href="blog" data-offset="100">Blog</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="tourguide" data-offset="100">Tour Guide</a>
+                        </li>
                     </ul>
                     <?php
                     if (isset($_SESSION['role']) && $_SESSION['role'] == 'admin') {
