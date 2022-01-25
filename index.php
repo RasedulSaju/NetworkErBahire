@@ -31,7 +31,7 @@ include 'header.php';
   <div class="container">
 
     <!-- Section: Features v.1 -->
-    <section id="destination" class="mt-4 wow fadeInDown">
+     <section id="destination" class="mt-4 wow fadeInDown">
 
       <!--Section heading-->
       <h4 class="text-center my-5 font-weight-bold wow fadeIn" data-wow-delay="0.2s">
@@ -224,7 +224,7 @@ include 'header.php';
                     <img src="https://mdbootstrap.com/img/Photos/Others/images/48.jpg" class="img-fluid" alt="">
 
                     <div class="mask flex-center rgba-blue-strong">
-                      <h4 class="white-text font-weight-bold">Lorem ipsum dolor sit amet</h4>
+                      <h4 class="white-text font-weight-bold">Bandarban</h4>
                     </div>
                   </div>
                   <!--/Image-->
@@ -248,7 +248,7 @@ include 'header.php';
                     <img src="https://mdbootstrap.com/img/Photos/Others/images/29.jpg" class="img-fluid" alt="">
 
                     <div class="mask flex-center rgba-blue-strong">
-                      <h4 class="white-text font-weight-bold">Lorem ipsum dolor sit amet</h4>
+                      <h4 class="white-text font-weight-bold">Saintmartin</h4>
                     </div>
                   </div>
                   <!--/Image-->
@@ -272,7 +272,7 @@ include 'header.php';
                     <img src="https://mdbootstrap.com/img/Photos/Others/images/49.jpg" class="img-fluid" alt="">
 
                     <div class="mask flex-center rgba-blue-strong">
-                      <h4 class="white-text font-weight-bold">Lorem ipsum dolor sit amet</h4>
+                      <h4 class="white-text font-weight-bold">Sajek valley</h4>
                     </div>
                   </div>
                   <!--/Image-->
@@ -296,7 +296,7 @@ include 'header.php';
                     <img src="https://mdbootstrap.com/img/Photos/Others/images/23.jpg" class="img-fluid" alt="">
 
                     <div class="mask flex-center rgba-blue-strong">
-                      <h4 class="white-text font-weight-bold">Lorem ipsum dolor sit amet</h4>
+                      <h4 class="white-text font-weight-bold">sylhet</h4>
                     </div>
                   </div>
                   <!--/Image-->

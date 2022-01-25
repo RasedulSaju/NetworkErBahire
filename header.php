@@ -81,7 +81,9 @@ session_start();
                             </li>
                         </ul>
                     <?php
-                    } else if (isset($_SESSION['role']) && $_SESSION['role'] == 'manager') {
+                    } 
+                    else if (isset($_SESSION['role']) && $_SESSION['role'] == 'manager')
+                    {
                     ?>
                         <ul class="navbar-nav ml-auto nav-flex-icons">
                             <li class="nav-item">
