@@ -1,7 +1,7 @@
 <?php
 $pageTitle = 'tourguide';
 include 'header.php';
-?>
+
 
     $search = null;
     $num = null;
@@ -9,27 +9,54 @@ include 'header.php';
     if (isset($_POST['search']))
     {
         $search = $_POST['search'];
-        $query= "SELECT * 
+        $sqlquery = "SELECT * 
              FROM tour_guide
              WHERE area LIKE '%$search%' ";
-             $queryfire = mysqli_query($con,$query); 
+             try {
+                $returnval = $dbcon->query($sqlquery); ///PDO Statement
+  
+                $divisionstable = $returnval->fetchAll();
+              
+                  }
+                  
+              } catch (PDOException $ex) {
+                echo $ex;
+              } 
              $num = mysqli_num_rows($queryfire);
 
     }
     elseif (isset($_GET['areaname']))
     {
         $search = $_GET['areaname'];
-        $query= "SELECT * 
+        $sqlquery = "SELECT * 
              FROM tour_guide
              WHERE area LIKE '$search' ";
-             $queryfire = mysqli_query($con,$query);
+             try {
+                $returnval = $dbcon->query($sqlquery); ///PDO Statement
+  
+                $divisionstable = $returnval->fetchAll();
+              
+                  }
+                  
+              } catch (PDOException $ex) {
+                echo $ex;
+              } 
              $num = mysqli_num_rows($queryfire);
 
     }
     else
     {
-        $query= "SELECT * FROM `tour_guide` WHERE 1  ";
-             $queryfire = mysqli_query($con,$query);
+        $sqlquery = "SELECT * FROM `tour_guide` WHERE 1  ";
+        try {
+            $returnval = $dbcon->query($sqlquery); ///PDO Statement
+
+            $divisionstable = $returnval->fetchAll();
+          
+              }
+              
+          } catch (PDOException $ex) {
+            echo $ex;
+          } 
              $num = mysqli_num_rows($queryfire);
        
     }
@@ -44,7 +71,7 @@ include 'header.php';
     {
         $t_id= $_POST['id'];
         
-        $query1= "DELETE FROM `tour_guide` WHERE id LIKE '$t_id'";
+        $sqlquery= "DELETE FROM `tour_guide` WHERE id LIKE '$t_id'";
 
         if($con->query($query1) === TRUE) 
         {
