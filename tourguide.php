@@ -17,12 +17,11 @@ include 'header.php';
   
                 $divisionstable = $returnval->fetchAll();
               
-                  }
                   
               } catch (PDOException $ex) {
                 echo $ex;
               } 
-             $num = mysqli_num_rows($queryfire);
+             $num = mysqli_num_rows($sqlquery);
 
     }
     elseif (isset($_GET['areaname']))
@@ -36,12 +35,12 @@ include 'header.php';
   
                 $divisionstable = $returnval->fetchAll();
               
-                  }
+                  
                   
               } catch (PDOException $ex) {
                 echo $ex;
               } 
-             $num = mysqli_num_rows($queryfire);
+             $num = mysqli_num_rows($returnval);
 
     }
     else
@@ -52,12 +51,12 @@ include 'header.php';
 
             $divisionstable = $returnval->fetchAll();
           
-              }
+              
               
           } catch (PDOException $ex) {
             echo $ex;
           } 
-             $num = mysqli_num_rows($queryfire);
+             $num = mysqli_num_rows($returnval);
        
     }
      
