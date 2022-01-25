@@ -1,4 +1,12 @@
 <?php
+session_start();
+if (isset($_SESSION['email'])) {
+?>
+  <script>
+    window.location.assign('../NetworkErBahire');
+  </script>
+<?php
+} else {
 $pageTitle = 'Register';
 include 'header.php';
 ?>
@@ -55,3 +63,6 @@ include 'header.php';
 </header>
 <!-- Main Navigation -->
 <?php include 'footer.php'; ?>
+<?php
+}
+?>
