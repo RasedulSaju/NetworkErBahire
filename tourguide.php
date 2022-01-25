@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'Welcome';
+$pageTitle = 'tourguide';
 include 'header.php';
 ?>
 
