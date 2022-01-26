@@ -14,31 +14,32 @@
         <div class="col-lg-8">
 
             <div class="card-body form">
-
+                <form method="POST" class="needs-validation" action="sendmail.php">
                 <!-- Header -->
                 <h3 class="mt-4"><i class="fas fa-envelope pr-2"></i>Write to us:</h3>
 
                 <!-- Grid row -->
                 <div class="row">
+                    
 
-                    <!-- Grid column -->
-                    <div class="col-md-6">
-                        <div class="md-form mb-0">
-                            <input type="text" id="form-contact-name" name="name" class="form-control" required>
-                            <label for="form-contact-name" class="">Your name</label>
+                        <!-- Grid column -->
+                        <div class="col-md-6">
+                            <div class="md-form mb-0">
+                                <input type="text" id="form-contact-name" name="name" class="form-control" required>
+                                <label for="form-contact-name" class="">Your name</label>
+                            </div>
                         </div>
-                    </div>
-                    <!-- Grid column -->
+                        <!-- Grid column -->
 
-                    <!-- Grid column -->
-                    <div class="col-md-6">
-                        <div class="md-form mb-0">
-                            <input type="text" id="form-contact-email" name="email" class="form-control" required>
-                            <label for="form-contact-email" class="">Your email</label>
+                        <!-- Grid column -->
+                        <div class="col-md-6">
+                            <div class="md-form mb-0">
+                                <input type="email" id="form-contact-email" name="email" class="form-control" required>
+                                <label for="form-contact-email" class="">Your email</label>
+                            </div>
                         </div>
-                    </div>
-                    <!-- Grid column -->
-
+                        <!-- Grid column -->
+                    
                 </div>
                 <!-- Grid row -->
 
@@ -74,15 +75,16 @@
                         <div class="md-form mb-0">
                             <textarea type="text" id="form-contact-message" name="message" class="form-control md-textarea" rows="3" required></textarea>
                             <label for="form-contact-message">Your message</label>
-                            <a class="btn-floating btn-lg blue">
-                                <i class="far fa-paper-plane"></i>
-                            </a>
+                            <input type="Submit" class="btn btn-rounded btn-lg blue" value="Send Email">
+                                
+                            
                         </div>
                     </div>
                     <!-- Grid column -->
 
-                </div>
+                  </div>
                 <!-- Grid row -->
+                </form>
 
             </div>
 
